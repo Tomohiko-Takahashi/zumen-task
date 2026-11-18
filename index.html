@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZUMEN TASK — 図面リスト型タスク管理</title>
+<style>
+:root{
+  --bg:#f5f4f0; --paper:#fff; --ink:#1c1c1a; --sub:#6b6a66; --mute:#a8a6a0;
+  --line:#dedbd3; --line2:#ebe8e1; --accent:#d2462b; --accent-s:#fbe9e4;
+  --inst:#2457c5; --inst-s:#e6edfb; --ok:#2f8f5b; --warn:#c98a12;
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic UI",Meiryo,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:13px}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+.muted{color:var(--mute)}
+
+/* header */
+#top{height:52px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--paper);border-bottom:1px solid var(--line);position:relative;z-index:5}
+.logo{font-family:var(--mono);font-weight:700;letter-spacing:.12em;font-size:14px;white-space:nowrap}
+.logo b{color:var(--accent)}
+#projSel{border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:5px 8px;max-width:240px}
+.tabs{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:2px}
+.tabs button{border:0;background:none;padding:5px 12px;border-radius:5px;color:var(--sub);white-space:nowrap}
+.tabs button.on{background:var(--paper);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08);font-weight:600}
+.sp{flex:1}
+.tbtn{border:1px solid var(--line);background:var(--paper);border-radius:6px;padding:5px 10px;white-space:nowrap}
+.tbtn:hover{border-color:var(--ink)}
+.tbtn.pri{background:var(--ink);color:#fff;border-color:var(--ink)}
+.tbtn:disabled{opacity:.4;cursor:default}
+#sync{font-size:11px;color:var(--sub);display:flex;align-items:center;gap:6px;white-space:nowrap;cursor:pointer}
+#sync i{width:8px;height:8px;border-radius:50%;background:var(--mute);display:inline-block}
+#sync.ok i{background:var(--ok)} #sync.pending i{background:var(--warn)} #sync.sync i{background:var(--inst);animation:pulse 1s infinite} #sync.err i{background:var(--accent)}
+@keyframes pulse{50%{opacity:.3}}
+#app{height:calc(100vh - 52px);overflow:hidden}
+
+/* list view */
+.lv{height:100%;overflow:auto;padding:24px 36px 80px}
+.lvbar{display:flex;align-items:flex-end;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.lvbar h2{margin:0;font-size:20px;font-weight:600}
+.lvbar .stat{font-family:var(--mono);color:var(--sub);font-size:12px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:none;padding:4px 10px;font-size:12px;color:var(--sub)}
+.seg button.on{background:var(--ink);color:#fff}
+.chk{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--sub);cursor:pointer}
+.mscards{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:stretch}
+.mscard{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:8px;padding:10px 12px;width:210px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.mscard:hover{border-color:#b9b5ab;border-top-color:var(--c)}
+.mscard .n{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mscard .d{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.mscard .big{font-family:var(--mono);font-size:20px;font-weight:600;margin:2px 0}
+.mscard .big small{font-size:11px;color:var(--sub);font-weight:400;margin-left:6px}
+.judge{font-size:11.5px;display:flex;align-items:center;gap:5px}
+.judge i{width:8px;height:8px;border-radius:50%;display:inline-block;flex:none}
+.j-ok i{background:var(--ok)} .j-warn i{background:var(--warn)} .j-over i{background:var(--accent)} .j-done i{background:var(--mute)}
+.j-over{color:var(--accent)} .j-warn{color:#8a5d00}
+.msadd{border:1px dashed var(--line);background:none;border-radius:8px;width:120px;color:var(--sub);font-size:12px}
+.msadd:hover{color:var(--ink);border-color:var(--ink)}
+.dlist{position:relative;width:800px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.drow{display:grid;grid-template-columns:24px 96px 1fr 80px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
+.drow:last-of-type{border-bottom:0}
+.drow.head{height:34px;font-size:11px;color:var(--sub);letter-spacing:.06em;background:#faf9f6;border-radius:8px 8px 0 0;border-bottom:1px solid var(--line)}
+.drow.head div{padding:0 8px}
+.drow:not(.head):hover{background:#fbfaf7}
+.drow.hl{background:var(--accent-s)!important}
+.drow.dragover{box-shadow:inset 0 2px 0 var(--accent)}
+.drow.flash{animation:flash 1.4s}
+.grip{color:var(--mute);cursor:grab;text-align:center;font-size:11px;letter-spacing:-2px;user-select:none}
+.cell{border:1px solid transparent;background:none;padding:5px 8px;border-radius:4px;width:100%;min-width:0}
+.cell:hover{border-color:var(--line)} .cell:focus{border-color:var(--ink);background:#fff;outline:0}
+.cell.no,.cell.sc{font-family:var(--mono);font-size:12px}
+.prog{display:flex;align-items:center;gap:8px;padding:0 8px;cursor:pointer;min-width:0}
+.sbar{display:flex;gap:2px;height:7px;flex:1;min-width:0}
+.sbar span{position:relative;border-radius:2px;overflow:hidden;background:#ece9e2;min-width:4px}
+.sbar span::before{content:"";position:absolute;inset:0;background:var(--c);opacity:.2}
+.sbar span i{position:relative;display:block;height:100%;background:var(--c)}
+.pct{font-family:var(--mono);font-size:12px;width:40px;text-align:right;flex:none}
+.ico{border:0;background:none;color:var(--mute);border-radius:4px;width:24px;height:24px;line-height:1;padding:0}
+.ico:hover{background:var(--line2);color:var(--ink)}
+.drow .del{opacity:0} .drow:hover .del{opacity:1}
+.port{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--mute);background:#fff;padding:0;justify-self:center}
+.port:hover,.port.on{border-color:var(--accent);background:var(--accent)}
+.linking .port{border-color:var(--accent)}
+.addrowbtn{display:block;width:100%;border:0;border-top:1px dashed var(--line);background:none;padding:9px;color:var(--sub);border-radius:0 0 8px 8px}
+.addrowbtn:hover{background:#faf9f6;color:var(--ink)}
+.linksvg{position:absolute;top:0;left:calc(100% - 14px);overflow:visible;pointer-events:none}
+.linksvg .lk{pointer-events:stroke;cursor:pointer}
+.linksvg .lbl{pointer-events:all;cursor:pointer}
+.linksvg .lk:hover,.linksvg g.hov .lk{stroke:var(--accent)}
+.hint{color:var(--sub);font-size:12px;margin-top:14px;line-height:1.8}
+.hint kbd{font-family:var(--mono);border:1px solid var(--line);border-radius:3px;padding:0 4px;background:#fff;font-size:11px}
+.linkbanner{position:fixed;left:50%;top:64px;transform:translateX(-50%);background:var(--accent);color:#fff;padding:7px 14px;border-radius:20px;font-size:12px;z-index:20;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.legendms{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--sub);margin:8px 0 0}
+.legendms span{display:inline-flex;align-items:center;gap:4px}
+.legendms i{width:10px;height:10px;border-radius:2px;background:var(--c);display:inline-block}
+
+/* detail view */
+.dv{display:grid;grid-template-columns:210px minmax(460px,1fr) minmax(380px,42%);height:100%}
+.dv.wide{grid-template-columns:180px minmax(360px,30%) 1fr}
+.zoom{display:inline-flex;align-items:center;gap:2px;margin-left:auto}
+.zoom button{border:1px solid var(--line);background:#fff;border-radius:4px;padding:2px 7px;font-size:12px}
+.zoom span{font-family:var(--mono);font-size:11px;width:40px;text-align:center;color:var(--sub)}
+.side{border-right:1px solid var(--line);overflow:auto;background:#faf9f6;padding:10px 0}
+.side h4{margin:4px 14px 8px;font-size:11px;color:var(--sub);letter-spacing:.08em;font-weight:500}
+.sitem{display:grid;grid-template-columns:58px 1fr 34px;gap:4px;align-items:center;padding:7px 14px;cursor:pointer;border-left:3px solid transparent}
+.sitem:hover{background:#f1efe9}
+.sitem.on{background:var(--paper);border-left-color:var(--ink)}
+.sitem.hl{background:var(--inst-s);border-left-color:var(--inst)}
+.sitem .no{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.sitem .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sitem .pc{font-family:var(--mono);font-size:11px;text-align:right;color:var(--sub)}
+.side .addd{margin:10px 14px;border:1px dashed var(--line);background:none;border-radius:6px;padding:6px;width:calc(100% - 28px);color:var(--sub)}
+.sheets{overflow:auto;padding:0 22px 120px}
+.shtool{position:sticky;top:0;z-index:3;background:var(--bg);padding:12px 0 10px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--sub)}
+.sheet{background:var(--paper);border:1px solid var(--line);border-radius:8px;margin-bottom:18px}
+.sheet.on{border-color:#b9b5ab;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.shead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.shead .cell.no{width:84px} .shead .cell.nm{flex:1;font-size:15px;font-weight:600;min-width:120px} .shead .cell.sc{width:70px}
+.shead .prog{width:200px;cursor:default}
+.rel{padding:6px 14px;border-bottom:1px solid var(--line2);font-size:12px;color:var(--sub);display:flex;flex-direction:column;gap:2px;background:#fcfbf9}
+.rel a{color:var(--ink);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--mute)}
+.rel .memo{color:var(--accent)}
+.content{padding:6px 0 4px;border-bottom:1px solid var(--line2)}
+.content:last-child{border-bottom:0}
+.chead{display:flex;align-items:center;gap:6px;padding:4px 14px 2px}
+.chead .cell{font-weight:600;flex:1;padding:4px 6px}
+.chead .meta{font-family:var(--mono);font-size:11px;color:var(--sub);white-space:nowrap}
+.chead .ico{opacity:.6}
+.tasks{list-style:none;margin:0;padding:0 8px 0 14px}
+.task{border-radius:5px;position:relative}
+.trow{display:grid;grid-template-columns:22px 20px minmax(0,1fr) auto auto 22px 96px auto 24px;align-items:center;gap:4px;height:32px;padding-right:4px}
+.task:hover{background:#f7f6f2}
+.task.hl{background:var(--inst-s)!important;box-shadow:inset 3px 0 0 var(--inst)}
+.task.flash{animation:flash 1.2s}
+@keyframes flash{0%,40%{background:#ffe8a3}}
+.tcell{display:flex;align-items:center;gap:4px;min-width:0}
+.ttl{border:1px solid transparent;background:none;padding:4px 6px;border-radius:4px;min-width:0;width:100%}
+.ttl:focus{border-color:var(--ink);background:#fff;outline:0}
+.task.done .ttl{color:var(--mute);text-decoration:line-through}
+.task input[type=checkbox]{margin:0;accent-color:var(--ink);width:15px;height:15px}
+.kt{font-size:10px;border-radius:3px;padding:1px 4px;white-space:nowrap;flex:none;color:#fff;background:var(--c,#6b6a66)}
+.kt.mtg{background:none;color:var(--c,#6b6a66);border:1px solid var(--c,#6b6a66)}
+.chain{border:0;background:none;color:var(--mute);font-size:13px;width:20px;height:22px;border-radius:4px;padding:0;font-family:var(--mono)}
+.chain:hover{background:var(--line2);color:var(--ink)}
+.chain.serial{color:var(--accent);font-weight:700}
+.chain.first{font-size:7px;text-align:center;line-height:22px;color:var(--line)}
+.depchip{border:1px solid var(--line);background:#fff;border-radius:10px;font-size:10px;padding:1px 6px;color:var(--sub);white-space:nowrap}
+.ibadge{font-size:10px;font-family:var(--mono);color:var(--inst);background:var(--inst-s);border-radius:10px;padding:2px 6px;cursor:pointer;white-space:nowrap}
+.ibadge.home{background:var(--inst);color:#fff}
+.task.inst .ttl{color:var(--inst)} .task.inst.done .ttl{color:var(--mute)}
+.task.sub{opacity:.42}
+.task.sub:hover,.task.sub.hl{opacity:.9}
+.subnote{grid-column:span 2;font-size:11px;color:var(--inst);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:right;padding-right:4px}
+.asg{border:1px solid var(--line);border-left:4px solid var(--c);border-radius:4px;background:#fff;padding:2px 2px 2px 4px;font-size:12px;width:96px}
+.hrs{width:40px;border:1px solid var(--line);border-radius:4px;padding:2px 4px;font-family:var(--mono);font-size:12px;text-align:right;background:#fff}
+.rw{display:flex;align-items:center;gap:3px;font-size:11px;color:var(--sub);justify-content:flex-end}
+.due{border:1px solid var(--line);border-radius:4px;padding:1px 3px;font-family:var(--mono);font-size:11px;background:#fff;width:112px}
+.due.over{border-color:var(--accent);color:var(--accent);background:var(--accent-s)}
+.stchip{border:1px solid var(--line);background:#fff;border-radius:10px;font-size:10.5px;padding:1px 7px;white-space:nowrap}
+.stchip.wait{border-color:var(--warn);color:#8a5d00;background:#fdf3dc}
+.stchip.done{border-color:var(--ok);color:var(--ok);background:#e6f4ec}
+.memo-b{font-size:12px}
+.memo-b.has{color:var(--warn)}
+.task .more{opacity:.5} .task:hover .more{opacity:1}
+.tmemo{padding:0 34px 6px 50px}
+.tmemo textarea{width:100%;min-height:46px;border:1px solid var(--ink);border-radius:5px;padding:5px 7px;font-size:12px;resize:vertical;background:#fffef8}
+.tmemo-v{margin:-4px 34px 5px 56px;font-size:11.5px;color:var(--sub);background:#fffbea;border-left:2px solid #e8d48a;padding:3px 8px;border-radius:0 4px 4px 0;cursor:text;white-space:pre-wrap;line-height:1.5}
+.addtask{padding:2px 8px 6px 56px;display:flex;gap:6px}
+.addtask input{flex:1;border:0;border-bottom:1px dashed var(--line);background:none;padding:5px 2px;outline:0}
+.addtask input:focus{border-bottom-color:var(--ink)}
+.addtask button{border:0;background:none;color:var(--inst);font-size:11px;white-space:nowrap}
+.addcontent{display:block;width:100%;border:0;background:none;padding:8px;color:var(--sub);border-top:1px dashed var(--line2);font-size:12px}
+.addcontent:hover{color:var(--ink);background:#faf9f6}
+
+.treepane{border-left:1px solid var(--line);display:flex;flex-direction:column;background:var(--paper);min-width:0}
+.tbar{padding:10px 14px;border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center}
+.tbar h4{margin:0;font-size:13px}
+.tstats{display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--sub);width:100%;flex-wrap:wrap}
+.tstats b{color:var(--ink);font-weight:600}
+.tstats .cp b{color:var(--accent)}
+#treebox{flex:1;overflow:auto;background-image:radial-gradient(var(--line2) 1px,transparent 1px);background-size:14px 14px;touch-action:none}
+.legend{font-size:11px;color:var(--sub);display:flex;gap:4px 12px;padding:6px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
+.legend span{display:inline-flex;align-items:center;gap:4px}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--ink)}
+
+svg .tn{cursor:grab}
+svg .tn.dragging{cursor:grabbing;opacity:.9}
+svg .tn.hl .bx{fill:var(--inst-s);stroke:var(--inst);stroke-width:2}
+svg .tn.follow .bx{stroke:var(--accent);stroke-width:2;stroke-dasharray:5 3;fill:#fff6f3}
+svg .tn.swept .bx{stroke:var(--accent);stroke-width:2.4;fill:var(--accent-s)}
+svg .msl{cursor:ew-resize}
+svg .msl:hover .msp{stroke-width:3.5}
+svg .bandbg{fill:transparent}
+svg .bandbg.on{fill:var(--accent-s);opacity:.7}
+
+/* party view */
+.pv{height:100%;overflow:auto;padding:24px 36px 80px}
+.pgroup{background:var(--paper);border:1px solid var(--line);border-radius:8px;margin-bottom:16px;max-width:1100px}
+.pgroup>header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.pgroup>header .dot{width:12px;height:12px;border-radius:3px;background:var(--c)}
+.pgroup>header h3{margin:0;font-size:14px}
+.pgroup>header .cnt{font-size:11.5px;color:var(--sub);font-family:var(--mono)}
+.ptab{width:100%;border-collapse:collapse;font-size:12.5px}
+.ptab th{font-size:11px;color:var(--sub);font-weight:500;text-align:left;padding:6px 10px;border-bottom:1px solid var(--line2);background:#faf9f6}
+.ptab td{padding:5px 10px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.ptab tr:last-child td{border-bottom:0}
+.ptab tr.isdone td{color:var(--mute)}
+.ptab .ttl{padding:3px 5px}
+.ptab .pl a{font-family:var(--mono);font-size:11px;color:var(--ink);cursor:pointer;border-bottom:1px dotted var(--mute);margin-right:6px}
+.ptab .blk{font-size:11px;color:var(--accent);font-family:var(--mono)}
+.ptab .pmemo{width:100%;border:1px solid transparent;background:none;padding:3px 5px;border-radius:4px;font-size:12px;color:var(--sub)}
+.ptab .pmemo:hover{border-color:var(--line)} .ptab .pmemo:focus{border-color:var(--ink);background:#fff;outline:0;color:var(--ink)}
+
+/* tooltip/menu/modal/toast */
+#tip{position:fixed;z-index:60;background:var(--ink);color:#fff;font-size:11px;padding:7px 10px;border-radius:6px;pointer-events:none;display:none;max-width:320px;line-height:1.6;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+#tip b{color:#9dbbff;font-weight:600}
+.menu{position:fixed;z-index:70;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.12);padding:4px;min-width:240px}
+.menu button{display:block;width:100%;text-align:left;border:0;background:none;padding:7px 10px;border-radius:5px;font-size:12.5px}
+.menu button:hover{background:var(--bg)}
+.menu button.danger{color:var(--accent)}
+.menu hr{border:0;border-top:1px solid var(--line2);margin:4px 0}
+.menu .mh{font-size:10.5px;color:var(--mute);padding:4px 10px 2px}
+.mbg{position:fixed;inset:0;background:rgba(28,28,26,.35);z-index:80;display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
+.modal{background:#fff;border-radius:10px;width:min(560px,100%);box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.modal.wide{width:min(860px,100%)}
+.modal h3{margin:0;padding:16px 20px;border-bottom:1px solid var(--line);font-size:15px}
+.mbody{padding:16px 20px;max-height:70vh;overflow:auto}
+.mfoot{padding:12px 20px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}
+.mfoot .left{margin-right:auto}
+.fld{display:block;margin-bottom:12px}
+.fld>span{display:block;font-size:11px;color:var(--sub);margin-bottom:4px;letter-spacing:.04em}
+.fld input:not([type=checkbox]):not([type=radio]):not([type=color]),.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;background:#fff}
+.fld textarea{min-height:70px;resize:vertical}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.row4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cl{border:1px solid var(--line);border-radius:6px;max-height:280px;overflow:auto}
+.cl label{display:flex;align-items:center;gap:8px;padding:6px 10px;border-bottom:1px solid var(--line2);font-size:12.5px;cursor:pointer}
+.cl label:last-child{border-bottom:0}
+.cl label.dis{opacity:.4;cursor:not-allowed}
+.cl .grp{padding:5px 10px;background:#faf9f6;font-size:11px;color:var(--sub);border-bottom:1px solid var(--line2);font-family:var(--mono)}
+.cl .where{margin-left:auto;font-size:10.5px;color:var(--mute);font-family:var(--mono)}
+.pick{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line2);background:none;padding:8px 10px}
+.pick:hover{background:var(--inst-s)}
+.pick small{display:block;color:var(--mute);font-family:var(--mono);font-size:10.5px;margin-top:2px}
+.note{font-size:11.5px;color:var(--sub);line-height:1.7;background:#faf9f6;border-radius:6px;padding:10px 12px;margin:6px 0 12px}
+.note code{font-family:var(--mono);background:#fff;border:1px solid var(--line2);padding:0 4px;border-radius:3px}
+.mrow{display:grid;grid-template-columns:36px 1fr 28px;gap:8px;align-items:center;margin-bottom:6px}
+.mrow.ms{grid-template-columns:36px 1fr 150px 28px}
+.mrow.cap{grid-template-columns:1fr 110px}
+.mrow input[type=color]{width:36px;height:30px;border:1px solid var(--line);border-radius:6px;padding:2px;background:#fff}
+.mrow input[type=text],.mrow input[type=date],.mrow input[type=number]{border:1px solid var(--line);border-radius:6px;padding:6px 8px;width:100%}
+.pdfgrid{display:grid;grid-template-columns:1fr 220px;gap:18px}
+#pvbox{background:#eeece6;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:12px;min-height:240px}
+.sec{font-size:11px;color:var(--sub);letter-spacing:.08em;margin:14px 0 8px;border-bottom:1px solid var(--line2);padding-bottom:4px}
+.rvtab{width:100%;border-collapse:collapse;font-size:12.5px;margin-bottom:8px}
+.rvtab th{font-size:11px;color:var(--sub);font-weight:500;text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}
+.rvtab td{padding:6px 8px;border-bottom:1px solid var(--line2)}
+.rvtab .n{text-align:right;font-family:var(--mono)}
+.lbar{height:8px;background:var(--line2);border-radius:4px;overflow:hidden;width:140px;position:relative}
+.lbar i{display:block;height:100%;background:var(--ok)}
+.lbar i.warn{background:var(--warn)} .lbar i.over{background:var(--accent)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.kpi{background:#faf9f6;border-radius:6px;padding:8px 10px}
+.kpi span{font-size:10.5px;color:var(--sub);display:block}
+.kpi b{font-family:var(--mono);font-size:17px}
+.kpi.bad b{color:var(--accent)}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.on{opacity:1}
+
+@media (max-width:1150px){
+  .dv{grid-template-columns:180px 1fr;grid-template-rows:1fr 45%}
+  .treepane{grid-column:1/3;border-left:0;border-top:1px solid var(--line)}
+}
+
+/* print */
+#printArea{display:none}
+@media print{
+  html,body{background:#fff!important}
+  body>*:not(#printArea){display:none!important}
+  #printArea{display:block!important}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+.pr{font-family:var(--sans);color:#000}
+.pr .ptitle{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:.4mm solid #000;padding-bottom:2mm;margin-bottom:4mm}
+.pr .ptitle h1{font-size:1.6em;margin:0;font-weight:600}
+.pr .ptitle .meta{font-family:var(--mono);font-size:.85em;text-align:right;line-height:1.5}
+.pr .plist{position:relative}
+.pr .prow{display:grid;grid-template-columns:24mm 1fr 20mm 52mm;align-items:center;border-bottom:.2mm solid #bbb;box-sizing:border-box}
+.pr .prow.h{border-bottom:.35mm solid #000;font-size:.8em;color:#555}
+.pr .prow>div{padding:0 2mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pr .mono{font-family:var(--mono)}
+.pr .pbar{display:flex;align-items:center;gap:2mm}
+.pr .sbar{height:1.8mm}
+.pr h2.sh{font-size:1.1em;margin:6mm 0 2mm;border-bottom:.3mm solid #000;padding-bottom:1mm}
+.pr .psheet{margin-top:6mm;break-inside:avoid-page}
+.pr .psheet h2{font-size:1.15em;margin:0 0 1.5mm;display:flex;gap:3mm;align-items:baseline;border-bottom:.3mm solid #000;padding-bottom:1mm}
+.pr .psheet h2 .mono{font-size:.8em}
+.pr .psheet h2 .r{margin-left:auto;font-family:var(--mono);font-size:.75em;font-weight:400}
+.pr .prel{font-size:.82em;color:#444;margin:1mm 0 2mm}
+.pr .pc{break-inside:avoid;margin:2mm 0 3mm}
+.pr .pc h3{font-size:.95em;margin:0 0 1mm}
+.pr table{width:100%;border-collapse:collapse;font-size:.9em;table-layout:fixed}
+.pr td,.pr th{border-bottom:.15mm solid #ccc;padding:.8mm 1.5mm;text-align:left;vertical-align:top;overflow:hidden}
+.pr th{font-weight:500;color:#555;font-size:.85em;border-bottom:.25mm solid #000}
+.pr td.c{text-align:center} .pr td.n{text-align:right;font-family:var(--mono)}
+.pr .over{color:#c0392b;font-weight:600}
+.pr .ptree{margin-top:5mm;break-inside:avoid-page}
+.pr .ptree h3{font-size:.95em;margin:0 0 2mm}
+.pr .ptree svg{max-width:100%;height:auto}
+.pr .pparty{break-inside:avoid;margin-bottom:4mm}
+.pr .pparty h3{font-size:1em;margin:0 0 1mm;display:flex;align-items:center;gap:2mm}
+.pr .pparty h3 i{display:inline-block;width:3mm;height:3mm;border-radius:.6mm}
+</style>
+<style id="pageStyle"></style>
+</head>
+<body>
+<div id="top">
+  <div class="logo">ZUMEN<b>/</b>TASK</div>
+  <select id="projSel" title="プロジェクト"></select>
+  <div class="tabs">
+    <button data-view="list">図面リスト</button>
+    <button data-view="detail">詳細・ツリー</button>
+    <button data-view="party">関係者</button>
+  </div>
+  <div class="sp"></div>
+  <div id="sync" title="同期状態(クリックで設定)"><i></i><span>ローカル保存</span></div>
+  <button class="tbtn" data-act="milestones">マイルストーン</button>
+  <button class="tbtn" data-act="members">メンバー</button>
+  <button class="tbtn" data-act="pdf">PDF書き出し</button>
+  <button class="tbtn" data-act="settings">設定・共有</button>
+</div>
+<div id="app"></div>
+<div id="tip"></div>
+<div id="toast"></div>
+<div id="printArea"></div>
+<input type="file" id="fileIn" accept=".json,application/json" hidden>
+
+<script>
+const SRC0 = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;   // 配布用HTML生成のための自身のソース
+/* =========================================================
+   ZUMEN/TASK v2 — 図面リスト型タスク管理
+   単一HTML / localStorage + Dropbox(App folder)同期
+   ========================================================= */
+
+// ▼ チーム配布用:App keyとリフレッシュトークンを埋め込むと、メンバーはURLを開くだけで同じデータを共有できます
+const EMBED = { appKey: '', refresh: '', token: '', path: '' };   // 平文(非推奨:URLを知る誰でも接続可能)
+// ▼ 「設定・共有 → 配布用HTMLを作成」で自動的に書き込まれる、チームパスコードで暗号化した接続情報
+const EMBED_ENC = '';
+
+const LS_KEY = 'zumentask.v1', CFG_KEY = 'zumentask.cfg', UI_KEY = 'zumentask.ui';
+const PAPER = { A4:[210,297], A3:[297,420], B4:[257,364], A2:[420,594] };
+const COLORS = ['#d2462b','#2457c5','#2f8f5b','#c98a12','#7b4bc4','#1a8a9a','#b8336a','#5b6770'];
+const KIND = { in:'社内', ext:'外部', mtg:'打合せ' };
+const NOBAND = '#9a978f';
+
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const uid = () => Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 8);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const lsGet = k => { try { return localStorage.getItem(k) } catch(e) { return null } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v) } catch(e) {} };
+const fmtH = h => { h = +h || 0; return (Math.round(h * 10) / 10).toString() };
+const trunc = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, n - 1) + '…' : s };
+
+/* ---------- dates ---------- */
+const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
+const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const addDays = n => { const d = today0(); d.setDate(d.getDate() + n); return ymd(d); };
+const parseD = s => { if (!s) return null; const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1], +m[2]-1, +m[3]) : null; };
+const fmtD = s => { const d = parseD(s); return d ? `${d.getMonth()+1}/${d.getDate()}` : '—'; };
+const calDays = s => { const d = parseD(s); return d ? Math.round((d - today0()) / 864e5) : null; };
+function workdays(s){ // 本日〜締切前日の平日数
+  const end = parseD(s); if (!end) return null; const d = today0(); let n = 0;
+  while (d < end && n < 3000) { const w = d.getDay(); if (w && w < 6) n++; d.setDate(d.getDate() + 1); }
+  return n;
+}
+const isOverdue = t => t.kind !== 'in' && !t.done && t.due && calDays(t.due) < 0;
+
+/* ---------------- data ---------------- */
+function defaultPdf(){ return { paper:'A3', orient:'landscape', m:{t:15,r:15,b:15,l:20}, pt:9, inc:{ms:true, list:true, links:true, detail:true, tree:false, parties:false} } }
+function newProject(name){
+  return { id: uid(), name: name || '新規プロジェクト', updatedAt: Date.now(), progressMode:'count',
+           drawings: [], tasks: {}, links: [], milestones: [], parties: [], cap: {}, hpd: 8, pdf: defaultPdf() };
+}
+function seedProject(){
+  const p = newProject('サンプル邸 実施設計');
+  const M1 = {id:uid(), name:'積算図渡し①(基本図)', date:addDays(16), color:'#2457c5'};
+  const M2 = {id:uid(), name:'確認申請', date:addDays(58), color:'#d2462b'};
+  const M3 = {id:uid(), name:'積算図渡し②(詳細図)', date:addDays(93), color:'#2f8f5b'};
+  p.milestones = [M1, M2, M3];
+  const PC = {id:uid(), name:'クライアント', color:'#b8336a'}, PS = {id:uid(), name:'構造設計', color:'#7b4bc4'},
+        PE = {id:uid(), name:'設備設計', color:'#1a8a9a'}, PG = {id:uid(), name:'確認検査機関', color:'#5b6770'};
+  p.parties = [PC, PS, PE, PG];
+  const T = p.tasks;
+  const t = (title, o) => { const id = uid(); T[id] = Object.assign({id, title, kind:'in', assignee:'', hours:0, deps:[], done:false, memo:'', ms:'', home:'', party:'', st:'req', due:'', days:0}, o); return id; };
+  const xe  = t('配管ルート案の提出依頼', {kind:'ext', party:PE.id, st:'wait', due:addDays(5), memo:'PS寸法の前提になるので早めに催促'});
+  const r1  = t('設備配管の管理ルート確認', {assignee:'m2', hours:3, deps:[xe]});
+  const ps  = t('PS・EPS位置の確定', {assignee:'m2', hours:2, deps:[r1]});
+  const st  = t('階段寸法(蹴上げ・踏面)確定', {assignee:'m1', hours:2, done:true});
+  const f1  = t('1F 間仕切り・建具位置の作図', {assignee:'m3', hours:6, deps:[ps], ms:M1.id});
+  const f2  = t('2F 間仕切り・建具位置の作図', {assignee:'m3', hours:5, deps:[ps], ms:M1.id});
+  const xk  = t('キッチン仕様の決定', {kind:'ext', party:PC.id, st:'req', due:addDays(24)});
+  const fur = t('家具・什器レイアウト反映', {assignee:'m3', hours:3, deps:[f1, xk], ms:M3.id});
+  const el  = t('外壁仕上げ割付', {assignee:'m1', hours:4, done:true, ms:M1.id});
+  const win = t('サッシ割付・開口寸法確定', {assignee:'m1', hours:3, deps:[el]});
+  const mt  = t('定例:天井高さの承認', {kind:'mtg', party:PC.id, due:addDays(9), hours:1.5, assignee:'m1'});
+  const cl  = t('天井高さ・天井懐寸法の決定', {assignee:'m1', hours:2, deps:[r1, mt]});
+  const sec = t('A-A断面の作図', {assignee:'m3', hours:4, deps:[cl, st], ms:M2.id});
+  const xs  = t('軒先部材寸法の回答', {kind:'ext', party:PS.id, st:'wait', due:addDays(-2), memo:'11/13に依頼済。電話で確認する'});
+  const ev  = t('軒先・パラペット納まり検討', {assignee:'m1', hours:4, deps:[xs]});
+  const kn  = t('矩計図の作図', {assignee:'m3', hours:6, deps:[ev, cl, win], ms:M2.id});
+  const xg  = t('事前相談(斜線・採光)', {kind:'mtg', party:PG.id, due:addDays(30), hours:2, assignee:'m1', ms:M2.id});
+  const C = (name, items) => ({id: uid(), name, items});
+  const D = (no, name, scale, contents) => ({id: uid(), no, name, scale, contents});
+  const dA101 = D('A-101', '平面図', '1/100', [C('1F平面図', [xe, r1, ps, st, f1, xk, fur]), C('2F平面図', [r1, ps, f2])]);
+  const dA201 = D('A-201', '立面図', '1/100', [C('東・西立面図', [el, win, xg]), C('南・北立面図', [el, win])]);
+  const dA301 = D('A-301', '断面図', '1/100', [C('A-A断面図', [r1, mt, cl, sec])]);
+  const dA401 = D('A-401', '矩計図', '1/30', [C('矩計図(南側)', [cl, win, kn])]);
+  const dA501 = D('A-501', '部分詳細図', '1/10', [C('軒先詳細', [xs, ev])]);
+  p.drawings = [dA101, dA201, dA301, dA401, dA501];
+  p.links = [
+    {id: uid(), from: dA501.id, to: dA401.id, memo: '軒先納まりの検討が終わったら矩計図に反映'},
+    {id: uid(), from: dA101.id, to: dA301.id, memo: 'PS位置確定後、断面に反映'},
+  ];
+  p.cap = { m1: 10, m2: 6, m3: 5 };   // 他案件と兼務している想定
+  return p;
+}
+function seed(){
+  return { v:2, updatedAt: Date.now(), deleted:[], projects:[seedProject()], members:[
+    {id:'m1', name:'高橋', color:COLORS[0]}, {id:'m2', name:'佐藤', color:COLORS[1]}, {id:'m3', name:'鈴木', color:COLORS[2]} ] };
+}
+function normalize(s){
+  s.members = s.members || []; s.projects = s.projects || []; s.deleted = s.deleted || [];
+  s.projects.forEach(p => {
+    p.drawings = p.drawings || []; p.tasks = p.tasks || {}; p.links = p.links || [];
+    p.milestones = p.milestones || []; p.parties = p.parties || []; p.cap = p.cap || {}; p.hpd = +p.hpd || 8;
+    p.pdf = Object.assign(defaultPdf(), p.pdf || {}); p.pdf.m = Object.assign({t:15,r:15,b:15,l:20}, p.pdf.m); p.pdf.inc = Object.assign(defaultPdf().inc, p.pdf.inc);
+    p.progressMode = p.progressMode || 'count';
+    if (p.autoSort == null) p.autoSort = true;
+    Object.values(p.tasks).forEach(t => {
+      t.deps = (t.deps || []).filter(d => p.tasks[d] && d !== t.id);
+      t.kind = t.kind || 'in'; t.memo = t.memo || ''; t.ms = t.ms || ''; t.home = t.home || ''; t.party = t.party || '';
+      t.st = t.st || 'req'; t.due = t.due || ''; t.days = +t.days || 0; t.hours = +t.hours || 0;
+      if (t.ms && !p.milestones.some(m => m.id === t.ms)) t.ms = '';
+    });
+    p.drawings.forEach(d => { d.contents = d.contents || []; d.contents.forEach(c => c.items = [...new Set((c.items || []).filter(i => p.tasks[i]))]); });
+  });
+  return s;
+}
+
+let S;
+try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
+if (!S || !S.projects) S = seed();
+normalize(S);
+if (!S.projects.length) S.projects.push(newProject());
+let ui = Object.assign({ fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
+
+const qs = new URLSearchParams(location.search);
+let cur = { pid: S.projects[0].id, view: 'list', did: null };
+{ const want = qs.get('p') || lsGet('zumentask.lastpid'); if (want && S.projects.some(p => p.id === want)) cur.pid = want; }
+let treeScope = 'sel', linking = null;
+const memoOpen = new Set();
+
+const P = () => S.projects.find(p => p.id === cur.pid) || S.projects[0];
+const member = id => S.members.find(m => m.id === id);
+const party = (p, id) => p.parties.find(x => x.id === id);
+
+/* ---------------- commit / undo ---------------- */
+let snap = JSON.stringify(S), undoStack = [], ver = 0;
+function persist(){ snap = JSON.stringify(S); lsSet(LS_KEY, snap); ver++; }
+function commit(){
+  const p = P(); if (p) p.updatedAt = Date.now();
+  S.updatedAt = Date.now();
+  undoStack.push(snap); if (undoStack.length > 100) undoStack.shift();
+  persist(); dirty = true; scheduleSync(); render();
+}
+function undo(){
+  if (!undoStack.length) return toast('これ以上戻せません');
+  S = normalize(JSON.parse(undoStack.pop()));
+  if (!S.projects.some(p => p.id === cur.pid)) cur.pid = S.projects[0].id;
+  const p = P(); if (p) p.updatedAt = Date.now(); S.updatedAt = Date.now();
+  persist(); dirty = true; scheduleSync(); render(); toast('元に戻しました');
+}
+
+/* ---------------- model helpers ---------------- */
+const dTaskIds = d => { const s = new Set(); d.contents.forEach(c => c.items.forEach(i => s.add(i))); return [...s]; };
+function places(p, tid){ const r = []; p.drawings.forEach(d => d.contents.forEach(c => { if (c.items.includes(tid)) r.push({d, c}); })); return r; }
+const placeCount = (p, tid) => places(p, tid).length;
+function homePlace(p, tid){ const pl = places(p, tid); return pl.find(x => x.c.id === p.tasks[tid].home) || pl[0]; }
+function progressOf(p, ids){
+  ids = ids.filter(i => p.tasks[i]); if (!ids.length) return null;
+  if (p.progressMode === 'hours'){
+    let tot = 0, dn = 0; ids.forEach(i => { const h = +p.tasks[i].hours || 0; tot += h; if (p.tasks[i].done) dn += h; });
+    if (!tot) return null; return Math.round(dn / tot * 100);
+  }
+  return Math.round(ids.filter(i => p.tasks[i].done).length / ids.length * 100);
+}
+const dProgress = (p, d) => progressOf(p, dTaskIds(d));
+function placedIds(p){ const s = new Set(); p.drawings.forEach(d => dTaskIds(d).forEach(i => s.add(i))); return [...s]; }
+const projProgress = p => progressOf(p, placedIds(p));
+function dependsOn(p, a, b, seen = new Set()){
+  if (a === b) return true; if (seen.has(a)) return false; seen.add(a);
+  return (p.tasks[a]?.deps || []).some(d => dependsOn(p, d, b, seen));
+}
+const wouldCycle = (p, tid, dep) => dep === tid || dependsOn(p, dep, tid);
+function deleteTask(p, tid){
+  delete p.tasks[tid];
+  p.drawings.forEach(d => d.contents.forEach(c => c.items = c.items.filter(i => i !== tid)));
+  Object.values(p.tasks).forEach(t => t.deps = t.deps.filter(x => x !== tid));
+}
+function gcTasks(p){ const used = new Set(placedIds(p)); Object.keys(p.tasks).forEach(id => { if (!used.has(id)) deleteTask(p, id); }); }
+function findDC(p, did, cid){ const d = p.drawings.find(x => x.id === did); return { d, c: d && d.contents.find(x => x.id === cid) }; }
+function nextNo(p){
+  const last = p.drawings[p.drawings.length - 1]; if (!last) return 'A-001';
+  const m = String(last.no).match(/^(.*?)(\d+)(\D*)$/);
+  if (!m) return last.no + '-2';
+  return m[1] + String(+m[2] + 1).padStart(m[2].length, '0') + m[3];
+}
+const newTask = o => Object.assign({ id: uid(), title: '', kind:'in', assignee: '', hours: 0, deps: [], done: false, memo: '', ms:'', home:'', party:'', st:'req', due:'', days:0 }, o);
+const capOf = (p, mid) => p.cap[mid] != null ? +p.cap[mid] : 30;
+
+/* ---------------- milestones: effective band ---------------- */
+// 各作業の「帯」= 自分に付けた締切と、後続作業の帯のうち早い方(後続から自動継承)
+const msSorted = p => [...p.milestones].sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
+function effBandsRaw(p){
+  const ms = msSorted(p), M = ms.length, idx = {}; ms.forEach((m, i) => idx[m.id] = i);
+  const succ = {}; Object.values(p.tasks).forEach(t => t.deps.forEach(d => (succ[d] = succ[d] || []).push(t.id)));
+  const band = {}, vis = {};
+  const B = id => {
+    if (band[id] != null) return band[id]; if (vis[id]) return M; vis[id] = 1;
+    const t = p.tasks[id]; let b = t.ms && idx[t.ms] != null ? idx[t.ms] : M;
+    (succ[id] || []).forEach(s => b = Math.min(b, B(s)));
+    return band[id] = b;
+  };
+  Object.keys(p.tasks).forEach(B);
+  return { band, ms, M, succ, idx };
+}
+let EC = { key: null, val: null };
+function eff(p){ const k = ver + '|' + p.id; if (EC.key !== k) EC = { key: k, val: effBandsRaw(p) }; return EC.val; }
+const bandColor = (E, b) => b < E.M ? (E.ms[b].color || COLORS[b % COLORS.length]) : NOBAND;
+const bandName = (E, b) => b < E.M ? E.ms[b].name : '未定';
+
+function moveToBand(p, tid, j){
+  const E = effBandsRaw(p), t = p.tasks[tid], cur0 = E.band[tid];
+  const setMs = (task, k) => task.ms = k >= E.M ? '' : E.ms[k].id;
+  if (j === cur0) return;
+  setMs(t, j);
+  if (j > cur0) { // 後ろへ:後続作業も連れて行く
+    const stack = [...(E.succ[tid] || [])], seen = new Set();
+    while (stack.length) {
+      const s = stack.pop(); if (seen.has(s)) continue; seen.add(s);
+      const st = p.tasks[s], own = st.ms && E.idx[st.ms] != null ? E.idx[st.ms] : E.M;
+      if (own < j) setMs(st, j);
+      (E.succ[s] || []).forEach(x => stack.push(x));
+    }
+  } // 前へ:前提作業は帯の継承で自動的についてくる
+}
+function applyMoves(p, list){
+  const before = effBandsRaw(p).band;
+  list.forEach(([tid, j]) => moveToBand(p, tid, j));
+  const after = effBandsRaw(p).band, prim = new Set(list.map(x => x[0]));
+  return Object.keys(after).filter(id => before[id] !== after[id] && !prim.has(id));
+}
+function simulateMoves(p, list){
+  const tmp = Object.assign({}, p, { tasks: JSON.parse(JSON.stringify(p.tasks)) });
+  return applyMoves(tmp, list);
+}
+
+/* ---------------- review ---------------- */
+function review(p, k){
+  const E = eff(p), ms = E.ms[k], T = p.tasks;
+  const ids = placedIds(p).filter(i => E.band[i] <= k), set = new Set(ids);
+  const pct = progressOf(p, ids), D = workdays(ms.date), cal = calDays(ms.date);
+  const remH = ids.filter(i => T[i].kind !== 'ext' && !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0);
+  const per = {}; ids.forEach(i => { const t = T[i]; if (t.kind === 'ext' || t.done || !t.hours) return; const a = t.assignee || ''; per[a] = (per[a] || 0) + (+t.hours || 0); });
+  const rows = Object.keys(per).map(a => {
+    const m = member(a), cap = a ? capOf(p, a) / 5 * (D || 0) : 0;
+    return { m, rem: per[a], cap, ratio: cap ? per[a] / cap : Infinity };
+  }).sort((a, b) => b.ratio - a.ratio);
+  // 日程(営業日):社内作業=時間÷(その人の1日あたり稼働)、外部/打合せ=日付で固定 or 所要日数
+  const F = {}, vis = {};
+  const fin = id => {
+    if (F[id] != null) return F[id]; if (vis[id]) return 0; vis[id] = 1;
+    const t = T[id]; let base = 0; t.deps.forEach(d => { if (set.has(d)) base = Math.max(base, fin(d)); });
+    if (t.done) return F[id] = base;
+    if (t.kind === 'in') { const perDay = t.assignee ? (capOf(p, t.assignee) / 5 || p.hpd) : p.hpd; return F[id] = base + (+t.hours || 0) / perDay; }
+    if (t.due) return F[id] = Math.max(base, Math.max(0, workdays(t.due) || 0));
+    return F[id] = base + (+t.days || 0);
+  };
+  let cpDays = 0; ids.forEach(i => cpDays = Math.max(cpDays, fin(i)));
+  const ext = ids.filter(i => T[i].kind !== 'in' && !T[i].done);
+  const overdue = ext.filter(i => isOverdue(T[i])), nodue = ext.filter(i => !T[i].due && !T[i].days);
+  const worst = rows[0];
+  let status = 'ok', reasons = [];
+  if (pct === 100) status = 'done';
+  else if (cal != null && cal < 0) { status = 'over'; reasons.push('締切超過'); }
+  else {
+    rows.forEach(r => { if (!r.m) return; if (r.ratio > 1) reasons.push(`${r.m.name} ${Math.round(r.ratio * 100)}%`); });
+    if (D != null && cpDays > D) reasons.push(`日程 ${cpDays.toFixed(1)}/${D}日`);
+    if (reasons.length) status = 'over';
+    else {
+      if (rows.some(r => r.m && r.ratio > .85)) reasons.push(`${worst.m.name} ${Math.round(worst.ratio * 100)}%`);
+      if (D != null && cpDays > D * .85) reasons.push('日程に余裕なし');
+      if (overdue.length) reasons.push(`回答遅れ${overdue.length}件`);
+      if (rows.some(r => !r.m)) reasons.push('担当未定あり');
+      if (reasons.length) status = 'warn';
+    }
+  }
+  return { ms, k, ids, pct, D, cal, remH, rows, cpDays, ext, overdue, nodue, status, reasons };
+}
+const JUDGE = { ok:'余裕あり', warn:'要注意', over:'厳しい', done:'完了' };
+
+/* ---------------- render: header ---------------- */
+function renderHeader(){
+  $('#projSel').innerHTML = S.projects.map(p => `<option value="${p.id}" ${p.id === cur.pid ? 'selected' : ''}>${esc(p.name)}</option>`).join('')
+    + `<option value="__new">＋ 新規プロジェクト…</option>`;
+  $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.view === cur.view));
+}
+let pendingRender = false, syncRendering = false;
+function render(){
+  const ae = document.activeElement;
+  if (syncRendering && ae && $('#app').contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) { pendingRender = true; return; }
+  renderHeader();
+  if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else renderDetail();
+}
+document.addEventListener('focusout', () => { if (pendingRender) { pendingRender = false; setTimeout(render, 0); } });
+
+/* ---------------- segmented progress bar ---------------- */
+function segBar(p, ids){
+  const E = eff(p), T = p.tasks; ids = ids.filter(i => T[i]);
+  const hm = p.progressMode === 'hours';
+  const segs = [];
+  for (let b = 0; b <= E.M; b++) {
+    const l = ids.filter(i => E.band[i] === b); if (!l.length) continue;
+    const n = hm ? l.reduce((a, i) => a + (+T[i].hours || 0), 0) : l.length;
+    const dn = hm ? l.filter(i => T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0) : l.filter(i => T[i].done).length;
+    const rem = l.filter(i => !T[i].done && T[i].kind !== 'ext').reduce((a, i) => a + (+T[i].hours || 0), 0);
+    if (hm && !n) continue;
+    const pc = n ? Math.round(dn / n * 100) : 0;
+    segs.push(`<span style="flex:${n};--c:${E.M ? bandColor(E, b) : 'var(--ink)'}" title="${esc(bandName(E, b))}:${l.filter(i => T[i].done).length}/${l.length}件 ${pc}% ・残り${fmtH(rem)}h"><i style="width:${pc}%"></i></span>`);
+  }
+  const pr = progressOf(p, ids);
+  return `<div class="sbar">${segs.join('') || '<span style="flex:1;--c:var(--line)"></span>'}</div><span class="pct ${pr == null ? 'muted' : ''}">${pr == null ? '—' : pr + '%'}</span>`;
+}
+
+/* ---------------- list view ---------------- */
+const ROW = 40, HEAD = 34;
+function msCards(p){
+  const E = eff(p);
+  const cards = E.ms.map((m, k) => {
+    const r = review(p, k), cd = r.cal;
+    return `<div class="mscard" data-act="review" data-k="${k}" style="--c:${m.color}">
+      <div class="n" title="${esc(m.name)}">${esc(m.name)}</div>
+      <div class="d">${esc(m.date || '日付未設定')}${cd != null ? ` ・ ${cd >= 0 ? 'あと' + cd + '日' : Math.abs(cd) + '日超過'}` : ''}</div>
+      <div class="big">${r.pct == null ? '—' : r.pct + '%'}<small>残 ${fmtH(r.remH)}h / ${r.D ?? '—'}営業日</small></div>
+      <div class="judge j-${r.status}"><i></i>${JUDGE[r.status]}${r.reasons.length ? ':' + esc(r.reasons.slice(0, 2).join('、')) : ''}</div>
+    </div>`;
+  }).join('');
+  return `<div class="mscards">${cards}<button class="msadd" data-act="milestones">${E.M ? '締切を編集' : '＋ 締切(マイルストーン)を登録'}</button></div>`;
+}
+function renderList(){
+  const p = P(), app = $('#app');
+  const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
+  const tot = projProgress(p), E = eff(p);
+  const hours = placedIds(p).filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (+p.tasks[i].hours || 0), 0);
+  const rows = p.drawings.map((d, i) => `
+    <div class="drow" data-did="${d.id}" data-idx="${i}">
+      ${p.autoSort === false ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
+      <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No.">
+      <input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">
+      <input class="cell sc" data-f="scale" value="${esc(d.scale)}" placeholder="1/100">
+      <div class="prog" data-act="open">${segBar(p, dTaskIds(d))}</div>
+      <button class="ico" data-act="open" title="詳細を開く">›</button>
+      <button class="ico del" data-act="deld" title="図面を削除">×</button>
+      <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
+    </div>`).join('');
+  app.innerHTML = `
+  <div class="lv ${linking ? 'linking' : ''}">
+    <div class="lvbar">
+      <h2>${esc(p.name)}</h2>
+      <span class="stat">図面 ${p.drawings.length}枚 ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}</span>
+      <span style="flex:1"></span>
+      <span class="seg" title="達成率の計算方法"><button data-act="pmode" data-v="count" class="${p.progressMode === 'count' ? 'on' : ''}">件数</button><button data-act="pmode" data-v="hours" class="${p.progressMode === 'hours' ? 'on' : ''}">工数</button></span>
+      <label class="chk" title="オフにすると⋮⋮のドラッグで自由に並べ替えできます"><input type="checkbox" data-act="autosort" ${p.autoSort !== false ? 'checked' : ''}> 番号順に自動整列</label>
+      <label class="chk"><input type="checkbox" data-act="showlinks" ${ui.showLinks ? 'checked' : ''}> 関係線を表示</label>
+    </div>
+    ${msCards(p)}
+    <div class="dlist" id="dlist">
+      <div class="drow head"><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率(締切ごと)</div><div></div><div></div><div title="関係線">⇄</div></div>
+      ${rows}
+      <button class="addrowbtn" data-act="addd">＋ 図面を追加</button>
+      ${ui.showLinks ? linkSVG(p) : ''}
+    </div>
+    ${E.M ? `<div class="legendms">${E.ms.map((m, k) => `<span style="--c:${m.color}"><i></i>${esc(m.name)}</span>`).join('')}<span style="--c:${NOBAND}"><i></i>未定</span><span>(帯の幅=作業量、濃い部分=完了分。カーソルで内訳)</span></div>` : ''}
+    <div class="hint">
+      ・達成率または <b>›</b> をクリックで詳細へ。番号を書き換えると自動で番号順に並び替わります(「番号順に自動整列」をオフにすると <b>⋮⋮</b> で手動並べ替え)。締切カードをクリックで計画レビュー。<br>
+      ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
+    </div>
+  </div>`;
+  app.firstElementChild.scrollTop = sc;
+  if (flashDid) { const r = $(`.drow[data-did="${flashDid}"]`); if (r) { r.classList.add('flash'); r.scrollIntoView({ block: 'nearest' }); } flashDid = null; }
+  if (linking) showBanner('つなぎ先の図面の ● をクリック(Escで取消)'); else hideBanner();
+}
+function laneLinks(p){
+  const idx = {}; p.drawings.forEach((d, i) => idx[d.id] = i);
+  const L = p.links.filter(l => idx[l.from] != null && idx[l.to] != null).map(l => {
+    const a = idx[l.from], b = idx[l.to]; return { l, a, b, lo: Math.min(a, b), hi: Math.max(a, b) };
+  }).sort((x, y) => (x.hi - x.lo) - (y.hi - y.lo));
+  const lanes = [];
+  L.forEach(o => { let k = 0; while (lanes[k] && lanes[k].some(([lo, hi]) => !(o.hi <= lo || o.lo >= hi))) k++; (lanes[k] = lanes[k] || []).push([o.lo, o.hi]); o.lane = k; });
+  return { L, nl: lanes.length };
+}
+function linkSVG(p){
+  const { L, nl } = laneLinks(p);
+  const yc = i => HEAD + i * ROW + ROW / 2, LX = 34 + nl * 30 + 4;
+  L.forEach(o => o.my = (yc(o.a) + yc(o.b)) / 2);
+  [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 23); return o.ly; }, -1e9);
+  const H = Math.max(HEAD + p.drawings.length * ROW, ...L.map(o => o.ly + 12)), W = LX + 230;
+  const paths = L.map(o => {
+    const x = 34 + o.lane * 30, y1 = yc(o.a), y2 = yc(o.b), s = y2 > y1 ? 1 : -1, r = 8;
+    const d = `M7,${y1} H${x - r} Q${x},${y1} ${x},${y1 + s * r} V${y2 - s * r} Q${x},${y2} ${x - r},${y2} H11`;
+    const memo = trunc(o.l.memo || '(メモなし)', 18), tw = Math.min(220, memo.length * 11.5 + 14);
+    return `<g data-lid="${o.l.id}" data-from="${o.l.from}" data-to="${o.l.to}">
+      <path class="lk" d="${d}" fill="none" stroke="#5c5a55" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path class="lk" d="${d}" fill="none" stroke="transparent" stroke-width="10" data-act="link"/>
+      <path d="M${x},${o.my} L${x + 6},${o.my} L${LX - 4},${o.ly}" fill="none" stroke="#d2462b" stroke-width=".8" stroke-dasharray="2 2"/>
+      <g class="lbl" data-act="link"><rect x="${LX}" y="${o.ly - 10}" width="${tw}" height="20" rx="3" fill="#fff" stroke="#d2462b" stroke-width=".8"/>
+      <text x="${LX + 7}" y="${o.ly + 4}" font-size="11" fill="#d2462b">${esc(memo)}</text><title>${esc(o.l.memo || '')}</title></g></g>`;
+  }).join('');
+  return `<svg class="linksvg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker></defs>${paths}</svg>`;
+}
+
+/* ---------------- detail view ---------------- */
+let focusAfter = null, scrollToDid = null, focusMemo = null;
+function renderDetail(){
+  const p = P(), app = $('#app');
+  if (!cur.did || !p.drawings.some(d => d.id === cur.did)) cur.did = p.drawings[0]?.id || null;
+  const prevSheets = $('#sheets'), sc = prevSheets ? prevSheets.scrollTop : null;
+  const tbScroll = $('#treebox') ? [$('#treebox').scrollLeft, $('#treebox').scrollTop] : null;
+  const side = p.drawings.map(d => { const pr = dProgress(p, d); return `
+    <div class="sitem ${d.id === cur.did ? 'on' : ''}" data-act="goto" data-did="${d.id}">
+      <span class="no">${esc(d.no)}</span><span class="nm">${esc(d.name)}</span><span class="pc">${pr == null ? '—' : pr + '%'}</span>
+    </div>`; }).join('');
+  app.innerHTML = `
+  <div class="dv ${ui.treeWide ? 'wide' : ''}">
+    <aside class="side"><h4>図面</h4>${side}<button class="addd" data-act="addd">＋ 図面を追加</button></aside>
+    <section class="sheets" id="sheets">
+      <div class="shtool">
+        <label class="chk"><input type="checkbox" data-act="fade" ${ui.fadeInst ? 'checked' : ''}> インスタンスは本体以外を薄く表示(集計からも除外)</label>
+        <span>作業名の頭に <b>@関係者名</b> を付けて追加すると外部作業になります</span>
+      </div>
+      ${p.drawings.map(d => sheetHTML(p, d)).join('') || '<p class="muted">図面がありません</p>'}
+    </section>
+    <section class="treepane">
+      <div class="tbar">
+        <h4>作業ツリー</h4>
+        <span class="seg"><button data-act="tscope" data-v="sel" class="${treeScope === 'sel' ? 'on' : ''}">選択中の図面</button><button data-act="tscope" data-v="all" class="${treeScope === 'all' ? 'on' : ''}">全図面</button></span>
+        <span class="zoom"><button data-act="zoom" data-v="-">−</button><span id="zl">${Math.round(ui.zoom * 100)}%</span><button data-act="zoom" data-v="+">＋</button><button data-act="zoom" data-v="fit" title="全体を表示">全体</button><button data-act="wide" title="ツリーを広く表示">${ui.treeWide ? '⇥ 戻す' : '⇤ 広く'}</button></span>
+        <div class="tstats" id="tstats"></div>
+      </div>
+      <div id="treebox"></div>
+      <div class="legend">
+        <span><i></i>前提→後続</span><span><i style="border-color:var(--accent)"></i>クリティカルパス</span>
+        <span>縦並び=並列</span><span>⬡外部 ◯打合せ</span><span style="color:var(--inst)">青字=インスタンス</span>
+        <span><b>締切線</b>:線をドラッグ→その行の作業を前後に振り分け/作業をドラッグ→帯を移動(関連作業は自動で連れて行く)</span>
+      </div>
+    </section>
+  </div>`;
+  const sh = $('#sheets');
+  if (sc != null) sh.scrollTop = sc;
+  sh.addEventListener('scroll', onSheetsScroll);
+  renderTree();
+  if (tbScroll) { $('#treebox').scrollLeft = tbScroll[0]; $('#treebox').scrollTop = tbScroll[1]; }
+  if (focusAfter) { const el = $(`.addtask input[data-cid="${focusAfter}"]`); if (el) el.focus(); focusAfter = null; }
+  if (focusMemo) { const el = $(`.tmemo textarea[data-key="${focusMemo}"]`); if (el) { el.focus(); el.selectionStart = el.value.length; } focusMemo = null; }
+  if (scrollToDid) { const el = $('#sheet-' + scrollToDid); if (el) { sh.scrollTop = el.offsetTop - 56; } scrollToDid = null; }
+}
+function sheetHTML(p, d){
+  const out = p.links.filter(l => l.from === d.id), inn = p.links.filter(l => l.to === d.id);
+  const dn = id => { const x = p.drawings.find(z => z.id === id); return x ? `${esc(x.no)} ${esc(x.name)}` : '?'; };
+  const rel = (out.length || inn.length) ? `<div class="rel">
+    ${out.map(l => `<div>→ <a data-act="goto" data-did="${l.to}">${dn(l.to)}</a> へ反映 <span class="memo">${esc(l.memo || '')}</span></div>`).join('')}
+    ${inn.map(l => `<div>← <a data-act="goto" data-did="${l.from}">${dn(l.from)}</a> から <span class="memo">${esc(l.memo || '')}</span></div>`).join('')}
+  </div>` : '';
+  const contents = d.contents.map(c => {
+    const counted = c.items.filter(i => p.tasks[i] && (!ui.fadeInst || homePlace(p, i)?.c.id === c.id));
+    const hrs = counted.filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (+p.tasks[i].hours || 0), 0);
+    const dn2 = counted.filter(i => p.tasks[i].done).length;
+    return `<div class="content" data-cid="${c.id}" data-did="${d.id}">
+      <div class="chead">
+        <input class="cell" data-cf="name" value="${esc(c.name)}" placeholder="作図内容">
+        <span class="meta">${dn2}/${counted.length}件 · ${fmtH(hrs)}h</span>
+        <button class="ico" data-act="cmore" title="作図内容メニュー">⋯</button>
+      </div>
+      <ul class="tasks">${c.items.map((tid, i) => taskLI(p, d, c, tid, i)).join('')}</ul>
+      <div class="addtask"><input data-cid="${c.id}" data-did="${d.id}" placeholder="＋ 作業を追加(Enter)  例:@クライアント 照明器具の承認">
+        <button data-act="insert" title="他の図面にある作業を、同一インスタンスとしてここにも配置">◆ 既存作業を配置</button></div>
+    </div>`;
+  }).join('');
+  return `<article class="sheet ${d.id === cur.did ? 'on' : ''}" id="sheet-${d.id}" data-did="${d.id}">
+    <div class="shead">
+      <input class="cell no" data-f="no" value="${esc(d.no)}">
+      <input class="cell nm" data-f="name" value="${esc(d.name)}">
+      <input class="cell sc" data-f="scale" value="${esc(d.scale)}">
+      <div class="prog">${segBar(p, dTaskIds(d))}</div>
+      <button class="ico" data-act="dmore" title="図面メニュー">⋯</button>
+    </div>
+    ${rel}${contents}
+    <button class="addcontent" data-act="addc">＋ 作図内容を追加</button>
+  </article>`;
+}
+function partySel(p, t){
+  return `<select class="asg" data-tf="party" style="--c:${party(p, t.party)?.color || '#d5d2ca'}"><option value="">関係者—</option>${p.parties.map(x => `<option value="${x.id}" ${x.id === t.party ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}<option value="__new">＋ 関係者を登録…</option></select>`;
+}
+function stChip(t){ const s = t.done ? 'done' : t.st; return `<button class="stchip ${s}" data-act="st" title="クリックで状態を切替">${t.done ? (t.kind === 'mtg' ? '済' : '回答済') : t.st === 'wait' ? '依頼中' : (t.kind === 'mtg' ? '予定' : '依頼前')}</button>`; }
+function taskLI(p, d, c, tid, i){
+  const t = p.tasks[tid]; if (!t) return '';
+  const prev = i > 0 ? c.items[i - 1] : null;
+  const serial = prev && t.deps.includes(prev);
+  const other = t.deps.filter(x => x !== prev && p.tasks[x]).length;
+  const n = placeCount(p, tid), hp = n > 1 ? homePlace(p, tid) : null, isHome = !hp || hp.c.id === c.id;
+  const sub = n > 1 && ui.fadeInst && !isHome;
+  const pa = party(p, t.party);
+  let right;
+  if (sub) right = `<span class="subnote" title="本体で管理">◆ ${esc(hp.d.no)}/${esc(hp.c.name)} で管理</span>`;
+  else if (t.kind === 'in') {
+    const m = member(t.assignee);
+    right = `<select class="asg" data-tf="assignee" style="--c:${m ? m.color : '#d5d2ca'}"><option value="">担当—</option>${S.members.map(mm => `<option value="${mm.id}" ${mm.id === t.assignee ? 'selected' : ''}>${esc(mm.name)}</option>`).join('')}</select>
+      <span class="rw"><input class="hrs" type="number" min="0" step="0.5" data-tf="hours" value="${t.hours || ''}" placeholder="0">h</span>`;
+  } else if (t.kind === 'ext') {
+    right = `${partySel(p, t)}<span class="rw">${stChip(t)}<input type="date" class="due ${isOverdue(t) ? 'over' : ''}" data-tf="due" value="${esc(t.due)}" title="回答予定日"></span>`;
+  } else {
+    right = `${partySel(p, t)}<span class="rw"><input type="date" class="due" data-tf="due" value="${esc(t.due)}" title="打合せ日"><input class="hrs" type="number" min="0" step="0.5" data-tf="hours" value="${t.hours || ''}" placeholder="0" title="所要時間">h</span>`;
+  }
+  const kt = t.kind === 'in' ? '' : `<span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${t.kind === 'ext' ? '外部' : '打合せ'}</span>`;
+  const memoEdit = memoOpen.has(tid + c.id);
+  return `<li class="task ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
+   <div class="trow">
+    ${i > 0 ? `<button class="chain ${serial ? 'serial' : ''}" data-act="chain" title="${serial ? '直列:前の作業が終わってから着手(クリックで並列に)' : '並列:前の作業と同時進行できる(クリックで直列に)'}">${serial ? '↓' : '∥'}</button>` : `<span class="chain first">●</span>`}
+    <input type="checkbox" data-act="done" ${t.done ? 'checked' : ''} title="完了">
+    <div class="tcell">${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div>
+    ${other ? `<button class="depchip" data-act="edit" title="この作業の前提作業">前提+${other}</button>` : '<span></span>'}
+    ${n > 1 ? `<span class="ibadge ${isHome ? 'home' : ''}" data-act="place" title="${isHome ? '本体' : 'インスタンス'}:同一作業 ${n}箇所(クリックで配置先を編集)">◆${n}</span>` : '<span></span>'}
+    <button class="ico memo-b ${t.memo ? 'has' : ''}" data-act="memo" title="備考">✎</button>
+    ${right}
+    <button class="ico more" data-act="more" title="作業メニュー">⋯</button>
+   </div>
+   ${memoEdit ? `<div class="tmemo"><textarea data-tf="memo" data-key="${tid + c.id}" placeholder="備考(他の配置箇所にも共通)">${esc(t.memo)}</textarea></div>`
+     : t.memo && !sub ? `<div class="tmemo-v" data-act="memo">${esc(t.memo)}</div>` : ''}
+  </li>`;
+}
+let spyLock = 0;
+function onSheetsScroll(){
+  if (Date.now() < spyLock) return;
+  const sh = $('#sheets'), top = sh.getBoundingClientRect().top + 60;
+  const s = $$('.sheet', sh).find(el => el.getBoundingClientRect().bottom > top);
+  if (s && s.dataset.did !== cur.did) setActiveDrawing(s.dataset.did, false);
+}
+function setActiveDrawing(did, scroll){
+  cur.did = did;
+  $$('.sitem').forEach(e => e.classList.toggle('on', e.dataset.did === did));
+  $$('.sheet').forEach(e => e.classList.toggle('on', e.dataset.did === did));
+  if (scroll) { spyLock = Date.now() + 900; const el = $('#sheet-' + did), sh = $('#sheets'); if (el) sh.scrollTo({ top: el.offsetTop - 56, behavior: 'smooth' }); }
+  if (treeScope === 'sel') renderTree();
+}
+
+/* ---------------- tree (DAG, banded by milestone) ---------------- */
+const NW = 178, NH = 46, GX = 40, GY = 14, PADX = 18, PADY = 60, LG = 64;
+function layoutTree(p, ids){
+  ids = ids.filter(i => p.tasks[i]);
+  const set = new Set(ids), ghosts = [];
+  ids.forEach(id => p.tasks[id].deps.forEach(d => { if (!set.has(d) && p.tasks[d] && !ghosts.includes(d)) ghosts.push(d); }));
+  const all = [...ids, ...ghosts], inAll = new Set(all), gset = new Set(ghosts);
+  const E = eff(p), M = E.M, bandOf = id => E.band[id] ?? M;
+  const preds = id => gset.has(id) ? [] : p.tasks[id].deps.filter(d => inAll.has(d));
+  const hrs = id => (gset.has(id) || p.tasks[id].kind === 'ext') ? 0 : (+p.tasks[id].hours || 0);
+  const lvl = {}, vis = {};
+  const L = id => { if (lvl[id] != null) return lvl[id]; if (vis[id]) return 0; vis[id] = 1; let m = 0; preds(id).forEach(d => { if (bandOf(d) === bandOf(id)) m = Math.max(m, L(d) + 1); }); return lvl[id] = m; };
+  all.forEach(L);
+  const bc = []; for (let b = 0; b <= M; b++) bc[b] = [];
+  all.forEach(id => { const b = bandOf(id); (bc[b][lvl[id]] = bc[b][lvl[id]] || []).push(id); });
+  const pos = {}, order = {}; all.forEach((id, i) => order[id] = i);
+  let x = PADX, maxRows = 1; const bands = [], lines = [];
+  for (let b = 0; b <= M; b++) {
+    const cols = bc[b], x0 = x;
+    cols.forEach((col, ci) => {
+      if (!col) return;
+      const bary = id => { const ps = preds(id).filter(d => pos[d]); return ps.length ? ps.reduce((a, d) => a + pos[d].r, 0) / ps.length : 1e3 + order[id]; };
+      col.sort((a, c) => bary(a) - bary(c) || order[a] - order[c]);
+      col.forEach((id, ri) => pos[id] = { x: x0 + ci * (NW + GX), y: PADY + ri * (NH + GY), r: ri, b });
+      maxRows = Math.max(maxRows, col.length);
+    });
+    const w = cols.length ? cols.length * (NW + GX) - GX : 0;
+    bands.push({ b, x0, x1: x0 + w, n: cols.length });
+    x = x0 + w;
+    if (b < M) { lines.push({ k: b, x: x + LG / 2, ms: E.ms[b] }); x += LG; }
+  }
+  const ef = {};
+  const EF = id => { if (ef[id] != null) return ef[id]; ef[id] = 0; let m = 0; preds(id).forEach(d => m = Math.max(m, EF(d))); return ef[id] = m + hrs(id); };
+  all.forEach(EF);
+  const crit = new Set(); let cp = 0, end = null;
+  ids.forEach(id => { if (ef[id] > cp) { cp = ef[id]; end = id; } });
+  let c = end;
+  while (c) { crit.add(c); const need = ef[c] - hrs(c); const nx = preds(c).find(d => Math.abs(ef[d] - need) < 1e-9); c = (need > 0 && nx) ? nx : null; }
+  const edges = []; all.forEach(id => preds(id).forEach(d => edges.push({ from: d, to: id, crit: crit.has(d) && crit.has(id) && Math.abs(ef[d] - (ef[id] - hrs(id))) < 1e-9 })));
+  const inIds = ids.filter(i => p.tasks[i].kind !== 'ext');
+  const total = inIds.reduce((a, i) => a + hrs(i), 0), remain = inIds.reduce((a, i) => a + (p.tasks[i].done ? 0 : hrs(i)), 0);
+  return { ids, all, pos, edges, crit, gset, bands, lines, M, E, W: x + PADX, H: PADY + maxRows * (NH + GY) - GY + 18, cp, total, remain, bandOf };
+}
+function nodeShape(t, fill, stroke, dash){
+  const a = `class="bx" fill="${fill}" stroke="${stroke}" stroke-width="1.2" ${dash ? 'stroke-dasharray="4 3"' : ''}`;
+  if (t.kind === 'ext') return `<polygon ${a} points="10,0 ${NW - 10},0 ${NW},${NH / 2} ${NW - 10},${NH} 10,${NH} 0,${NH / 2}"/>`;
+  if (t.kind === 'mtg') return `<rect ${a} width="${NW}" height="${NH}" rx="${NH / 2}"/>`;
+  return `<rect ${a} width="${NW}" height="${NH}" rx="5"/>`;
+}
+function treeSVG(p, T, print){
+  if (!T.ids.length) return print ? '' : `<p class="muted" style="padding:20px">作業がありません</p>`;
+  const sfx = print ? 'p' : '';
+  const nos = id => [...new Set(places(p, id).map(x => x.d.no))].join(',');
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" ${print ? '' : `width="${Math.round(T.W * ui.zoom)}" height="${Math.round(T.H * ui.zoom)}"`} viewBox="0 0 ${T.W} ${T.H}" font-family="${print ? 'sans-serif' : 'inherit'}">
+  <defs><marker id="ta${sfx}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8d8a83"/></marker>
+  <marker id="tc${sfx}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d2462b"/></marker></defs>`;
+  // band backgrounds (drop targets)
+  T.bands.forEach((bd, i) => {
+    const xa = i === 0 ? 0 : T.lines[i - 1].x, xb = i < T.lines.length ? T.lines[i].x : T.W;
+    s += `<rect class="bandbg" data-band="${bd.b}" x="${xa}" y="0" width="${Math.max(0, xb - xa)}" height="${T.H}" fill="transparent"/>`;
+    for (let ci = 0; ci < bd.n; ci++) s += `<text x="${bd.x0 + ci * (NW + GX)}" y="${PADY - 10}" font-size="10" fill="#a8a6a0" font-family="ui-monospace,monospace" letter-spacing="1">STEP ${ci + 1}</text>`;
+    if (T.M && bd.b === T.M && bd.n) s += `<text x="${bd.x0}" y="18" font-size="11" fill="#9a978f">未定(締切なし)</text>`;
+  });
+  T.edges.forEach(e => {
+    const a = T.pos[e.from], b = T.pos[e.to]; if (!a || !b) return;
+    const x1 = a.x + NW, y1 = a.y + NH / 2, x2 = b.x - 2, y2 = b.y + NH / 2, mx = (x1 + x2) / 2;
+    s += `<path class="ed" data-from="${e.from}" data-to="${e.to}" d="M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}" fill="none" stroke="${e.crit ? '#d2462b' : '#8d8a83'}" stroke-width="${e.crit ? 1.8 : 1.2}" marker-end="url(#${e.crit ? 'tc' : 'ta'}${sfx})"/>`;
+  });
+  // milestone lines
+  T.lines.forEach(l => {
+    const col = l.ms.color || '#d2462b', cd = calDays(l.ms.date);
+    s += `<g class="msl" data-k="${l.k}">
+      <path class="msp" d="M${l.x},8 V${T.H}" stroke="${col}" stroke-width="2.2" fill="none" ${cd != null && cd < 0 ? 'stroke-dasharray="6 4"' : ''}/>
+      ${print ? '' : `<path class="mshit" d="M${l.x},8 V${T.H}" stroke="transparent" stroke-width="16" fill="none"/>`}
+      <text x="${l.x + 6}" y="18" font-size="11" font-weight="600" fill="${col}">${esc(trunc(l.ms.name, 16))}</text>
+      <text x="${l.x + 6}" y="31" font-size="10" fill="${col}" font-family="ui-monospace,monospace">${esc(l.ms.date || '')}${cd != null ? (cd >= 0 ? ' あと' + cd + '日' : ' 超過') : ''}</text></g>`;
+  });
+  T.all.forEach(id => {
+    const t = p.tasks[id], q = T.pos[id], g = T.gset.has(id), m = member(t.assignee), n = placeCount(p, id), pa = party(p, t.party);
+    const crit = T.crit.has(id), od = isOverdue(t);
+    let sub;
+    if (g) sub = `他図面 ${nos(id)}`;
+    else if (t.kind === 'ext') sub = `${pa ? pa.name : '関係者—'} · ${t.done ? '回答済' : t.st === 'wait' ? '依頼中' : '依頼前'}${t.due ? ' · 〆' + fmtD(t.due) : ''}`;
+    else if (t.kind === 'mtg') sub = `${pa ? pa.name : '打合せ'} · ${t.due ? fmtD(t.due) : '日程未定'}`;
+    else sub = `${m ? m.name : '—'} · ${fmtH(t.hours)}h${n > 1 ? ' · ◆' + nos(id) : ''}`;
+    const stroke = od ? '#d2462b' : crit ? '#d2462b' : (t.kind !== 'in' && pa) ? pa.color : '#9a978f';
+    const fill = t.done ? '#f1f0ec' : t.kind !== 'in' ? '#fbfaf8' : '#fff';
+    const ownMs = t.ms && p.milestones.find(x => x.id === t.ms);
+    s += `<g class="tn" data-tid="${id}" transform="translate(${q.x},${q.y})">
+      ${nodeShape(t, fill, stroke, g || t.kind === 'ext')}
+      ${m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
+      ${ownMs ? `<circle cx="${NW - 7}" cy="7" r="4" fill="${ownMs.color}"><title>締切指定:${esc(ownMs.name)}</title></circle>` : ''}
+      <text x="${t.kind === 'in' ? 11 : 16}" y="19" font-size="11.5" fill="${t.done ? '#a8a6a0' : n > 1 ? '#2457c5' : '#1c1c1a'}">${t.done ? '✓ ' : ''}${esc(trunc(t.title, t.kind === 'in' ? 14 : 13))}</text>
+      <text x="${t.kind === 'in' ? 11 : 16}" y="35" font-size="10" fill="${od ? '#d2462b' : '#6b6a66'}" font-family="ui-monospace,monospace">${esc(trunc(sub + (od ? ' 超過' : ''), 25))}</text>
+      <title>${esc(t.title)}${t.memo ? '\n備考:' + esc(t.memo) : ''}</title></g>`;
+  });
+  return s + '</svg>';
+}
+function treeIds(p){
+  if (treeScope === 'all') return placedIds(p);
+  const d = p.drawings.find(x => x.id === cur.did) || p.drawings[0]; return d ? dTaskIds(d) : [];
+}
+let lastT = null;
+function renderTree(){
+  const p = P(), box = $('#treebox'); if (!box) return;
+  const T = lastT = layoutTree(p, treeIds(p));
+  box.innerHTML = treeSVG(p, T, false);
+  const d = p.drawings.find(x => x.id === cur.did);
+  $('#tstats').innerHTML = `<span>${treeScope === 'all' ? '全図面' : d ? esc(d.no + ' ' + d.name) : ''}</span>
+    <span>社内合計 <b>${fmtH(T.total)}h</b></span><span>残り <b>${fmtH(T.remain)}h</b></span>
+    <span class="cp" title="直列でつながる作業の最長経路(社内作業の時間)">クリティカルパス <b>${fmtH(T.cp)}h</b></span>`;
+}
+
+/* ---------- tree drag: nodes & milestone lines ---------- */
+let drag = null, treeLock = 0;
+function svgPt(e){ const svg = $('#treebox svg'); const r = svg.getBoundingClientRect(); return { x: (e.clientX - r.left) / ui.zoom, y: (e.clientY - r.top) / ui.zoom }; }
+function markFollow(ids, cls = 'follow'){
+  $$('#treebox .tn.' + cls).forEach(n => n.classList.remove(cls));
+  ids.forEach(id => $$(`#treebox .tn[data-tid="${id}"]`).forEach(n => n.classList.add(cls)));
+}
+document.addEventListener('pointerdown', e => {
+  if (!e.target.closest || !e.target.closest('#treebox svg') || e.button !== 0) return;
+  if (Date.now() < treeLock) return;
+  const node = e.target.closest('g.tn'), line = e.target.closest('g.msl');
+  if (!node && !line) return;
+  e.preventDefault();
+  const pt = svgPt(e);
+  drag = { type: node ? 'node' : 'line', el: node || line, sx: e.clientX, sy: e.clientY, moved: false, T: lastT };
+  if (node) { drag.tid = node.dataset.tid; drag.p0 = lastT.pos[drag.tid]; drag.band0 = lastT.bandOf(drag.tid); drag.target = drag.band0; }
+  else {
+    drag.k = +line.dataset.k; drag.lx = lastT.lines.find(l => l.k === drag.k).x;
+    drag.row = Math.max(0, Math.floor((pt.y - PADY + GY / 2) / (NH + GY)));
+    drag.moves = [];
+  }
+});
+document.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = (e.clientX - drag.sx) / ui.zoom, dy = (e.clientY - drag.sy) / ui.zoom;
+  if (!drag.moved && Math.hypot(dx, dy) * ui.zoom < 5) return;
+  if (!drag.moved) { drag.moved = true; hideTip(); if (drag.type === 'node') { drag.el.classList.add('dragging'); drag.el.parentNode.appendChild(drag.el); } }
+  const p = P(), T = drag.T;
+  if (drag.type === 'node') {
+    drag.el.setAttribute('transform', `translate(${drag.p0.x + dx},${drag.p0.y + dy})`);
+    const cx = drag.p0.x + dx + NW / 2;
+    const target = T.lines.filter(l => l.x < cx).length;
+    $$('#treebox .bandbg').forEach(r => r.classList.toggle('on', +r.dataset.band === target && target !== drag.band0));
+    if (target !== drag.target) {
+      drag.target = target;
+      markFollow(target === drag.band0 ? [] : simulateMoves(p, [[drag.tid, target]]));
+    }
+  } else {
+    const bx = drag.lx + dx, rowTop = PADY + drag.row * (NH + GY) - GY / 2, rowBot = rowTop + NH + GY, k = drag.k;
+    const d = `M${drag.lx},8 V${rowTop - 6} L${bx},${rowTop + 4} V${rowBot - 4} L${drag.lx},${rowBot + 6} V${T.H}`;
+    $('.msp', drag.el).setAttribute('d', d);
+    const moves = [];
+    T.all.forEach(id => {
+      const q = T.pos[id]; if (q.r !== drag.row) return; const cx = q.x + NW / 2, b = T.bandOf(id);
+      if (bx < drag.lx && b <= k && cx > bx) moves.push([id, k + 1]);
+      if (bx > drag.lx && b >= k + 1 && cx < bx) moves.push([id, k]);
+    });
+    const key = moves.map(m => m.join(':')).join(',');
+    if (key !== drag.mkey) {
+      drag.mkey = key; drag.moves = moves;
+      markFollow(moves.map(m => m[0]), 'swept');
+      markFollow(moves.length ? simulateMoves(p, moves) : []);
+    }
+  }
+});
+document.addEventListener('pointerup', e => {
+  if (!drag) return;
+  const d = drag; drag = null;
+  const p = P();
+  if (!d.moved) {
+    if (d.type === 'node') return jumpToTask(d.tid);
+    return openMilestones();
+  }
+  let followers = [], list = [];
+  if (d.type === 'node' && d.target !== d.band0) list = [[d.tid, d.target]];
+  if (d.type === 'line') list = d.moves;
+  if (!list.length) return renderTree();
+  followers = applyMoves(p, list);
+  const E = effBandsRaw(p);
+  const nm = d.type === 'node' ? `「${trunc(p.tasks[d.tid].title, 14)}」を ${bandName(E, d.target)} へ` : `${list.length}件を振り分け`;
+  toast(nm + (followers.length ? `(関連作業 ${followers.length}件も移動)` : ''));
+  treeLock = Date.now() + 750;
+  setTimeout(() => commit(), 650);   // 少し間をおいて、締切線がまっすぐになるよう再レイアウト
+});
+function jumpToTask(tid){
+  const p = P(), pl = places(p, tid); if (!pl.length) return;
+  const target = pl.find(x => x.d.id === cur.did) || pl[0];
+  if (target.d.id !== cur.did) setActiveDrawing(target.d.id, false);
+  const li = $(`.task[data-tid="${tid}"][data-cid="${target.c.id}"]`);
+  if (li) { spyLock = Date.now() + 900; li.scrollIntoView({ behavior: 'smooth', block: 'center' }); li.classList.remove('flash'); void li.offsetWidth; li.classList.add('flash'); }
+}
+
+/* ---------------- hover highlight ---------------- */
+let hovTid = null;
+document.addEventListener('mouseover', e => {
+  if (drag) return;
+  const el = e.target.closest && e.target.closest('[data-tid]');
+  const tid = el ? el.dataset.tid : null;
+  if (tid !== hovTid) {
+    $$('.hl').forEach(x => x.classList.remove('hl'));
+    hovTid = tid;
+    if (tid && P().tasks[tid]) {
+      const p = P(); const pl = places(p, tid);
+      if (pl.length > 1 || el.closest('svg')) {
+        $$(`[data-tid="${tid}"]`).forEach(x => x.classList.add('hl'));
+        const dids = new Set(pl.map(x => x.d.id));
+        $$('.sitem').forEach(x => { if (dids.has(x.dataset.did)) x.classList.add('hl'); });
+      }
+      if (pl.length > 1) {
+        const hp = homePlace(p, tid);
+        showTip(`<b>◆ 同一インスタンス ${pl.length}箇所</b><br>${pl.map(x => `${x === hp ? '★ ' : '・'}${esc(x.d.no)} ${esc(x.d.name)} / ${esc(x.c.name)}`).join('<br>')}<br><span style="opacity:.6">★=本体 ・ 編集はすべての箇所に即時反映</span>`, e);
+      } else hideTip();
+    } else hideTip();
+  }
+  const lg = e.target.closest && e.target.closest('.linksvg g[data-lid]');
+  $$('.drow.hl').forEach(x => { if (!lg || (x.dataset.did !== lg.dataset.from && x.dataset.did !== lg.dataset.to)) x.classList.remove('hl'); });
+  if (lg) { $$(`.drow[data-did="${lg.dataset.from}"],.drow[data-did="${lg.dataset.to}"]`).forEach(x => x.classList.add('hl')); lg.classList.add('hov'); }
+  $$('.linksvg g.hov').forEach(x => { if (x !== lg) x.classList.remove('hov'); });
+});
+document.addEventListener('mousemove', e => { if ($('#tip').style.display === 'block') placeTip(e); });
+function showTip(html, e){ const t = $('#tip'); t.innerHTML = html; t.style.display = 'block'; placeTip(e); }
+function placeTip(e){ const t = $('#tip'); let x = e.clientX + 14, y = e.clientY + 16; if (x + t.offsetWidth > innerWidth - 8) x = e.clientX - t.offsetWidth - 10; if (y + t.offsetHeight > innerHeight - 8) y = e.clientY - t.offsetHeight - 10; t.style.left = x + 'px'; t.style.top = y + 'px'; }
+function hideTip(){ $('#tip').style.display = 'none'; }
+
+/* ---------------- party view ---------------- */
+function renderParties(){
+  const p = P(), app = $('#app'), T = p.tasks;
+  const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
+  const E = eff(p);
+  const all = placedIds(p).filter(i => T[i].kind !== 'in');
+  const succCount = id => (E.succ[id] || []).filter(s => !T[s]?.done).length;
+  const groups = [...p.parties, { id: '', name: '関係者未設定', color: '#a8a6a0' }];
+  const html = groups.map(g => {
+    let ids = all.filter(i => (T[i].party || '') === g.id);
+    if (!g.id && !ids.length) return '';
+    const open = ids.filter(i => !T[i].done), od = ids.filter(i => isOverdue(T[i]));
+    if (ui.openOnly) ids = open;
+    ids.sort((a, b) => (T[a].done - T[b].done) || (T[a].due || '9999').localeCompare(T[b].due || '9999'));
+    return `<section class="pgroup" style="--c:${g.color}">
+      <header><span class="dot"></span><h3>${esc(g.name)}</h3><span class="cnt">未完了 ${open.length}件${od.length ? ` ・ <span style="color:var(--accent)">期限超過 ${od.length}件</span>` : ''}</span></header>
+      ${ids.length ? `<table class="ptab"><tr><th style="width:80px">状態</th><th>内容</th><th style="width:150px">図面</th><th style="width:124px">回答予定日/日付</th><th style="width:130px">締切</th><th style="width:80px">止めている</th><th style="width:28%">備考</th></tr>
+      ${ids.map(i => { const t = T[i], pl = places(p, i), b = E.band[i];
+        return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''}">
+          <td>${stChip(t)}</td>
+          <td><div class="tcell"><span class="kt ${t.kind}" style="--c:${g.color}">${KIND[t.kind]}</span><input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
+          <td class="pl">${[...new Map(pl.map(x => [x.d.id, x.d])).values()].map(d => `<a data-act="goto" data-did="${d.id}">${esc(d.no)}</a>`).join('')}</td>
+          <td><input type="date" class="due ${isOverdue(t) ? 'over' : ''}" data-tf="due" value="${esc(t.due)}"></td>
+          <td style="white-space:nowrap"><span style="font-size:11px;color:${bandColor(E, b)}" title="${esc(bandName(E, b))}">● ${esc(trunc(bandName(E, b), 10))}</span></td>
+          <td class="blk">${succCount(i) ? `後続 ${succCount(i)}件` : ''}</td>
+          <td><input class="pmemo" data-tf="memo" value="${esc(t.memo)}" placeholder="備考"></td></tr>`; }).join('')}</table>`
+      : `<div style="padding:12px 14px;color:var(--mute);font-size:12px">${ui.openOnly ? '未完了の項目はありません' : '項目はありません'}</div>`}
+    </section>`;
+  }).join('');
+  app.innerHTML = `<div class="pv">
+    <div class="lvbar"><h2>関係者別 確認・依頼事項</h2><span class="stat">外部・打合せ ${all.length}件 / 未完了 ${all.filter(i => !T[i].done).length}件</span>
+      <span style="flex:1"></span>
+      <label class="chk"><input type="checkbox" data-act="openonly" ${ui.openOnly ? 'checked' : ''}> 未完了のみ</label>
+      <button class="tbtn" data-act="parties">関係者を管理</button>
+      <button class="tbtn" data-act="ppdf">この一覧をPDF</button></div>
+    <div class="note" style="max-width:1100px">詳細画面で作業の種別を「外部」「打合せ」にすると、ここに関係者ごとにまとまります(作業名の頭に <b>@関係者名</b> を付けて追加しても可)。「止めている」はこの回答待ちで着手できない後続作業の数です。定例の議題や質疑書としてPDFに書き出せます。</div>
+    ${html || '<p class="muted">関係者が登録されていません</p>'}</div>`;
+  app.firstElementChild.scrollTop = sc;
+}
+
+/* ---------------- UI primitives ---------------- */
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2600); }
+function showBanner(txt){ let b = $('.linkbanner'); if (!b) { b = document.createElement('div'); b.className = 'linkbanner'; document.body.appendChild(b); } b.textContent = txt; }
+function hideBanner(){ const b = $('.linkbanner'); if (b) b.remove(); }
+function closeMenu(){ $$('.menu').forEach(m => m.remove()); }
+function openMenu(anchor, items){
+  closeMenu();
+  const m = document.createElement('div'); m.className = 'menu';
+  items.forEach(it => {
+    if (it === '-') { m.appendChild(document.createElement('hr')); return; }
+    if (it.head) { const h = document.createElement('div'); h.className = 'mh'; h.textContent = it.head; m.appendChild(h); return; }
+    const b = document.createElement('button'); b.textContent = it.label; if (it.danger) b.className = 'danger';
+    b.onclick = ev => { ev.stopPropagation(); closeMenu(); it.run(); }; m.appendChild(b);
+  });
+  document.body.appendChild(m);
+  const r = anchor.getBoundingClientRect();
+  let x = r.right - m.offsetWidth, y = r.bottom + 4;
+  if (x < 8) x = 8; if (y + m.offsetHeight > innerHeight - 8) y = Math.max(8, r.top - m.offsetHeight - 4);
+  m.style.left = x + 'px'; m.style.top = y + 'px';
+}
+function modal(title, body, buttons, opts = {}){
+  closeModal();
+  const bg = document.createElement('div'); bg.className = 'mbg';
+  bg.innerHTML = `<div class="modal ${opts.wide ? 'wide' : ''}"><h3>${title}</h3><div class="mbody">${body}</div><div class="mfoot"></div></div>`;
+  const foot = $('.mfoot', bg);
+  (buttons || [{label:'閉じる'}]).forEach(b => {
+    const btn = document.createElement('button'); btn.className = 'tbtn ' + (b.cls || ''); btn.textContent = b.label;
+    btn.onclick = () => { const r = b.run ? b.run(bg) : true; if (r !== false) closeModal(); };
+    foot.appendChild(btn);
+  });
+  bg.addEventListener('mousedown', e => { if (e.target === bg) closeModal(); });
+  document.body.appendChild(bg);
+  if (opts.mount) opts.mount(bg);
+  const f = $('input:not([type=checkbox]):not([type=color]):not([type=date]),textarea', $('.mbody', bg)); if (f && !opts.nofocus) f.focus();
+  return bg;
+}
+function closeModal(){ $$('.mbg').forEach(m => m.remove()); }
+function confirmBox(msg, onYes, label = '削除'){
+  modal('確認', `<p style="margin:0;line-height:1.7">${msg}</p>`, [{label:'キャンセル'}, {label, cls:'pri', run(){ onYes(); }}], {nofocus:true});
+}
+function prompt2(title, label, val, onOk){
+  modal(title, `<label class="fld"><span>${label}</span><input id="pv" value="${esc(val)}"></label>`,
+    [{label:'キャンセル'}, {label:'OK', cls:'pri', run(bg){ onOk($('#pv', bg).value.trim()); }}],
+    {mount(bg){ $('#pv', bg).addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { onOk($('#pv', bg).value.trim()); closeModal(); } }); }});
+}
+
+/* ---------------- actions ---------------- */
+const noCmp = (a, b) => { if (!a.no && !b.no) return 0; if (!a.no) return 1; if (!b.no) return -1; return String(a.no).localeCompare(String(b.no), 'ja', { numeric: true, sensitivity: 'base' }); };
+function sortDrawings(p){ if (p.autoSort === false) return false; const before = p.drawings.map(d => d.id).join(); p.drawings.sort(noCmp); return before !== p.drawings.map(d => d.id).join(); }
+let flashDid = null;
+function addDrawing(){
+  const p = P();
+  const d = { id: uid(), no: nextNo(p), name: '新規図面', scale: '1/100', contents: [{ id: uid(), name: '作図内容', items: [] }] };
+  p.drawings.push(d); sortDrawings(p); cur.did = d.id; scrollToDid = d.id; flashDid = d.id; commit();
+}
+function addTask(did, cid, title){
+  const p = P(), { c } = findDC(p, did, cid); if (!c || !title) return;
+  const o = { title };
+  const m = title.match(/^[@＠](\S+)[\s　]+(.+)$/);
+  if (m) {
+    let pa = p.parties.find(x => x.name === m[1]) || p.parties.find(x => x.name.startsWith(m[1]) || m[1].startsWith(x.name));
+    if (!pa) { pa = { id: uid(), name: m[1], color: COLORS[(p.parties.length + 3) % COLORS.length] }; p.parties.push(pa); toast(`関係者「${m[1]}」を登録しました`); }
+    Object.assign(o, { title: m[2], kind: 'ext', party: pa.id });
+  }
+  const t = newTask(o); p.tasks[t.id] = t;
+  c.items.push(t.id); focusAfter = cid; commit();
+}
+function toggleChain(did, cid, i){
+  const p = P(), { c } = findDC(p, did, cid); if (!c) return;
+  const t = p.tasks[c.items[i]], prev = c.items[i - 1];
+  if (t.deps.includes(prev)) { t.deps = t.deps.filter(x => x !== prev); commit(); return; }
+  if (wouldCycle(p, t.id, prev)) return toast('循環になるため直列にできません');
+  t.deps.push(prev); commit();
+}
+function moveTask(did, cid, i, dir){
+  const p = P(), { c } = findDC(p, did, cid); const j = i + dir; if (!c || j < 0 || j >= c.items.length) return;
+  [c.items[i], c.items[j]] = [c.items[j], c.items[i]]; commit();
+}
+function setKind(tid, k){
+  const p = P(), t = p.tasks[tid]; t.kind = k;
+  if (k !== 'in' && !t.party && p.parties.length === 0) toast('関係者は「関係者」タブで登録、または行のプルダウンから追加できます');
+  commit();
+}
+function taskMenu(btn){
+  const li = btn.closest('.task'), p = P(), tid = li.dataset.tid, did = li.dataset.did, cid = li.dataset.cid, i = +li.dataset.i;
+  const n = placeCount(p, tid), t = p.tasks[tid], hp = homePlace(p, tid);
+  openMenu(btn, [
+    { label: '詳細編集(前提作業・締切・備考)…', run: () => editTask(tid) },
+    { head: '種別' },
+    ...Object.keys(KIND).map(k => ({ label: `${t.kind === k ? '✓ ' : '　'}${{in:'社内作業', ext:'外部依頼・回答待ち', mtg:'打合せ・確認'}[k]}`, run: () => setKind(tid, k) })),
+    '-',
+    { label: '◆ インスタンスとして他の作図内容にも配置…', run: () => placeTask(tid) },
+    ...(n > 1 && hp.c.id !== cid ? [{ label: '★ ここを本体にする', run: () => { t.home = cid; commit(); toast('本体をこの配置に変更しました'); } }] : []),
+    { label: '独立したコピーを作る(この箇所だけ別作業に)', run: () => detachTask(did, cid, i) },
+    '-',
+    { label: '↑ 上へ移動', run: () => moveTask(did, cid, i, -1) },
+    { label: '↓ 下へ移動', run: () => moveTask(did, cid, i, 1) },
+    '-',
+    { label: n > 1 ? 'この作図内容から外す(他の箇所は残る)' : 'この作図内容から外す', danger: n <= 1, run: () => {
+        const { c } = findDC(p, did, cid);
+        if (n <= 1) return confirmBox('この作業は他に配置がないため、削除されます。よろしいですか?', () => { deleteTask(p, tid); commit(); });
+        c.items.splice(i, 1); if (t.home === cid) t.home = ''; commit(); } },
+    ...(n > 1 ? [{ label: `作業を完全に削除(${n}箇所すべて)`, danger: true, run: () => confirmBox(`「${esc(t.title)}」を${n}箇所すべてから削除します。`, () => { deleteTask(p, tid); commit(); }) }] : []),
+  ]);
+}
+function detachTask(did, cid, i){
+  const p = P(), { c } = findDC(p, did, cid); const t = p.tasks[c.items[i]];
+  const nt = Object.assign(JSON.parse(JSON.stringify(t)), { id: uid(), title: t.title + '(コピー)', home: '' }); p.tasks[nt.id] = nt;
+  c.items[i] = nt.id; if (t.home === cid) t.home = ''; commit(); toast('独立したコピーにしました');
+}
+function editTask(tid){
+  const p = P(), t = p.tasks[tid], E = eff(p);
+  const succ = Object.values(p.tasks).filter(x => x.deps.includes(tid));
+  const where = id => places(p, id).map(x => x.d.no + '/' + x.c.name).join(', ');
+  const others = placedIds(p).filter(id => id !== tid);
+  const opts = others.map(id => { const x = p.tasks[id]; const dis = !t.deps.includes(id) && wouldCycle(p, tid, id);
+    return `<label class="${dis ? 'dis' : ''}" data-q="${esc(x.title + ' ' + where(id))}"><input type="checkbox" value="${id}" ${t.deps.includes(id) ? 'checked' : ''} ${dis ? 'disabled title="循環になります"' : ''}>${x.kind !== 'in' ? `<span class="kt ${x.kind}" style="--c:${party(p, x.party)?.color || '#6b6a66'}">${KIND[x.kind]}</span>` : ''}${esc(x.title)}<span class="where">${esc(trunc(where(id), 40))}</span></label>`; }).join('');
+  const effB = E.band[tid];
+  modal('作業の詳細', `
+    <label class="fld"><span>作業名</span><input id="et" value="${esc(t.title)}"></label>
+    <div class="row3">
+      <label class="fld"><span>種別</span><select id="ek">${Object.keys(KIND).map(k => `<option value="${k}" ${t.kind === k ? 'selected' : ''}>${{in:'社内作業', ext:'外部依頼・回答待ち', mtg:'打合せ・確認'}[k]}</option>`).join('')}</select></label>
+      <label class="fld" data-for="in mtg"><span>担当者(社内)</span><select id="ea"><option value="">—</option>${S.members.map(m => `<option value="${m.id}" ${m.id === t.assignee ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label class="fld" data-for="in mtg"><span>必要時間(h)</span><input id="eh" type="number" min="0" step="0.5" value="${t.hours || 0}"></label>
+      <label class="fld" data-for="ext mtg"><span>関係者</span><select id="ep"><option value="">—</option>${p.parties.map(x => `<option value="${x.id}" ${x.id === t.party ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
+      <label class="fld" data-for="ext mtg"><span id="edl1">回答予定日</span><input id="ed" type="date" value="${esc(t.due)}"></label>
+      <label class="fld" data-for="ext"><span>所要日数(日付未定の場合)</span><input id="es" type="number" min="0" step="1" value="${t.days || 0}"></label>
+    </div>
+    <div class="row2">
+      <label class="fld"><span>締切(マイルストーン)</span><select id="em2"><option value="">自動(後続作業から決まる)</option>${E.ms.map(m => `<option value="${m.id}" ${m.id === t.ms ? 'selected' : ''}>${esc(m.name)} ${esc(m.date)}</option>`).join('')}</select></label>
+      <div class="fld"><span>現在の締切</span><div style="padding:7px 0;color:${bandColor(E, effB)}">● ${esc(bandName(E, effB))}${!t.ms && effB < E.M ? '(後続作業から継承)' : ''}</div></div>
+    </div>
+    <label class="fld"><span>備考</span><textarea id="em">${esc(t.memo || '')}</textarea></label>
+    <div class="fld"><span>前提作業(これらが終わるまで着手できない)</span>
+      <input id="eq" placeholder="絞り込み…" style="margin-bottom:6px">
+      <div class="cl" id="edl">${opts || '<div class="grp">他の作業がありません</div>'}</div></div>
+    ${succ.length ? `<div class="note">この作業の後続:${succ.map(x => esc(x.title)).join(' / ')}</div>` : ''}
+    <div class="note">配置箇所:${esc(where(tid))}${placeCount(p, tid) > 1 ? '(同一インスタンス・変更は全箇所に反映)' : ''}</div>`,
+    [{ label: 'キャンセル' }, { label: '保存', cls: 'pri', run(bg){
+      t.title = $('#et', bg).value.trim() || t.title; t.kind = $('#ek', bg).value; t.assignee = $('#ea', bg).value; t.hours = parseFloat($('#eh', bg).value) || 0;
+      t.party = $('#ep', bg).value; t.due = $('#ed', bg).value; t.days = parseFloat($('#es', bg).value) || 0; t.memo = $('#em', bg).value;
+      const nms = $('#em2', bg).value;
+      t.deps = $$('#edl input:checked', bg).map(x => x.value);
+      if (nms !== t.ms) { const j = nms ? msSorted(p).findIndex(m => m.id === nms) : msSorted(p).length; const f = applyMoves(p, [[tid, j]]); t.ms = nms; if (f.length) toast(`関連作業 ${f.length}件の締切も移動しました`); }
+      commit(); } }],
+    { wide: true, mount(bg){
+      const upd = () => { const k = $('#ek', bg).value; $$('[data-for]', bg).forEach(el => el.style.display = el.dataset.for.split(' ').includes(k) ? '' : 'none'); $('#edl1', bg).textContent = k === 'mtg' ? '打合せ日' : '回答予定日'; };
+      $('#ek', bg).addEventListener('change', upd); upd();
+      $('#eq', bg).addEventListener('input', e => { const q = e.target.value.toLowerCase(); $$('#edl label', bg).forEach(l => l.style.display = l.dataset.q.toLowerCase().includes(q) ? '' : 'none'); });
+    } });
+}
+function placeTask(tid){
+  const p = P(), t = p.tasks[tid], hp = homePlace(p, tid);
+  const list = p.drawings.map(d => `<div class="grp">${esc(d.no)} ${esc(d.name)}</div>` + d.contents.map(c =>
+    `<label><input type="checkbox" data-did="${d.id}" data-cid="${c.id}" ${c.items.includes(tid) ? 'checked' : ''}>${esc(c.name)}<span class="where"><input type="radio" name="home" value="${c.id}" ${hp && hp.c.id === c.id ? 'checked' : ''} title="本体"> 本体</span></label>`).join('')).join('');
+  modal('◆ インスタンスの配置先', `<div class="note">「<b>${esc(t.title)}</b>」を配置する作図内容を選んでください。すべて同一の作業として扱われ、どこで編集しても全箇所へ即時に反映されます。<br>「本体」は集計の基準になる配置です(薄く表示するとき、本体以外が薄くなります)。</div><div class="cl">${list}</div>`,
+    [{ label: 'キャンセル' }, { label: '反映', cls: 'pri', run(bg){
+      const boxes = $$('.cl input[type=checkbox]', bg);
+      if (!boxes.some(b => b.checked)) { toast('最低1箇所は必要です(削除はメニューから)'); return false; }
+      boxes.forEach(b => { const { c } = findDC(p, b.dataset.did, b.dataset.cid); const has = c.items.includes(tid);
+        if (b.checked && !has) c.items.push(tid); if (!b.checked && has) c.items = c.items.filter(x => x !== tid); });
+      const h = $('input[name=home]:checked', bg); if (h && boxes.find(b => b.dataset.cid === h.value)?.checked) t.home = h.value;
+      commit(); toast('配置を更新しました'); } }]);
+}
+function insertExisting(did, cid){
+  const p = P(), { c } = findDC(p, did, cid);
+  const ids = placedIds(p).filter(id => !c.items.includes(id));
+  const where = id => places(p, id).map(x => x.d.no + '/' + x.c.name).join(', ');
+  modal(`◆ 既存作業を「${esc(c.name)}」に配置`, `<div class="note">他の図面の作業を<b>同一インスタンス</b>としてここに配置します(コピーではなく同じ作業)。</div>
+    <input id="iq" placeholder="作業名・図面番号で絞り込み…" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin-bottom:8px">
+    <div class="cl" id="il">${ids.map(id => `<button class="pick" data-id="${id}" data-q="${esc(p.tasks[id].title + ' ' + where(id))}">${esc(p.tasks[id].title)}<small>${esc(where(id))}</small></button>`).join('') || '<div class="grp">配置できる作業がありません</div>'}</div>`,
+    [{ label: '閉じる' }],
+    { mount(bg){
+      $('#iq', bg).addEventListener('input', e => { const q = e.target.value.toLowerCase(); $$('.pick', bg).forEach(l => l.style.display = l.dataset.q.toLowerCase().includes(q) ? '' : 'none'); });
+      $$('.pick', bg).forEach(b => b.onclick = () => { c.items.push(b.dataset.id); closeModal(); commit(); toast('インスタンスとして配置しました'); });
+    } });
+}
+function contentMenu(btn){
+  const box = btn.closest('.content'), p = P(), { d, c } = findDC(p, box.dataset.did, box.dataset.cid); const ci = d.contents.indexOf(c);
+  const E = eff(p);
+  openMenu(btn, [
+    ...(E.M ? [{ head: 'この作図内容の作業の締切を一括設定' }, ...E.ms.map((m, k) => ({ label: `● ${m.name}`, run: () => { const f = applyMoves(p, c.items.map(id => [id, k])); commit(); toast(`${c.items.length}件を「${m.name}」に設定${f.length ? `(関連 ${f.length}件も移動)` : ''}`); } })),
+      { label: '　締切の指定を解除(自動に戻す)', run: () => { c.items.forEach(id => p.tasks[id].ms = ''); commit(); } }, '-'] : []),
+    { label: '↑ 上へ移動', run: () => { if (ci > 0) { [d.contents[ci - 1], d.contents[ci]] = [d.contents[ci], d.contents[ci - 1]]; commit(); } } },
+    { label: '↓ 下へ移動', run: () => { if (ci < d.contents.length - 1) { [d.contents[ci + 1], d.contents[ci]] = [d.contents[ci], d.contents[ci + 1]]; commit(); } } },
+    { label: '作業をすべて直列につなぐ', run: () => { let ng = 0; c.items.forEach((id, i) => { if (i && !p.tasks[id].deps.includes(c.items[i - 1])) { if (wouldCycle(p, id, c.items[i - 1])) ng++; else p.tasks[id].deps.push(c.items[i - 1]); } }); commit(); if (ng) toast(ng + '件は循環のためスキップ'); } },
+    { label: '作業をすべて並列にする', run: () => { c.items.forEach((id, i) => { if (i) p.tasks[id].deps = p.tasks[id].deps.filter(x => x !== c.items[i - 1]); }); commit(); } },
+    '-',
+    { label: '作図内容を削除', danger: true, run: () => confirmBox(`作図内容「${esc(c.name)}」を削除します。他に配置のない作業も削除されます。`, () => { d.contents.splice(ci, 1); gcTasks(p); commit(); }) },
+  ]);
+}
+function drawingMenu(btn, did){
+  const p = P(), d = p.drawings.find(x => x.id === did);
+  openMenu(btn, [
+    { label: '関係線を追加(この図面 → 他の図面)…', run: () => pickLinkTarget(did) },
+    { label: '図面を複製(作業は独立コピー)', run: () => {
+        const map = {}; const nd = JSON.parse(JSON.stringify(d)); nd.id = uid(); nd.no = d.no + '’'; nd.name = d.name + '(複製)';
+        nd.contents.forEach(c => { c.id = uid(); c.items = c.items.map(tid => { if (!map[tid]) { const id = uid(); map[tid] = id; p.tasks[id] = Object.assign(JSON.parse(JSON.stringify(p.tasks[tid])), { id, home: '' }); } return map[tid]; }); });
+        Object.values(map).forEach(id => p.tasks[id].deps = p.tasks[id].deps.map(x => map[x] || x));
+        p.drawings.splice(p.drawings.indexOf(d) + 1, 0, nd); cur.did = nd.id; scrollToDid = nd.id; commit(); } },
+    '-',
+    { label: '図面を削除', danger: true, run: () => deleteDrawing(did) },
+  ]);
+}
+function deleteDrawing(did){
+  const p = P(), d = p.drawings.find(x => x.id === did);
+  confirmBox(`図面「${esc(d.no)} ${esc(d.name)}」を削除します。他の図面に配置のない作業も削除されます。`, () => {
+    p.drawings = p.drawings.filter(x => x.id !== did); p.links = p.links.filter(l => l.from !== did && l.to !== did); gcTasks(p); commit(); });
+}
+function pickLinkTarget(from){
+  const p = P();
+  modal('関係線の追加', `<div class="cl">${p.drawings.filter(d => d.id !== from).map(d => `<button class="pick" data-id="${d.id}">${esc(d.no)} ${esc(d.name)}</button>`).join('')}</div>`, [{ label: '閉じる' }],
+    { mount(bg){ $$('.pick', bg).forEach(b => b.onclick = () => { closeModal(); createLink(from, b.dataset.id); }); } });
+}
+function createLink(from, to){
+  const p = P();
+  if (p.links.some(l => l.from === from && l.to === to)) return toast('同じ関係線が既にあります');
+  const l = { id: uid(), from, to, memo: '' }; p.links.push(l); commit(); editLink(l.id, true);
+}
+function editLink(lid, isNew){
+  const p = P(), l = p.links.find(x => x.id === lid); if (!l) return;
+  const dn = id => { const d = p.drawings.find(x => x.id === id); return d ? `${esc(d.no)} ${esc(d.name)}` : '?'; };
+  modal(isNew ? '関係線のメモ' : '関係線の編集', `<div class="note" style="font-size:13px"><b>${dn(l.from)}</b> → <b>${dn(l.to)}</b></div>
+    <label class="fld"><span>メモ(例:この詳細図の検討が終わったら矩計図に反映)</span><textarea id="lm">${esc(l.memo)}</textarea></label>`,
+    [{ label: '削除', cls: 'left', run(){ p.links = p.links.filter(x => x.id !== lid); commit(); } },
+     { label: '向きを反転', run(bg){ l.memo = $('#lm', bg).value; [l.from, l.to] = [l.to, l.from]; commit(); } },
+     { label: '保存', cls: 'pri', run(bg){ l.memo = $('#lm', bg).value; commit(); } }]);
+}
+
+/* ---------------- milestones / review / parties / members ---------------- */
+function openMilestones(){
+  const p = P();
+  const row = m => `<div class="mrow ms" data-id="${m.id}"><input type="color" value="${m.color}"><input type="text" value="${esc(m.name)}" placeholder="例:確認申請"><input type="date" value="${esc(m.date)}"><button class="ico" data-del>×</button></div>`;
+  modal('マイルストーン(提出締切)と稼働', `
+    <div class="sec" style="margin-top:0">締切</div>
+    <div id="msl">${msSorted(p).map(row).join('')}</div>
+    <button class="tbtn" id="msadd">＋ 締切を追加</button>
+    <div class="note">作業に締切を付けると、その作業の前提作業も自動的に同じ締切までに必要な作業になります。ツリーでは締切ごとに帯で区切られ、赤線や作業をドラッグして前後を振り分けられます。</div>
+    <div class="sec">このプロジェクトに使える時間(レビュー用)</div>
+    ${S.members.map(m => `<div class="mrow cap" data-mid="${m.id}"><span>${esc(m.name)}</span><span style="display:flex;align-items:center;gap:4px"><input type="number" min="0" step="1" value="${capOf(p, m.id)}">h/週</span></div>`).join('') || '<div class="muted">メンバーが未登録です</div>'}
+    <label class="fld" style="width:50%;margin-top:10px"><span>担当未定の作業の1日あたり時間(h)</span><input id="hpd" type="number" min="1" step="0.5" value="${p.hpd}"></label>
+    <div class="note">稼働可能時間 = 週あたり時間 ÷ 5 × 締切までの営業日(土日除く、祝日は考慮しません)。</div>`,
+    [{ label: 'キャンセル' }, { label: '保存', cls: 'pri', run(bg){
+      const ms = $$('#msl .mrow', bg).map(r => ({ id: r.dataset.id, color: $('input[type=color]', r).value, name: $('input[type=text]', r).value.trim() || '締切', date: $('input[type=date]', r).value }));
+      const ids = new Set(ms.map(m => m.id));
+      Object.values(p.tasks).forEach(t => { if (t.ms && !ids.has(t.ms)) t.ms = ''; });
+      p.milestones = ms;
+      $$('.mrow.cap', bg).forEach(r => p.cap[r.dataset.mid] = parseFloat($('input', r).value) || 0);
+      p.hpd = parseFloat($('#hpd', bg).value) || 8;
+      commit(); } }],
+    { wide: true, nofocus: true, mount(bg){
+      $('#msadd', bg).onclick = () => { const d = document.createElement('div'); d.innerHTML = row({ id: uid(), color: COLORS[$$('#msl .mrow', bg).length % COLORS.length], name: '', date: '' }); $('#msl', bg).appendChild(d.firstElementChild); $('#msl .mrow:last-child input[type=text]', bg).focus(); };
+      $('#msl', bg).addEventListener('click', e => { if (e.target.closest('[data-del]')) e.target.closest('.mrow').remove(); });
+    } });
+}
+function openReview(k){
+  const p = P(), r = review(p, k), T = p.tasks, E = eff(p);
+  const memRows = r.rows.map(x => { const pc = x.cap ? x.rem / x.cap : null; const cls = pc == null ? 'over' : pc > 1 ? 'over' : pc > .85 ? 'warn' : '';
+    return `<tr><td>${x.m ? esc(x.m.name) : '<span style="color:var(--accent)">担当未定</span>'}</td><td class="n">${fmtH(x.rem)}h</td><td class="n">${x.m ? fmtH(x.cap) + 'h' : '—'}</td>
+      <td><div class="lbar"><i class="${cls}" style="width:${Math.min(100, (pc ?? 1) * 100)}%"></i></div></td><td class="n" style="color:${cls === 'over' ? 'var(--accent)' : 'inherit'}">${pc == null ? '—' : Math.round(pc * 100) + '%'}</td></tr>`; }).join('');
+  const extRows = r.ext.map(i => { const t = T[i], pa = party(p, t.party);
+    return `<tr><td><span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${KIND[t.kind]}</span> ${esc(t.title)}</td><td>${esc(pa?.name || '—')}</td><td>${t.done ? '' : t.st === 'wait' ? '依頼中' : t.kind === 'mtg' ? '予定' : '依頼前'}</td>
+      <td class="n" style="color:${isOverdue(t) ? 'var(--accent)' : 'inherit'}">${t.due ? fmtD(t.due) + (isOverdue(t) ? ' 超過' : '') : t.days ? t.days + '日' : '<span style="color:var(--warn)">未設定</span>'}</td></tr>`; }).join('');
+  const todo = r.ids.filter(i => !T[i].done && T[i].kind === 'in');
+  modal(`計画レビュー:${esc(r.ms.name)}`, `
+    <div class="kpis">
+      <div class="kpi"><span>締切</span><b>${esc(r.ms.date || '—')}</b><span>${r.cal != null ? (r.cal >= 0 ? 'あと' + r.cal + '日' : Math.abs(r.cal) + '日超過') : ''}</span></div>
+      <div class="kpi"><span>達成率(この締切までの作業)</span><b>${r.pct == null ? '—' : r.pct + '%'}</b><span>${r.ids.filter(i => T[i].done).length}/${r.ids.length}件</span></div>
+      <div class="kpi"><span>残り社内工数</span><b>${fmtH(r.remH)}h</b><span>未完了 ${todo.length}件</span></div>
+      <div class="kpi ${r.D != null && r.cpDays > r.D ? 'bad' : ''}"><span>最短所要 / 残り営業日</span><b>${r.cpDays.toFixed(1)} / ${r.D ?? '—'}日</b><span>前後関係と外部回答日を考慮</span></div>
+    </div>
+    <div class="judge j-${r.status}" style="font-size:13px;margin-bottom:10px"><i></i><b>${JUDGE[r.status]}</b>${r.reasons.length ? ':' + esc(r.reasons.join('、')) : ''}</div>
+    <div class="sec">人ごとの負荷(この締切までに終える必要がある残り作業)</div>
+    ${memRows ? `<table class="rvtab"><tr><th>担当</th><th class="n">残り工数</th><th class="n">使える時間</th><th>負荷</th><th class="n">負荷率</th></tr>${memRows}</table>` : '<div class="muted">残っている社内作業はありません</div>'}
+    <div class="sec">外部・打合せ(未完了)</div>
+    ${extRows ? `<table class="rvtab"><tr><th>内容</th><th>関係者</th><th>状態</th><th class="n">回答予定</th></tr>${extRows}</table>` : '<div class="muted">待ちはありません</div>'}
+    <div class="note">対象 = この締切が付いた作業と、その前提作業すべて(前の締切の分も含む累積)。使える時間は「マイルストーン」設定の h/週 から計算します。最短所要は、担当者が並行作業できると仮定した日数です(同じ人の重なりは負荷率で判定)。</div>`,
+    [{ label: '締切・稼働を編集', cls: 'left', run(){ setTimeout(openMilestones, 0); } }, { label: '閉じる', cls: 'pri' }], { wide: true, nofocus: true });
+}
+function openParties(){
+  const p = P();
+  const row = x => `<div class="mrow" data-id="${x.id}"><input type="color" value="${x.color}"><input type="text" value="${esc(x.name)}" placeholder="例:クライアント、構造設計"><button class="ico" data-del>×</button></div>`;
+  modal('関係者(外部)', `<div id="pl">${p.parties.map(row).join('')}</div><button class="tbtn" id="padd">＋ 関係者を追加</button>
+    <div class="note">クライアント、構造・設備の協力事務所、行政・確認検査機関など。関係者はプロジェクトごとに管理します。削除すると、その関係者の作業は「関係者未設定」になります。</div>`,
+    [{ label: 'キャンセル' }, { label: '保存', cls: 'pri', run(bg){
+      const list = $$('#pl .mrow', bg).map(r => ({ id: r.dataset.id, color: $('input[type=color]', r).value, name: $('input[type=text]', r).value.trim() || '関係者' }));
+      const ids = new Set(list.map(x => x.id)); Object.values(p.tasks).forEach(t => { if (t.party && !ids.has(t.party)) t.party = ''; });
+      p.parties = list; commit(); } }],
+    { mount(bg){
+      $('#padd', bg).onclick = () => { const d = document.createElement('div'); d.innerHTML = row({ id: uid(), color: COLORS[($$('#pl .mrow', bg).length + 4) % COLORS.length], name: '' }); $('#pl', bg).appendChild(d.firstElementChild); $('#pl .mrow:last-child input[type=text]', bg).focus(); };
+      $('#pl', bg).addEventListener('click', e => { if (e.target.closest('[data-del]')) e.target.closest('.mrow').remove(); });
+    } });
+}
+function openMembers(){
+  const rows = () => S.members.map(m => `<div class="mrow" data-id="${m.id}"><input type="color" value="${m.color}"><input type="text" value="${esc(m.name)}"><button class="ico" data-del>×</button></div>`).join('');
+  modal('メンバー', `<div id="ml">${rows()}</div><button class="tbtn" id="madd">＋ メンバー追加</button>
+    <div class="note">メンバーは全プロジェクト共通です(プロジェクトごとの稼働時間は「マイルストーン」で設定)。削除すると、その人に割り当てた作業は「担当なし」になります。</div>`,
+    [{ label: 'キャンセル' }, { label: '保存', cls: 'pri', run(bg){
+      const keep = $$('.mrow', bg).map(r => ({ id: r.dataset.id, color: $('input[type=color]', r).value, name: $('input[type=text]', r).value.trim() || '名称未設定' }));
+      const ids = new Set(keep.map(m => m.id));
+      S.projects.forEach(p => Object.values(p.tasks).forEach(t => { if (t.assignee && !ids.has(t.assignee)) t.assignee = ''; }));
+      S.members = keep; commit(); } }],
+    { mount(bg){
+      $('#madd', bg).onclick = () => { const id = uid(); const div = document.createElement('div'); div.innerHTML = `<div class="mrow" data-id="${id}"><input type="color" value="${COLORS[$$('.mrow', bg).length % COLORS.length]}"><input type="text" placeholder="名前"><button class="ico" data-del>×</button></div>`; $('#ml', bg).appendChild(div.firstElementChild); $('#ml .mrow:last-child input[type=text]', bg).focus(); };
+      $('#ml', bg).addEventListener('click', e => { if (e.target.closest('[data-del]')) e.target.closest('.mrow').remove(); });
+    } });
+}
+
+/* ---------------- PDF / print ---------------- */
+function openPdf(){
+  const p = P(), o = p.pdf;
+  const cb = (id, key, label, ind) => `<label class="chk" style="display:flex;margin-bottom:6px;${ind ? 'padding-left:18px' : ''}"><input type="checkbox" id="${id}" ${o.inc[key] ? 'checked' : ''}> ${label}</label>`;
+  modal('PDF書き出し', `
+  <div class="pdfgrid"><div>
+    <div class="row2">
+      <label class="fld"><span>用紙</span><select id="pp">${Object.keys(PAPER).map(k => `<option ${k === o.paper ? 'selected' : ''}>${k}</option>`).join('')}</select></label>
+      <label class="fld"><span>向き</span><select id="po"><option value="landscape" ${o.orient === 'landscape' ? 'selected' : ''}>横</option><option value="portrait" ${o.orient === 'portrait' ? 'selected' : ''}>縦</option></select></label>
+    </div>
+    <div class="sec">余白(mm)</div>
+    <div class="row4">
+      <label class="fld"><span>上</span><input id="mt" type="number" min="0" step="1" value="${o.m.t}"></label>
+      <label class="fld"><span>右</span><input id="mr" type="number" min="0" step="1" value="${o.m.r}"></label>
+      <label class="fld"><span>下</span><input id="mb" type="number" min="0" step="1" value="${o.m.b}"></label>
+      <label class="fld"><span>左(綴じ代)</span><input id="ml2" type="number" min="0" step="1" value="${o.m.l}"></label>
+    </div>
+    <label class="fld" style="width:50%"><span>文字サイズ(pt)</span><input id="pt" type="number" min="6" max="14" step="0.5" value="${o.pt}"></label>
+    <div class="sec">出力内容</div>
+    ${cb('i0', 'ms', 'マイルストーン概要(締切・達成率・判定)')}
+    ${cb('i1', 'list', '図面リスト(番号・名称・スケール・達成率)')}
+    ${cb('i2', 'links', '図面間の関係線とメモ', true)}
+    ${cb('i3', 'detail', '図面ごとの作業一覧(備考含む)')}
+    ${cb('i4', 'tree', '図面ごとの作業ツリー')}
+    ${cb('i5', 'parties', '関係者別 確認・依頼事項')}
+  </div>
+  <div><div id="pvbox"></div><div class="note" style="margin-top:8px">印刷ダイアログで「送信先:PDFに保存」を選び、<b>倍率100%・余白「なし」または「デフォルト」</b>で保存してください。</div></div></div>`,
+  [{ label: 'キャンセル' }, { label: 'PDF書き出し', cls: 'pri', run(bg){ readPdf(bg); commit(); setTimeout(() => doPrint(), 50); } }],
+  { wide: true, nofocus: true, mount(bg){ const upd = () => { readPdf(bg); drawPreview(); }; bg.addEventListener('input', upd); bg.addEventListener('change', upd); drawPreview(); } });
+}
+function readPdf(bg){
+  const o = P().pdf, n = (id, d) => { const v = parseFloat($(id, bg).value); return isNaN(v) ? d : Math.max(0, v); };
+  o.paper = $('#pp', bg).value; o.orient = $('#po', bg).value;
+  o.m = { t: n('#mt', 15), r: n('#mr', 15), b: n('#mb', 15), l: n('#ml2', 20) }; o.pt = n('#pt', 9) || 9;
+  o.inc = { ms: $('#i0', bg).checked, list: $('#i1', bg).checked, links: $('#i2', bg).checked, detail: $('#i3', bg).checked, tree: $('#i4', bg).checked, parties: $('#i5', bg).checked };
+}
+function paperWH(o){ let [w, h] = PAPER[o.paper] || PAPER.A3; if (o.orient === 'landscape') [w, h] = [h, w]; return [w, h]; }
+function drawPreview(){
+  const o = P().pdf, [w, h] = paperWH(o), s = 200 / Math.max(w, h), W = w * s, H = h * s;
+  const ok = o.m.l + o.m.r < w && o.m.t + o.m.b < h;
+  $('#pvbox').innerHTML = `<svg width="${W + 40}" height="${H + 40}" viewBox="-20 -20 ${W + 40} ${H + 40}" font-family="ui-monospace,monospace" font-size="9">
+    <rect width="${W}" height="${H}" fill="#fff" stroke="#999"/>
+    <rect x="${o.m.l * s}" y="${o.m.t * s}" width="${Math.max(0, (w - o.m.l - o.m.r) * s)}" height="${Math.max(0, (h - o.m.t - o.m.b) * s)}" fill="${ok ? '#fbe9e4' : '#fdd'}" stroke="#d2462b" stroke-dasharray="3 2"/>
+    <text x="${W / 2}" y="-6" text-anchor="middle" fill="#555">${o.paper} ${w}×${h}</text>
+    <text x="${W / 2}" y="${o.m.t * s / 2 + 3}" text-anchor="middle" fill="#d2462b">${o.m.t}</text>
+    <text x="${W / 2}" y="${H - o.m.b * s / 2 + 3}" text-anchor="middle" fill="#d2462b">${o.m.b}</text>
+    <text x="${o.m.l * s / 2}" y="${H / 2}" text-anchor="middle" fill="#d2462b">${o.m.l}</text>
+    <text x="${W - o.m.r * s / 2}" y="${H / 2}" text-anchor="middle" fill="#d2462b">${o.m.r}</text>
+    <text x="${W / 2}" y="${H / 2 + 3}" text-anchor="middle" fill="#888">印刷範囲 ${Math.round(w - o.m.l - o.m.r)}×${Math.round(h - o.m.t - o.m.b)}</text></svg>`;
+}
+function partyPrintHTML(p){
+  const T = p.tasks, E = eff(p), all = placedIds(p).filter(i => T[i].kind !== 'in');
+  const groups = [...p.parties, { id: '', name: '関係者未設定', color: '#999' }];
+  return `<h2 class="sh">関係者別 確認・依頼事項</h2>` + groups.map(g => {
+    const ids = all.filter(i => (T[i].party || '') === g.id && !T[i].done).sort((a, b) => (T[a].due || '9999').localeCompare(T[b].due || '9999'));
+    if (!ids.length) return '';
+    return `<div class="pparty"><h3><i style="background:${g.color}"></i>${esc(g.name)}<span style="font-weight:400;font-size:.85em;color:#555">(${ids.length}件)</span></h3>
+      <table><colgroup><col style="width:5%"><col style="width:12mm"><col style="width:35%"><col style="width:16mm"><col style="width:20mm"><col style="width:22mm"><col></colgroup>
+      <tr><th>No.</th><th>種別</th><th>内容</th><th>図面</th><th>状態</th><th>回答予定/日付</th><th>備考</th></tr>
+      ${ids.map((i, n) => { const t = T[i]; return `<tr><td class="n">${n + 1}</td><td>${KIND[t.kind]}</td><td>${esc(t.title)}</td><td class="mono">${[...new Set(places(p, i).map(x => x.d.no))].map(esc).join(', ')}</td>
+        <td>${t.st === 'wait' ? '依頼中' : t.kind === 'mtg' ? '予定' : '依頼前'}</td><td class="${isOverdue(t) ? 'over' : ''} mono">${esc(t.due || (t.days ? t.days + '日' : ''))}${isOverdue(t) ? ' 超過' : ''}</td><td>${esc(t.memo)}</td></tr>`; }).join('')}</table></div>`;
+  }).join('');
+}
+function doPrint(only){
+  const p = P(), o = p.pdf, [w] = paperWH(o), cw = w - o.m.l - o.m.r;
+  const inc = only === 'parties' ? { parties: true } : o.inc;
+  $('#pageStyle').textContent = `@page{size:${o.paper} ${o.orient};margin:${o.m.t}mm ${o.m.r}mm ${o.m.b}mm ${o.m.l}mm}`;
+  const rowH = 7, headH = 7, now = new Date(), E = eff(p), T = p.tasks;
+  const tot = projProgress(p);
+  let h = `<div class="pr" style="font-size:${o.pt}pt;width:${cw}mm">
+    <div class="ptitle"><h1>${esc(p.name)}${only === 'parties' ? ' — 確認・依頼事項' : ''}</h1><div class="meta">図面 ${p.drawings.length}枚 / 全体達成率 ${tot == null ? '—' : tot + '%'}<br>出力 ${ymd(now).replace(/-/g, '.')}</div></div>`;
+  if (inc.ms && E.M) {
+    h += `<table style="margin-bottom:5mm"><colgroup><col style="width:30%"><col style="width:24mm"><col style="width:18mm"><col style="width:18mm"><col style="width:22mm"><col style="width:26mm"><col></colgroup>
+      <tr><th>マイルストーン</th><th>締切</th><th>残営業日</th><th>達成率</th><th>残り社内工数</th><th>最短所要</th><th>判定</th></tr>
+      ${E.ms.map((m, k) => { const r = review(p, k); return `<tr><td><span style="display:inline-block;width:2.5mm;height:2.5mm;background:${m.color};margin-right:1.5mm"></span>${esc(m.name)}</td><td class="mono">${esc(m.date)}</td><td class="n">${r.D ?? '—'}</td><td class="n">${r.pct == null ? '—' : r.pct + '%'}</td><td class="n">${fmtH(r.remH)}h</td><td class="n">${r.cpDays.toFixed(1)}日</td><td class="${r.status === 'over' ? 'over' : ''}">${JUDGE[r.status]}${r.reasons.length ? ':' + esc(r.reasons.join('、')) : ''}</td></tr>`; }).join('')}</table>`;
+  }
+  if (inc.list) {
+    const withLinks = inc.links && p.links.length, gw = withLinks ? Math.min(90, cw * 0.36) : 0;
+    h += `<div class="plist" style="width:${cw - gw}mm">
+      <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率</div></div>
+      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div>${esc(d.name)}</div><div class="mono">${esc(d.scale)}</div>
+        <div class="pbar prog" style="padding:0 2mm">${segBar(p, dTaskIds(d))}</div></div>`).join('')}
+      ${withLinks ? printLinks(p, gw, rowH, headH) : ''}</div>`;
+  }
+  if (inc.detail || inc.tree) {
+    p.drawings.forEach(d => {
+      const pr = dProgress(p, d);
+      const out = p.links.filter(l => l.from === d.id), inn = p.links.filter(l => l.to === d.id);
+      const dn = id => { const x = p.drawings.find(z => z.id === id); return x ? x.no + ' ' + x.name : ''; };
+      h += `<div class="psheet"><h2><span class="mono">${esc(d.no)}</span>${esc(d.name)}<span class="mono">${esc(d.scale)}</span><span class="r">達成率 ${pr == null ? '—' : pr + '%'}</span></h2>`;
+      if (out.length || inn.length) h += `<div class="prel">${out.map(l => `→ ${esc(dn(l.to))}:${esc(l.memo)}`).concat(inn.map(l => `← ${esc(dn(l.from))}:${esc(l.memo)}`)).join('<br>')}</div>`;
+      if (inc.detail) d.contents.forEach(c => {
+        h += `<div class="pc"><h3>${esc(c.name)}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
+          <tr><th></th><th>作業</th><th>担当/関係者</th><th style="text-align:right">時間/期日</th><th>締切</th><th>前提作業</th><th>共有</th></tr>
+        ${c.items.map((tid, i) => { const t = T[tid]; const m = member(t.assignee), pa = party(p, t.party); const n = placeCount(p, tid), b = E.band[tid];
+          const who = t.kind === 'in' ? (m ? esc(m.name) : '') : `${KIND[t.kind]}:${esc(pa?.name || '')}`;
+          const tm = t.kind === 'ext' ? `<span class="${isOverdue(t) ? 'over' : ''}">${t.due ? fmtD(t.due) : t.days ? t.days + '日' : ''}</span>` : t.kind === 'mtg' ? `${t.due ? fmtD(t.due) : ''} ${fmtH(t.hours)}h` : fmtH(t.hours) + 'h';
+          return `<tr><td class="c">${t.done ? '☑' : '☐'}</td><td>${i && t.deps.includes(c.items[i - 1]) ? '↓ ' : ''}${esc(t.title)}${t.memo ? `<div style="color:#666;font-size:.85em">※${esc(t.memo)}</div>` : ''}</td><td>${who}</td><td class="n">${tm}</td>
+          <td style="font-size:.85em"><span style="color:${bandColor(E, b)}">●</span>${esc(trunc(bandName(E, b), 10))}</td><td style="font-size:.85em;color:#444">${t.deps.map(x => esc(trunc(T[x]?.title, 16))).join('、')}</td><td style="font-size:.85em">${n > 1 ? '◆' + n : ''}</td></tr>`; }).join('')}</table></div>`;
+      });
+      if (inc.tree) { const TT = layoutTree(p, dTaskIds(d)); if (TT.ids.length) h += `<div class="ptree"><h3>作業ツリー(社内合計 ${fmtH(TT.total)}h / クリティカルパス ${fmtH(TT.cp)}h)</h3>${treeSVG(p, TT, true).replace('<svg ', `<svg style="width:${Math.min(cw, TT.W * 0.27).toFixed(1)}mm" `)}</div>`; }
+      h += `</div>`;
+    });
+  }
+  if (inc.parties) h += partyPrintHTML(p);
+  h += `</div>`;
+  $('#printArea').innerHTML = h;
+  window.print();
+}
+function printLinks(p, gw, rowH, headH){
+  const { L, nl } = laneLinks(p);
+  const H = headH + p.drawings.length * rowH, yc = i => headH + i * rowH + rowH / 2;
+  let s = `<svg style="position:absolute;left:100%;top:0;overflow:visible" width="${gw}mm" height="${H}mm" viewBox="0 0 ${gw} ${H}">
+    <defs><marker id="pah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>`;
+  const LX = 5 + nl * 5 + 2;
+  L.forEach(o => o.my = (yc(o.a) + yc(o.b)) / 2);
+  [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 3.6); return o.ly; }, -1e9);
+  const maxCh = Math.max(6, Math.floor((gw - LX) / 2.7));
+  L.forEach(o => {
+    const x = 5 + o.lane * 5, y1 = yc(o.a), y2 = yc(o.b), sg = y2 > y1 ? 1 : -1, r = 1.5;
+    s += `<path d="M0.5,${y1} H${x - r} Q${x},${y1} ${x},${y1 + sg * r} V${y2 - sg * r} Q${x},${y2} ${x - r},${y2} H1.5" fill="none" stroke="#333" stroke-width=".3" marker-end="url(#pah)"/>`;
+    s += `<path d="M${x},${o.my} L${LX - .8},${o.ly - .9}" stroke="#c0392b" stroke-width=".15" stroke-dasharray=".6 .6" fill="none"/>`;
+    s += `<text x="${LX}" y="${o.ly}" font-size="2.6" fill="#c0392b">${esc(trunc(o.l.memo, maxCh))}</text>`;
+  });
+  return s + '</svg>';
+}
+
+/* ---------------- settings / share / sync ---------------- */
+let cfg = Object.assign({ token: '', appKey: '', refresh: '', path: '/zumentask/data.json', auto: true }, (() => { try { return JSON.parse(lsGet(CFG_KEY) || '{}'); } catch(e) { return {}; } })());
+if (!cfg.token && !cfg.refresh && (EMBED.token || EMBED.refresh)) { Object.assign(cfg, { token: EMBED.token, appKey: EMBED.appKey, refresh: EMBED.refresh }); if (EMBED.path) cfg.path = EMBED.path; }
+const saveCfg = () => lsSet(CFG_KEY, JSON.stringify(cfg));
+function shareURL(){ return location.origin + location.pathname + '?p=' + encodeURIComponent(cur.pid); }
+function openSettings(){
+  const p = P(), on = syncEnabled();
+  modal('設定・共有', `
+    <div class="sec" style="margin-top:0">プロジェクト</div>
+    <label class="fld"><span>プロジェクト名</span><input id="sn" value="${esc(p.name)}"></label>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <button class="tbtn" id="bexp">JSON書き出し</button><button class="tbtn" id="bimp">JSON読み込み</button>
+      <button class="tbtn" id="bdup">プロジェクト複製</button><button class="tbtn" id="bsample">サンプルを追加</button>
+      <button class="tbtn" id="bdel" style="color:var(--accent)">プロジェクト削除</button>
+    </div>
+    <div class="sec">共有アドレス</div>
+    <div style="display:flex;gap:8px"><input id="surl" readonly value="${esc(shareURL())}" style="flex:1;border:1px solid var(--line);border-radius:6px;padding:7px;font-family:var(--mono);font-size:11px"><button class="tbtn" id="bcopy">コピー</button></div>
+    <div class="note">GitHub Pagesに置いたこのHTMLのアドレスに <code>?p=プロジェクトID</code> が付いたリンクです。同じDropboxに接続しているメンバーは、このアドレスでこのプロジェクトを開けます。</div>
+    <div class="sec">Dropbox同期 ${on ? '<span style="color:var(--ok)">● 接続中</span>' : '<span class="muted">● 未接続</span>'}</div>
+    <div class="row2">
+      <label class="fld"><span>App key(Dropbox App Console)</span><input id="ak" value="${esc(cfg.appKey)}" placeholder="例: abcd1234efgh567"></label>
+      <label class="fld"><span>保存先パス(App folder内)</span><input id="dp" value="${esc(cfg.path)}"></label>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <button class="tbtn pri" id="bconn">Dropboxと連携</button>
+      <button class="tbtn" id="bsync" ${on ? '' : 'disabled'}>今すぐ同期</button>
+      <button class="tbtn" id="bdisc" ${on ? '' : 'disabled'}>連携解除</button>
+      <label class="chk"><input type="checkbox" id="sauto" ${cfg.auto ? 'checked' : ''}> 自動同期</label>
+    </div>
+    ${EMBED_ENC && !on ? `<div class="note" style="background:var(--inst-s)">このページにはチームの接続情報が入っています。<button class="tbtn" id="bunlock" style="margin-left:6px">パスコードで接続</button></div>` : ''}
+    <details><summary style="cursor:pointer;font-size:12px;color:var(--sub)">アクセストークンを直接入力する(上級)</summary>
+      <label class="fld" style="margin-top:8px"><span>Access token(短期トークンは約4時間で失効)</span><input id="tk" value="${esc(cfg.token)}"></label></details>
+    <div class="note">
+      <b>はじめての設定(管理者のみ・1回だけ)</b><br>
+      1. Dropbox App Consoleで「Scoped access / App folder」のアプリを作成し、Permissionsタブで <code>files.content.write</code> と <code>files.content.read</code> にチェック → Submit<br>
+      2. Settingsタブの Redirect URIs に <code>${esc(location.origin + location.pathname)}</code> を登録<br>
+      3. 上にApp keyを入れて「Dropboxと連携」→ Dropboxで「許可」すると自動で戻ってきます
+    </div>
+    <div class="sec">チームに配布 ${cfg.refresh ? '' : '<span class="muted">(Dropbox連携後に使えます)</span>'}</div>
+    <div class="row2">
+      <label class="fld"><span>チームパスコード(8文字以上)</span><input id="dpw" type="password" autocomplete="new-password" ${cfg.refresh ? '' : 'disabled'}></label>
+      <label class="fld"><span>確認のためもう一度</span><input id="dpw2" type="password" autocomplete="new-password" ${cfg.refresh ? '' : 'disabled'}></label>
+    </div>
+    <button class="tbtn pri" id="bdist" ${cfg.refresh ? '' : 'disabled'}>配布用HTMLを作成(index.htmlをダウンロード)</button>
+    <div class="note" style="margin-top:10px">
+      ダウンロードした <code>index.html</code> をGitHubリポジトリに上書きアップロードし、共有アドレスをメンバーに送ってください。メンバーは初回だけパスコードを入力すれば、あなたのDropboxのデータを一緒に編集できます。<br>
+      ・接続情報はパスコードで暗号化して埋め込むので、URLだけ知っている人には読めません。<b>パスコードはURLと別の経路(口頭・別チャット)で伝えてください。</b><br>
+      ・メンバーを外したい時は、Dropbox側でアプリの連携を解除してから再連携し、新しいパスコードで作り直します。<br>
+      ・同じプロジェクトを数秒以内に同時編集した場合は、後から保存した側が優先されます。
+    </div>`,
+  [{ label: '閉じる', run(bg){ const nm = $('#sn', bg).value.trim(); cfg.appKey = $('#ak', bg).value.trim(); cfg.path = $('#dp', bg).value.trim() || '/zumentask/data.json'; cfg.token = $('#tk', bg).value.trim(); cfg.auto = $('#sauto', bg).checked; saveCfg(); if (nm && nm !== p.name) { p.name = nm; commit(); } else setStatus(); } }],
+  { nofocus: true, mount(bg){
+    const stash = () => { cfg.appKey = $('#ak', bg).value.trim(); cfg.path = $('#dp', bg).value.trim() || cfg.path; cfg.token = $('#tk', bg).value.trim(); saveCfg(); };
+    $('#bcopy', bg).onclick = () => copy(shareURL());
+    $('#bexp', bg).onclick = exportJSON;
+    $('#bimp', bg).onclick = () => $('#fileIn').click();
+    $('#bdup', bg).onclick = () => { const np = JSON.parse(JSON.stringify(p)); np.id = uid(); np.name = p.name + '(複製)'; S.projects.push(np); cur.pid = np.id; closeModal(); commit(); };
+    $('#bsample', bg).onclick = () => { const np = seedProject(); ['m1','m2','m3'].forEach((id, i) => { if (!member(id)) S.members.push({ id, name: ['高橋','佐藤','鈴木'][i], color: COLORS[i] }); }); S.projects.push(np); cur.pid = np.id; cur.did = null; closeModal(); commit(); toast('サンプルプロジェクトを追加しました'); };
+    $('#bdel', bg).onclick = () => { if (S.projects.length < 2) return toast('最後のプロジェクトは削除できません'); confirmBox(`プロジェクト「${esc(p.name)}」を削除します。共有中のメンバーからも消えます。`, () => { S.deleted.push(p.id); S.projects = S.projects.filter(x => x.id !== p.id); cur.pid = S.projects[0].id; commit(); }); };
+    $('#bconn', bg).onclick = () => { stash(); if (!cfg.appKey) return toast('App keyを入力してください'); dbxConnect(); };
+    $('#bsync', bg).onclick = () => { stash(); sync(true); };
+    $('#bdisc', bg).onclick = () => { cfg.token = ''; cfg.refresh = ''; saveCfg(); rev = null; access = { tok: null, exp: 0 }; closeModal(); setStatus(); toast('連携を解除しました(このブラウザのみ)'); };
+    if ($('#bunlock', bg)) $('#bunlock', bg).onclick = () => { closeModal(); openUnlock(); };
+    $('#bdist', bg).onclick = async () => {
+      const a = $('#dpw', bg).value, b = $('#dpw2', bg).value;
+      if (a.length < 8) return toast('パスコードは8文字以上にしてください');
+      if (a !== b) return toast('確認用のパスコードが一致しません');
+      if (!crypto.subtle) return toast('https(GitHub Pages)で開いてください');
+      stash(); await buildDist(a); toast('配布用のindex.htmlを作成しました');
+    };
+  } });
+}
+function copy(txt){ (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => toast('コピーしました'), () => { prompt2('コピー', '以下を選択してコピーしてください', txt, () => {}); }); }
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `zumentask_${ymd(new Date())}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+$('#fileIn').addEventListener('change', e => {
+  const f = e.target.files[0]; if (!f) return; const r = new FileReader();
+  r.onload = () => { try { const d = normalize(JSON.parse(r.result)); if (!d.projects?.length) throw 0;
+      closeModal();
+      modal('JSON読み込み', `<p>${d.projects.length}件のプロジェクトが含まれています。</p>`, [
+        { label: 'キャンセル' },
+        { label: 'プロジェクトとして追加', run(){ d.projects.forEach(p => { if (S.projects.some(x => x.id === p.id)) p.id = uid(); S.projects.push(p); }); d.members.forEach(m => { if (!member(m.id)) S.members.push(m); }); cur.pid = d.projects[0].id; commit(); } },
+        { label: 'すべて置き換え', cls: 'pri', run(){ S = d; cur.pid = S.projects[0].id; commit(); } }]);
+    } catch(err) { toast('読み込めないファイルです'); } };
+  r.readAsText(f); e.target.value = '';
+});
+
+/* チーム配布:接続情報をパスコードで暗号化 (PBKDF2 + AES-GCM) */
+const b64e = u8 => btoa(String.fromCharCode(...new Uint8Array(u8)));
+const b64d = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function passKey(pass, salt){
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt, iterations: 250000, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+async function encryptCfg(obj, pass){
+  const salt = crypto.getRandomValues(new Uint8Array(16)), iv = crypto.getRandomValues(new Uint8Array(12));
+  const ct = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, await passKey(pass, salt), new TextEncoder().encode(JSON.stringify(obj)));
+  return [b64e(salt), b64e(iv), b64e(ct)].join('.');
+}
+async function decryptCfg(str, pass){
+  const [s, i, c] = str.split('.').map(b64d);
+  const pt = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: i }, await passKey(pass, s), c);
+  return JSON.parse(new TextDecoder().decode(pt));
+}
+function openUnlock(){
+  modal('チームの共有データに接続', `
+    <p style="margin:0 0 12px;line-height:1.7">このページはチームのDropboxにつながるよう設定されています。管理者から伝えられた<b>チームパスコード</b>を入力してください(このブラウザに記憶され、次回からは不要です)。</p>
+    <label class="fld"><span>チームパスコード</span><input id="upw" type="password" autocomplete="current-password"></label>
+    <div id="uerr" style="color:var(--accent);font-size:12px;min-height:16px"></div>`,
+    [{ label: 'ローカルだけで使う', cls: 'left', run(){ lsSet('zumentask.localonly', '1'); } }, { label: '接続', cls: 'pri', run(bg){ tryUnlock(bg); return false; } }],
+    { mount(bg){ $('#upw', bg).addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) tryUnlock(bg); }); } });
+}
+async function tryUnlock(bg){
+  const pw = $('#upw', bg).value; if (!pw) return;
+  $('#uerr', bg).textContent = '確認中…';
+  try {
+    const c = await decryptCfg(EMBED_ENC, pw);
+    Object.assign(cfg, { appKey: c.appKey, refresh: c.refresh, path: c.path || cfg.path, token: '' }); saveCfg(); lsSet('zumentask.localonly', '');
+    access = { tok: null, exp: 0 }; rev = null; dirty = false;
+    closeModal(); toast('チームのDropboxに接続しました');
+    await sync(true);
+  } catch(e) { $('#uerr', bg).textContent = 'パスコードが違います'; }
+}
+async function buildDist(pass){
+  let src = null;
+  try { if (/^https?:/.test(location.protocol)) { const r = await fetch(location.pathname, { cache: 'no-store' }); if (r.ok) src = await r.text(); } } catch(e) {}
+  if (!src || !/const EMBED_ENC = '[^']*';/.test(src)) src = SRC0;
+  const enc = await encryptCfg({ appKey: cfg.appKey, refresh: cfg.refresh, path: cfg.path }, pass);
+  src = src.replace(/const EMBED_ENC = '[^']*';/, `const EMBED_ENC = '${enc}';`)
+           .replace(/const EMBED = \{[^}]*\};/, `const EMBED = { appKey: '', refresh: '', token: '', path: '' };`);
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([src], { type: 'text/html' })); a.download = 'index.html'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
+
+/* Dropbox */
+let rev = lsGet('zumentask.rev') || null, dirty = false, syncing = false, again = false, syncTimer = null, access = { tok: null, exp: 0 };
+const syncEnabled = () => !!(cfg.token || (cfg.refresh && cfg.appKey));
+const dbxArg = o => JSON.stringify(o).replace(/[\u007f-￿]/g, c => '\\u' + ('000' + c.charCodeAt(0).toString(16)).slice(-4));
+function setStatus(st, msg){
+  const el = $('#sync');
+  if (!syncEnabled()) { el.className = ''; $('span', el).textContent = 'ローカル保存のみ'; return; }
+  st = st || (dirty ? 'pending' : 'ok');
+  el.className = st; $('span', el).textContent = { ok: 'Dropbox同期済み', pending: '変更あり…', sync: '同期中…', err: '同期エラー' }[st] + (msg ? ' ' + msg : '');
+}
+async function getTok(){
+  if (cfg.refresh && cfg.appKey) {
+    if (access.tok && Date.now() < access.exp - 60000) return access.tok;
+    const r = await fetch('https://api.dropboxapi.com/oauth2/token', { method: 'POST', body: new URLSearchParams({ grant_type: 'refresh_token', refresh_token: cfg.refresh, client_id: cfg.appKey }) });
+    if (!r.ok) throw new Error('認証失敗');
+    const j = await r.json(); access = { tok: j.access_token, exp: Date.now() + j.expires_in * 1000 }; return access.tok;
+  }
+  return cfg.token;
+}
+async function dbxDownload(){
+  const tok = await getTok();
+  const r = await fetch('https://content.dropboxapi.com/2/files/download', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Dropbox-API-Arg': dbxArg({ path: cfg.path }) } });
+  if (r.status === 409) return null;
+  if (r.status === 401) throw new Error('認証切れ');
+  if (!r.ok) throw new Error('取得 ' + r.status);
+  const meta = JSON.parse(r.headers.get('dropbox-api-result') || '{}');
+  return { data: JSON.parse(await r.text()), rev: meta.rev };
+}
+async function dbxUpload(){
+  const tok = await getTok();
+  const mode = rev ? { '.tag': 'update', update: rev } : { '.tag': 'add' };
+  const r = await fetch('https://content.dropboxapi.com/2/files/upload', { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/octet-stream', 'Dropbox-API-Arg': dbxArg({ path: cfg.path, mode, autorename: false, mute: true }) }, body: JSON.stringify(S) });
+  if (r.status === 409) return false;
+  if (!r.ok) throw new Error('保存 ' + r.status);
+  const j = await r.json(); rev = j.rev; lsSet('zumentask.rev', rev); return true;
+}
+function mergeRemote(remote){
+  remote = normalize(remote);
+  if (!dirty) { S = remote; return; }
+  const del = new Set([...(S.deleted || []), ...(remote.deleted || [])]);
+  const map = {};
+  remote.projects.forEach(p => map[p.id] = p);
+  S.projects.forEach(p => { const r = map[p.id]; if (!r || (p.updatedAt || 0) >= (r.updatedAt || 0)) map[p.id] = p; });
+  const order = [...S.projects.map(p => p.id), ...remote.projects.map(p => p.id)].filter((id, i, a) => a.indexOf(id) === i);
+  const mem = {}; remote.members.forEach(m => mem[m.id] = m); S.members.forEach(m => mem[m.id] = m);
+  S = { v: 2, updatedAt: Date.now(), members: Object.values(mem), projects: order.map(id => map[id]).filter(p => p && !del.has(p.id)), deleted: [...del] };
+}
+async function sync(manual){
+  if (!syncEnabled()) return;
+  if (syncing) { again = true; return; }
+  syncing = true; setStatus('sync');
+  try {
+    const remote = await dbxDownload();
+    if (remote && remote.rev !== rev) {
+      const before = JSON.stringify(S);
+      mergeRemote(remote.data); rev = remote.rev; lsSet('zumentask.rev', rev);
+      if (!S.projects.length) S.projects.push(newProject());
+      if (!S.projects.some(p => p.id === cur.pid)) cur.pid = S.projects[0].id;
+      persist();
+      if (JSON.stringify(S) !== before && !drag) { undoStack = []; syncRendering = true; render(); syncRendering = false; }
+    }
+    if (dirty || !remote) { const ok = await dbxUpload(); if (ok) dirty = false; else again = true; }
+    setStatus(); if (manual) toast('同期しました');
+  } catch(e) { setStatus('err', e.message); if (manual) toast('同期エラー: ' + e.message); }
+  syncing = false;
+  if (again) { again = false; setTimeout(sync, 600); }
+}
+function scheduleSync(){ if (!syncEnabled()) return setStatus(); setStatus('pending'); if (!cfg.auto) return; clearTimeout(syncTimer); syncTimer = setTimeout(sync, 1200); }
+setInterval(() => { if (syncEnabled() && cfg.auto && !document.hidden && !syncing && !drag) sync(); }, 20000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden && syncEnabled() && cfg.auto) sync(); });
+
+const b64url = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+async function dbxConnect(){
+  if (!crypto.subtle) return toast('https(GitHub Pages等)で開いてください');
+  const verf = b64url(crypto.getRandomValues(new Uint8Array(48)));
+  const ch = b64url(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verf)));
+  lsSet('zumentask.pkce', JSON.stringify({ ver: verf, pid: cur.pid }));
+  const redirect = location.origin + location.pathname;
+  location.href = `https://www.dropbox.com/oauth2/authorize?client_id=${encodeURIComponent(cfg.appKey)}&response_type=code&code_challenge=${ch}&code_challenge_method=S256&token_access_type=offline&redirect_uri=${encodeURIComponent(redirect)}`;
+}
+async function handleOAuth(){
+  const code = qs.get('code'); if (!code) return;
+  let pk = null; try { pk = JSON.parse(lsGet('zumentask.pkce')); } catch(e) {}
+  history.replaceState(null, '', location.pathname + (pk?.pid ? '?p=' + pk.pid : ''));
+  if (!pk) return;
+  if (pk.pid && S.projects.some(p => p.id === pk.pid)) cur.pid = pk.pid;
+  try {
+    const r = await fetch('https://api.dropboxapi.com/oauth2/token', { method: 'POST', body: new URLSearchParams({ code, grant_type: 'authorization_code', code_verifier: pk.ver, client_id: cfg.appKey, redirect_uri: location.origin + location.pathname }) });
+    if (!r.ok) throw new Error(r.status);
+    const j = await r.json(); cfg.refresh = j.refresh_token; cfg.token = ''; access = { tok: j.access_token, exp: Date.now() + j.expires_in * 1000 }; saveCfg();
+    lsSet('zumentask.pkce', ''); rev = null; dirty = true;
+    toast('Dropboxと連携しました'); sync(true);
+  } catch(e) { toast('Dropbox連携に失敗しました'); }
+}
+
+/* ---------------- events ---------------- */
+document.addEventListener('click', e => {
+  if (!e.target.closest('.menu')) closeMenu();
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act, p = P();
+  const row = a.closest('[data-did]'), did = row ? row.dataset.did : a.dataset.did;
+  const tidOf = () => a.closest('[data-tid]').dataset.tid;
+  switch (act) {
+    case 'members': return openMembers();
+    case 'milestones': return openMilestones();
+    case 'parties': return openParties();
+    case 'pdf': return openPdf();
+    case 'ppdf': return doPrint('parties');
+    case 'settings': return openSettings();
+    case 'review': return openReview(+a.dataset.k);
+    case 'pmode': p.progressMode = a.dataset.v; return commit();
+    case 'autosort': p.autoSort = a.checked; if (a.checked) sortDrawings(p); return commit();
+    case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
+    case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
+    case 'openonly': ui.openOnly = a.checked; saveUi(); return render();
+    case 'addd': return addDrawing();
+    case 'deld': return deleteDrawing(did);
+    case 'open': cur.view = 'detail'; cur.did = did; scrollToDid = did; linking = null; return render();
+    case 'port':
+      if (!linking) { linking = did; return render(); }
+      if (linking === did) { linking = null; return render(); }
+      { const from = linking; linking = null; hideBanner(); return createLink(from, did); }
+    case 'link': return editLink(a.closest('[data-lid]').dataset.lid);
+    case 'goto': e.preventDefault(); if (cur.view !== 'detail') { cur.view = 'detail'; cur.did = a.dataset.did; scrollToDid = a.dataset.did; return render(); } return setActiveDrawing(a.dataset.did, true);
+    case 'zoom': {
+      const v = a.dataset.v; if (v === '+') ui.zoom = Math.min(1.6, ui.zoom + .1); else if (v === '-') ui.zoom = Math.max(.3, ui.zoom - .1);
+      else if (lastT) ui.zoom = Math.max(.3, Math.min(1, ($('#treebox').clientWidth - 10) / lastT.W));
+      ui.zoom = Math.round(ui.zoom * 100) / 100; saveUi(); $('#zl').textContent = Math.round(ui.zoom * 100) + '%'; return renderTree();
+    }
+    case 'wide': ui.treeWide = !ui.treeWide; saveUi(); return render();
+    case 'tscope': treeScope = a.dataset.v; $$('[data-act=tscope]').forEach(b => b.classList.toggle('on', b === a)); return renderTree();
+    case 'chain': { const li = a.closest('.task'); return toggleChain(li.dataset.did, li.dataset.cid, +li.dataset.i); }
+    case 'more': return taskMenu(a);
+    case 'edit': return editTask(tidOf());
+    case 'place': return placeTask(tidOf());
+    case 'memo': { const li = a.closest('.task'); const key = li.dataset.tid + li.dataset.cid; if (memoOpen.has(key)) memoOpen.delete(key); else { memoOpen.add(key); focusMemo = key; } return render(); }
+    case 'st': { const t = p.tasks[tidOf()]; if (t.done) { t.done = false; t.st = 'wait'; } else if (t.st === 'req') t.st = 'wait'; else { t.done = true; } return commit(); }
+    case 'insert': { const c = a.closest('.content'); return insertExisting(c.dataset.did, c.dataset.cid); }
+    case 'cmore': return contentMenu(a);
+    case 'dmore': return drawingMenu(a, did);
+    case 'addc': { const d = p.drawings.find(x => x.id === did); const c = { id: uid(), name: '作図内容', items: [] }; d.contents.push(c); focusAfter = c.id; return commit(); }
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target, p = P();
+  if (el.id === 'projSel') {
+    if (el.value === '__new') { el.value = cur.pid; return prompt2('新規プロジェクト', 'プロジェクト名', '', nm => { const np = newProject(nm || '新規プロジェクト'); S.projects.push(np); cur.pid = np.id; cur.did = null; commit(); }); }
+    cur.pid = el.value; cur.did = null; lsSet('zumentask.lastpid', cur.pid); history.replaceState(null, '', '?p=' + cur.pid); return render();
+  }
+  if (!$('#app').contains(el)) return;
+  if (el.dataset.f) {
+    const d = p.drawings.find(x => x.id === el.closest('[data-did]').dataset.did); d[el.dataset.f] = el.value.trim();
+    if (el.dataset.f === 'no' && sortDrawings(p)) { flashDid = d.id; toast(`${d.no} を番号順の位置へ移動しました`); }
+    return commit();
+  }
+  if (el.dataset.cf) { const box = el.closest('.content'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.name = el.value.trim() || c.name; return commit(); }
+  if (el.dataset.tf) {
+    const host = el.closest('[data-tid]'), t = p.tasks[host.dataset.tid], f = el.dataset.tf;
+    if (f === 'party' && el.value === '__new') { el.value = t.party; return openParties(); }
+    if (f === 'memo' && host.dataset.cid) memoOpen.delete(host.dataset.tid + host.dataset.cid);
+    t[f] = f === 'hours' ? (parseFloat(el.value) || 0) : f === 'title' ? (el.value.trim() || t.title) : el.value;
+    if (f === 'due' && t.kind === 'ext' && el.value && t.st === 'req') t.st = 'wait';
+    return commit();
+  }
+  if (el.dataset.act === 'done') { const t = p.tasks[el.closest('[data-tid]').dataset.tid]; t.done = el.checked; return commit(); }
+});
+document.addEventListener('focusout', e => { // 備考エディタ:変更なしで離れたら閉じる
+  const el = e.target; if (!el.matches || !el.matches('.tmemo textarea')) return;
+  const li = el.closest('.task'); const key = li.dataset.tid + li.dataset.cid;
+  setTimeout(() => { if (memoOpen.has(key) && P().tasks[li.dataset.tid].memo === el.value) { memoOpen.delete(key); render(); } }, 120);
+});
+document.addEventListener('keydown', e => {
+  const el = e.target;
+  if (e.key === 'Enter' && !e.isComposing && el.matches('.addtask input')) { e.preventDefault(); return addTask(el.dataset.did, el.dataset.cid, el.value.trim()); }
+  if (e.key === 'Enter' && !e.isComposing && el.matches('.cell, .ttl, .hrs, .pmemo')) { el.blur(); return; }
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && el.matches('.tmemo textarea')) { el.blur(); return; }
+  if (e.key === 'Escape') { if ($('.mbg')) return closeModal(); closeMenu(); if (linking) { linking = null; hideBanner(); render(); } return; }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey && !/INPUT|TEXTAREA|SELECT/.test(el.tagName)) { e.preventDefault(); undo(); }
+});
+$$('.tabs button').forEach(b => b.onclick = () => { cur.view = b.dataset.view; linking = null; hideBanner(); render(); });
+$('#sync').onclick = openSettings;
+
+let dragIdx = null;
+document.addEventListener('mousedown', e => { const g = e.target.closest && e.target.closest('.grip'); if (g) g.closest('.drow').draggable = true; });
+document.addEventListener('dragstart', e => { const r = e.target.closest && e.target.closest('.drow'); if (!r) return; dragIdx = +r.dataset.idx; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', ''); } catch(_) {} });
+document.addEventListener('dragover', e => { const r = e.target.closest && e.target.closest('.drow:not(.head)'); if (dragIdx == null || !r) return; e.preventDefault(); $$('.drow.dragover').forEach(x => x.classList.remove('dragover')); r.classList.add('dragover'); });
+document.addEventListener('drop', e => { const r = e.target.closest && e.target.closest('.drow:not(.head)'); if (dragIdx == null || !r) return; e.preventDefault(); const p = P(), to = +r.dataset.idx; const [d] = p.drawings.splice(dragIdx, 1); p.drawings.splice(to, 0, d); dragIdx = null; commit(); });
+document.addEventListener('dragend', () => { dragIdx = null; $$('.drow').forEach(x => { x.draggable = false; x.classList.remove('dragover'); }); });
+window.addEventListener('afterprint', () => { $('#printArea').innerHTML = ''; });
+
+/* ---------------- boot ---------------- */
+lsSet('zumentask.lastpid', cur.pid);
+render(); setStatus();
+handleOAuth().then(() => {
+  if (syncEnabled() && !qs.get('code')) sync();
+  else if (!syncEnabled() && EMBED_ENC && !lsGet('zumentask.localonly')) openUnlock();
+});
+</script>
+</body>
+</html>
