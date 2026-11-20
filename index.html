@@ -2,7 +2,13 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ZUMEN TASK">
+<meta name="theme-color" content="#f5f4f0">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' fill='%231c1c1a'/%3E%3Cpath d='M40 52h100M40 90h100M40 128h64' stroke='%23fff' stroke-width='12' stroke-linecap='round'/%3E%3Cpath d='M118 112l22 22' stroke='%23d2462b' stroke-width='14' stroke-linecap='round'/%3E%3C/svg%3E">
 <title>ZUMEN TASK — 図面リスト型タスク管理</title>
 <style>
 :root{
@@ -50,6 +56,25 @@ input,select,textarea{font:inherit;color:inherit}
 .mscard{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:8px;padding:10px 12px;width:210px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
 .mscard:hover{border-color:#b9b5ab;border-top-color:var(--c)}
 .mscard .n{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mscard .pd{font-size:10.5px;color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:color-mix(in srgb,var(--c) 10%,transparent);border-radius:3px;padding:1px 5px;align-self:flex-start;max-width:100%}
+.msstart{display:flex;align-items:center;gap:10px;padding:8px 10px;background:#faf9f6;border-radius:6px;margin-bottom:6px;flex-wrap:wrap}
+.msstart input,.msrow input[type=text],.msrow input[type=date]{border:1px solid var(--line);border-radius:6px;padding:6px 8px;background:#fff}
+.lbl{font-size:11px;color:var(--sub);white-space:nowrap}
+.msrow{border-left:3px solid var(--line);margin:0 0 0 14px;padding:4px 0 4px 14px}
+.msrow .per{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.msrow .per input{flex:1;max-width:340px;background:#fffef6!important}
+.msrow .msl2{display:grid;grid-template-columns:36px 54px 1fr 150px 28px;gap:8px;align-items:center;margin-left:-30px;background:#fff;padding:4px 0}
+.msrow .msl2 input[type=color]{width:36px;height:30px;border:1px solid var(--line);border-radius:6px;padding:2px;background:#fff}
+.mtabw{overflow-x:auto;max-width:1150px;margin-bottom:4px}
+.mtab{border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:8px;font-size:12px}
+.mtab th{font-size:10.5px;color:var(--sub);font-weight:500;padding:5px 6px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap;line-height:1.3}
+.mtab th b{font-size:12.5px;color:var(--ink)} .mtab th small{display:block;font-size:9.5px;color:var(--mute)}
+.mtab th.l,.mtab td.l{text-align:left;padding-left:12px;white-space:nowrap}
+.mtab td{padding:4px 4px;border-bottom:1px solid var(--line2);text-align:center}
+.mtab th.cur,.mtab td.cur{background:#f3f7fd}
+.mtab input{width:58px;border:1px dashed var(--line);border-radius:4px;padding:3px 4px;font-family:var(--mono);font-size:12px;text-align:right;background:#fff}
+.mtab input[data-mstd]{border-style:solid;width:62px}
+.mtab input.man{border:1px solid var(--warn);background:#fdf3dc}
 .mscard .d{font-family:var(--mono);font-size:11px;color:var(--sub)}
 .mscard .big{font-family:var(--mono);font-size:20px;font-weight:600;margin:2px 0}
 .mscard .big small{font-size:11px;color:var(--sub);font-weight:400;margin-left:6px}
@@ -244,7 +269,8 @@ input,select,textarea{font:inherit;color:inherit}
 .tstats{display:flex;gap:14px;font-family:var(--mono);font-size:11px;color:var(--sub);width:100%;flex-wrap:wrap}
 .tstats b{color:var(--ink);font-weight:600}
 .tstats .cp b{color:var(--accent)}
-#treebox{flex:1;overflow:auto;background-image:radial-gradient(var(--line2) 1px,transparent 1px);background-size:14px 14px;touch-action:none}
+#treebox{flex:1;overflow:auto;background-image:radial-gradient(var(--line2) 1px,transparent 1px);background-size:14px 14px;-webkit-overflow-scrolling:touch}
+svg .tn,svg .msl{touch-action:none}
 .legend{font-size:11px;color:var(--sub);display:flex;gap:4px 12px;padding:6px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
 .legend span{display:inline-flex;align-items:center;gap:4px}
 .legend i{display:inline-block;width:18px;height:0;border-top:2px solid var(--ink)}
@@ -334,9 +360,98 @@ svg .bandbg.on{fill:var(--accent-s);opacity:.7}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.on{opacity:1}
 
-@media (max-width:1150px){
-  .dv{grid-template-columns:180px 1fr;grid-template-rows:1fr 45%}
-  .treepane{grid-column:1/3;border-left:0;border-top:1px solid var(--line)}
+
+/* calendar */
+.cv{height:100%;overflow:auto;padding:24px 36px 80px}
+.pcards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.pcard{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:8px;padding:10px 12px;width:280px;display:flex;flex-direction:column;gap:4px;cursor:pointer}
+.pcard:hover{border-color:#b9b5ab;border-top-color:var(--c)}
+.pcard .pn{font-weight:700;color:var(--c);font-size:13px}
+.pcard .pr{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.pcard .pr span{font-family:var(--sans);margin-left:4px}
+.pcard .pb{display:flex;align-items:baseline;gap:6px}
+.pcard .pb b{font-family:var(--mono);font-size:20px}
+.pcard .pb small{font-size:11px;color:var(--sub)}
+.pcard .pb em{margin-left:auto;font-style:normal;font-family:var(--mono);font-weight:700}
+.pcard .lbar{width:100%}
+.pcard .pm{display:flex;flex-wrap:wrap;gap:4px;margin-top:2px}
+.pcard .pm span{font-size:10.5px;font-family:var(--mono);background:var(--bg);border-radius:10px;padding:1px 7px;display:inline-flex;align-items:center;gap:4px}
+.pcard .pm span i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+.pcard .pm span.warn{background:#fdf3dc;color:#8a5d00} .pcard .pm span.over{background:var(--accent-s);color:var(--accent)}
+.pcard .pf{font-size:10.5px;color:var(--mute)}
+em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
+.calm{max-width:1100px;margin-bottom:20px}
+.calm h3{margin:0 0 6px;font-size:15px}
+.calm h3 small{font-size:11px;font-weight:400;color:var(--sub);font-family:var(--mono);margin-left:8px}
+.cgrid{display:grid;grid-template-columns:repeat(7,1fr);background:var(--line);gap:1px;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.cw{background:#faf9f6;font-size:11px;color:var(--sub);text-align:center;padding:4px 0}
+.cw.we{color:var(--accent)}
+.cd{background:var(--paper);min-height:92px;padding:0 0 4px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.cd.out{background:#f8f7f3}
+.cd.we{background:#fbfaf7}
+.cd.past{opacity:.6}
+.cd.today{box-shadow:inset 0 0 0 2px var(--ink)}
+.cd .strip{height:18px;background:color-mix(in srgb,var(--c) 18%,#fff);border-bottom:2px solid var(--c);font-size:10.5px;color:var(--c);font-weight:600;white-space:nowrap;overflow:visible;position:relative;cursor:pointer}
+.cd .strip span{position:absolute;left:4px;top:2px;z-index:1;background:color-mix(in srgb,var(--c) 18%,#fff);padding-right:4px}
+.cd .strip em{font-style:normal;font-family:var(--mono);font-weight:700;font-size:10px}
+.cd .strip.none{background:none;border-bottom:2px solid transparent}
+.cd .dn{font-family:var(--mono);font-size:12px;padding:1px 5px;display:flex;justify-content:space-between;align-items:baseline}
+.cd.we .dn{color:var(--accent)}
+.cd .dn small{font-size:9.5px;color:var(--mute)}
+.ci{font-size:10.5px;margin:0 3px;padding:1px 4px;border-radius:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;border-left:3px solid var(--c);background:color-mix(in srgb,var(--c) 10%,#fff)}
+.ci.ms{background:var(--c);color:#fff;font-weight:600;border-left:0}
+.ci.od{color:var(--accent);background:var(--accent-s)}
+.ci.mtg{border-radius:9px;border-left:0;border:1px solid var(--c);background:#fff}
+
+/* ---------- iPad / tablet ---------- */
+#hmore{display:none}
+.narrow-only,.mid-only{display:none!important}
+@media (max-width:1180px){
+  #top{gap:8px;padding:0 10px;padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
+  #top .hb{display:none} #hmore{display:inline-block}
+  .logo{font-size:12px;letter-spacing:.06em}
+  #projSel{max-width:170px}
+  .tabs{overflow-x:auto;scrollbar-width:none} .tabs::-webkit-scrollbar{display:none}
+  .tabs button{padding:5px 10px}
+  #sync span{display:none}
+  .lv,.mv,.pv,.cv{padding:16px 16px 80px}
+  .dv{grid-template-columns:minmax(0,1fr) minmax(330px,40%)}
+  .dv.wide{grid-template-columns:minmax(300px,32%) minmax(0,1fr)}
+  .dv .side{display:none}
+  .mid-only{display:inline-block!important;border:1px solid var(--line);border-radius:6px;padding:5px 6px;background:#fff;max-width:240px}
+  .sheets{padding:0 14px 120px}
+}
+@media (max-width:1000px){
+  .dv,.dv.wide{grid-template-columns:1fr!important;grid-template-rows:1fr!important}
+  .dv .side{display:none}
+  .dv:not(.pane-tree) .treepane{display:none}
+  .dv.pane-tree .sheets{display:none}
+  .treepane{border:0;grid-column:1!important}
+  .narrow-only{display:inline-flex!important}
+  select.narrow-only{display:inline-block!important;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:#fff;max-width:220px}
+  [data-act=wide]{display:none}
+  .sheets{padding:0 12px 120px}
+  .cd{min-height:78px}
+  .pcard{width:calc(50% - 5px)}
+}
+@media (pointer:coarse){
+  .trow{height:42px}
+  .task input[type=checkbox],.mtasks input[type=checkbox]{width:20px;height:20px}
+  .chain{width:26px;height:30px;font-size:15px}
+  .ico{width:30px;height:30px;font-size:15px}
+  .trow{grid-template-columns:28px 24px minmax(0,1fr) auto auto 30px 100px auto 30px}
+  .asg,.hrs,.due,.cell,.ttl{min-height:32px}
+  .drow .del{opacity:.5}
+  .tbtn{padding:7px 12px}
+  .seg button{padding:7px 12px}
+  .zoom button{padding:5px 11px}
+  .menu button{padding:11px 12px;font-size:14px}
+  .caret{width:28px;height:32px;font-size:12px}
+  .port{width:18px;height:18px}
+  .sitem{padding:11px 14px}
+  #treebox{touch-action:pan-x pan-y}
+  svg .tn,svg .msl{touch-action:none}
+  .stchip{padding:4px 10px}
 }
 
 /* print */
@@ -387,15 +502,17 @@ svg .bandbg.on{fill:var(--accent-s);opacity:.7}
   <div class="tabs">
     <button data-view="list">図面リスト</button>
     <button data-view="detail">詳細・ツリー</button>
+    <button data-view="cal">カレンダー</button>
     <button data-view="member">メンバー工数</button>
     <button data-view="party">関係者</button>
   </div>
   <div class="sp"></div>
   <div id="sync" title="同期状態(クリックで設定)"><i></i><span>ローカル保存</span></div>
-  <button class="tbtn" data-act="milestones">マイルストーン</button>
-  <button class="tbtn" data-act="members">メンバー</button>
-  <button class="tbtn" data-act="pdf">PDF書き出し</button>
-  <button class="tbtn" data-act="settings">設定・共有</button>
+  <button class="tbtn hb" data-act="milestones">マイルストーン</button>
+  <button class="tbtn hb" data-act="members">メンバー</button>
+  <button class="tbtn hb" data-act="pdf">PDF書き出し</button>
+  <button class="tbtn hb" data-act="settings">設定・共有</button>
+  <button class="tbtn" id="hmore" data-act="hmore" title="メニュー">☰</button>
 </div>
 <div id="app"></div>
 <div id="tip"></div>
@@ -433,6 +550,10 @@ const trunc = (s, n) => { s = String(s || ''); return s.length > n ? s.slice(0, 
 /* ---------- dates ---------- */
 const today0 = () => { const d = new Date(); d.setHours(0,0,0,0); return d; };
 const ymd = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const ymKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+const ymLabel = k => { const [y, m] = k.split('-'); return `${+m}月`; };
+const _wdm = {};
+function wdInMonth(key){ if (_wdm[key]) return _wdm[key]; const [y, m] = key.split('-').map(Number); const d = new Date(y, m - 1, 1); let n = 0; while (d.getMonth() === m - 1) { const w = d.getDay(); if (w && w < 6) n++; d.setDate(d.getDate() + 1); } return _wdm[key] = n; }
 const addDays = n => { const d = today0(); d.setDate(d.getDate() + n); return ymd(d); };
 const parseD = s => { if (!s) return null; const m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? new Date(+m[1], +m[2]-1, +m[3]) : null; };
 const fmtD = s => { const d = parseD(s); return d ? `${d.getMonth()+1}/${d.getDate()}` : '—'; };
@@ -447,14 +568,14 @@ const isOverdue = t => t.kind !== 'in' && !t.done && t.due && calDays(t.due) < 0
 /* ---------------- data ---------------- */
 function defaultPdf(){ return { paper:'A3', orient:'landscape', m:{t:15,r:15,b:15,l:20}, pt:9, inc:{ms:true, list:true, links:true, detail:true, tree:false, parties:false} } }
 function newProject(name){
-  return { id: uid(), name: name || '新規プロジェクト', updatedAt: Date.now(), progressMode:'count',
+  return { id: uid(), name: name || '新規プロジェクト', updatedAt: Date.now(), start: ymd(today0()), progressMode:'count',
            drawings: [], tasks: {}, links: [], milestones: [], parties: [], cap: {}, hpd: 8, pdf: defaultPdf() };
 }
 function seedProject(){
   const p = newProject('サンプル邸 実施設計');
-  const M1 = {id:uid(), name:'積算図渡し①(基本図)', date:addDays(16), color:'#2457c5'};
-  const M2 = {id:uid(), name:'確認申請', date:addDays(58), color:'#d2462b'};
-  const M3 = {id:uid(), name:'積算図渡し②(詳細図)', date:addDays(93), color:'#2f8f5b'};
+  const M1 = {id:uid(), name:'積算図渡し①(基本図)', date:addDays(16), color:'#2457c5', period:'基本図 検討・作図'};
+  const M2 = {id:uid(), name:'確認申請', date:addDays(58), color:'#d2462b', period:'法規整理・申請図作図'};
+  const M3 = {id:uid(), name:'積算図渡し②(詳細図)', date:addDays(93), color:'#2f8f5b', period:'詳細検討・詳細図作図'};
   p.milestones = [M1, M2, M3];
   const PC = {id:uid(), name:'クライアント', color:'#b8336a'}, PS = {id:uid(), name:'構造設計', color:'#7b4bc4'},
         PE = {id:uid(), name:'設備設計', color:'#1a8a9a'}, PG = {id:uid(), name:'確認検査機関', color:'#5b6770'};
@@ -490,7 +611,9 @@ function seedProject(){
     {id: uid(), from: dA501.id, to: dA401.id, memo: '軒先納まりの検討が終わったら矩計図に反映'},
     {id: uid(), from: dA101.id, to: dA301.id, memo: 'PS位置確定後、断面に反映'},
   ];
-  p.sched = { m1: [0,2,2,2,2,2,0], m2: [0,3,0,3,0,0,0], m3: [0,0,2,0,3,0,0] };   // 他案件と兼務・出勤日が違う想定
+  p.start = addDays(-21);
+  p.mstd = { m1: 50, m2: 40, m3: 30 };   // 他案件と兼務している想定(h/月)
+  { const t = today0(), k1 = ymKey(t), k2 = ymKey(new Date(t.getFullYear(), t.getMonth() + 1, 1)); p.mcap = { m3: { [k1]: 20, [k2]: 12 }, m1: { [k2]: 30 } }; }   // 月によって変わる例
   return p;
 }
 function seed(){
@@ -501,7 +624,8 @@ function normalize(s){
   s.members = s.members || []; s.projects = s.projects || []; s.deleted = s.deleted || [];
   s.projects.forEach(p => {
     p.drawings = p.drawings || []; p.tasks = p.tasks || {}; p.links = p.links || [];
-    p.milestones = p.milestones || []; p.parties = p.parties || []; p.cap = p.cap || {}; p.hpd = +p.hpd || 8; p.sched = p.sched || {}; p.capOv = p.capOv || {};
+    p.milestones = p.milestones || []; p.parties = p.parties || []; p.cap = p.cap || {}; p.hpd = +p.hpd || 8; p.sched = p.sched || {}; p.capOv = p.capOv || {}; p.mstd = p.mstd || {}; p.mcap = p.mcap || {}; if (!p.start) p.start = ymd(new Date(p.updatedAt || Date.now()));
+    p.milestones.forEach(m => { m.period = m.period || ''; });
     p.pdf = Object.assign(defaultPdf(), p.pdf || {}); p.pdf.m = Object.assign({t:15,r:15,b:15,l:20}, p.pdf.m); p.pdf.inc = Object.assign(defaultPdf().inc, p.pdf.inc);
     p.progressMode = p.progressMode || 'count';
     if (p.autoSort == null) p.autoSort = true;
@@ -521,7 +645,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{} }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -586,32 +710,49 @@ function nextNo(p){
   return m[1] + String(+m[2] + 1).padStart(m[2].length, '0') + m[3];
 }
 const newTask = o => Object.assign({ id: uid(), title: '', kind:'in', assignee: '', hours: 0, deps: [], done: false, memo: '', ms:'', home:'', party:'', st:'req', due:'', days:0 }, o);
-// 稼働:メンバーごとの曜日別時間(このプロジェクトに使える時間)。index = Date#getDay()(0=日)
-const WK = [[1,'月'],[2,'火'],[3,'水'],[4,'木'],[5,'金'],[6,'土'],[0,'日']];
-function schedOf(p, mid){
-  if (!p.sched[mid]) { const w = p.cap[mid] != null ? +p.cap[mid] : 30; p.sched[mid] = [0, w/5, w/5, w/5, w/5, w/5, 0].map(x => Math.round(x * 10) / 10); }
-  return p.sched[mid];
+// 稼働:メンバーごと・月ごとの「このプロジェクトに使える時間」。未入力の月は標準(h/月)を使う
+function stdOf(p, mid){
+  if (p.mstd[mid] == null) { // 旧データ(曜日別・h/週)から引き継ぎ
+    const w = p.sched && p.sched[mid] ? p.sched[mid].reduce((a, x) => a + (+x || 0), 0) : (p.cap[mid] != null ? +p.cap[mid] : 30);
+    p.mstd[mid] = Math.round(w * 4.3);
+  }
+  return +p.mstd[mid] || 0;
 }
-const capOf = (p, mid) => Math.round(schedOf(p, mid).reduce((a, x) => a + (+x || 0), 0) * 10) / 10;   // h/週
-const daysOn = (p, mid) => schedOf(p, mid).filter(x => +x > 0).length;
-const perDayOf = (p, mid) => { const n = daysOn(p, mid); return n ? capOf(p, mid) / n : 0; };
-function hoursBetween(p, mid, from, to){ // from 以上 to 未満の日の稼働時間合計
-  const sc = schedOf(p, mid), d = new Date(from); let h = 0, n = 0;
-  while (d < to && n < 3000) { h += +sc[d.getDay()] || 0; d.setDate(d.getDate() + 1); n++; }
+const isManualMonth = (p, mid, key) => p.mcap[mid] && p.mcap[mid][key] != null && p.mcap[mid][key] !== '';
+const monthHours = (p, mid, key) => isManualMonth(p, mid, key) ? +p.mcap[mid][key] : stdOf(p, mid);
+function hoursBetween(p, mid, from, to){ // from 以上 to 未満の平日に、その月の時間を平日数で按分
+  const d = new Date(from); let h = 0, n = 0;
+  while (d < to && n < 3000) { const w = d.getDay(); if (w && w < 6) { const k = ymKey(d); h += monthHours(p, mid, k) / (wdInMonth(k) || 1); } d.setDate(d.getDate() + 1); n++; }
   return h;
 }
-function availInt(p, mid, k, E){ // 締切 k の区間(前の締切 or 本日 〜 締切k)で使える時間。手入力があればそれを優先
+const capOf = (p, mid) => monthHours(p, mid, ymKey(today0()));   // 今月の h/月
+const perDayOf = (p, mid) => { const k = ymKey(today0()); return monthHours(p, mid, k) / (wdInMonth(k) || 21); };
+function periodRange(p, E, k){ return { from: k ? E.ms[k - 1].date : (p.start || ''), to: E.ms[k].date }; }
+const periodName = (E, k) => k >= E.M ? '未定(締切なし)' : (E.ms[k].period || (k ? `${E.ms[k - 1].name} 〜 ${E.ms[k].name}` : `設計開始 〜 ${E.ms[k].name}`));
+function availInt(p, mid, k, E){ // 期間 k(前の締切の翌日 or 設計開始 〜 締切k当日)のうち、本日以降に使える時間。手入力があればそれを優先
   const ms = E.ms[k], ov = p.capOv[mid]?.[ms.id];
   if (ov != null && ov !== '') return { h: +ov, manual: true };
   const to = parseD(ms.date); if (!to) return { h: 0, manual: false };
-  const prev = k ? parseD(E.ms[k - 1].date) : null, t0 = today0();
-  const from = prev && prev > t0 ? prev : t0;
-  return { h: Math.round(hoursBetween(p, mid, from, to) * 10) / 10, manual: false };
+  const r = periodRange(p, E, k), lo = parseD(r.from), t0 = today0();
+  let from = lo ? new Date(lo) : new Date(t0); if (k && lo) from.setDate(from.getDate() + 1);
+  if (from < t0) from = new Date(t0);
+  return { h: Math.round(hoursBetween(p, mid, from, new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1)) * 10) / 10, manual: false };
 }
 const availCum = (p, mid, k, E) => { let h = 0; for (let j = 0; j <= k; j++) h += availInt(p, mid, j, E).h; return h; };
-function schedInputs(p, mid){
-  const sc = schedOf(p, mid);
-  return `<span class="wk">${WK.map(([d, l]) => `<label class="${d === 0 || d === 6 ? 'we' : ''}"><i>${l}</i><input type="number" min="0" max="24" step="0.5" data-sched="${mid}|${d}" value="${+sc[d] || ''}" placeholder="0"></label>`).join('')}<b>計${capOf(p, mid)}h/週</b></span>`;
+function projMonths(p){
+  const E = eff(p), t0 = today0(), st = parseD(p.start) || t0;
+  const a = st < t0 ? st : t0; const last = E.ms.map(m => parseD(m.date)).filter(Boolean).sort((x, y) => y - x)[0];
+  const b = last && last > t0 ? last : new Date(t0.getFullYear(), t0.getMonth() + 2, 1);
+  const out = [], d = new Date(a.getFullYear(), a.getMonth(), 1);
+  while (d <= b && out.length < 36) { out.push(ymKey(d)); d.setMonth(d.getMonth() + 1); }
+  return out;
+}
+function monthTable(p){
+  const months = projMonths(p), cm = ymKey(today0());
+  return `<table class="mtab"><tr><th class="l">メンバー</th><th title="月ごとの入力がない月はこの値">標準(h/月)</th>${months.map(k => `<th class="${k === cm ? 'cur' : ''}">${k.slice(0, 4)}<br><b>${ymLabel(k)}</b><small>${wdInMonth(k)}営業日</small></th>`).join('')}</tr>
+    ${S.members.map(m => `<tr><td class="l"><span style="color:${m.color}">●</span> ${esc(m.name)}</td>
+      <td><input type="number" min="0" step="1" data-mstd="${m.id}" value="${stdOf(p, m.id)}"></td>
+      ${months.map(k => `<td class="${k === cm ? 'cur' : ''}"><input type="number" min="0" step="1" class="${isManualMonth(p, m.id, k) ? 'man' : ''}" data-mcap="${m.id}|${k}" value="${isManualMonth(p, m.id, k) ? +p.mcap[m.id][k] : ''}" placeholder="${stdOf(p, m.id)}"></td>`).join('')}</tr>`).join('') || '<tr><td class="l muted">メンバー未登録</td></tr>'}</table>`;
 }
 
 /* ---------------- milestones: effective band ---------------- */
@@ -716,7 +857,8 @@ function render(){
   const ae = document.activeElement;
   if (syncRendering && ae && $('#app').contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) { pendingRender = true; return; }
   renderHeader();
-  if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else if (cur.view === 'member') renderMembers(); else renderDetail();
+  document.body.dataset.view = cur.view;
+  if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else if (cur.view === 'member') renderMembers(); else if (cur.view === 'cal') renderCalendar(); else renderDetail();
 }
 document.addEventListener('focusout', () => { if (pendingRender) { pendingRender = false; setTimeout(render, 0); } });
 
@@ -747,7 +889,8 @@ function msCards(p){
   const cards = E.ms.map((m, k) => {
     const r = review(p, k), cd = r.cal;
     return `<div class="mscard" data-act="review" data-k="${k}" style="--c:${m.color}">
-      <div class="n" title="${esc(m.name)}">${esc(m.name)}</div>
+      <div class="pd" title="期間:${esc(periodName(E, k))}">${esc(periodName(E, k))}</div>
+      <div class="n" title="${esc(m.name)}">◆ ${esc(m.name)}</div>
       <div class="d">${esc(m.date || '日付未設定')}${cd != null ? ` ・ ${cd >= 0 ? 'あと' + cd + '日' : Math.abs(cd) + '日超過'}` : ''}</div>
       <div class="big">${r.pct == null ? '—' : r.pct + '%'}<small>残 ${fmtH(r.remH)}h / ${r.D ?? '—'}営業日</small></div>
       <div class="judge j-${r.status}"><i></i>${JUDGE[r.status]}${r.reasons.length ? ':' + esc(r.reasons.slice(0, 2).join('、')) : ''}</div>
@@ -843,10 +986,12 @@ function renderDetail(){
       <span class="no">${esc(d.no)}</span><span class="nm">${esc(d.name)}</span><span class="pc">${pr == null ? '—' : pr + '%'}</span>
     </div>`; }).join('');
   app.innerHTML = `
-  <div class="dv ${ui.treeWide ? 'wide' : ''}">
+  <div class="dv ${ui.treeWide ? 'wide' : ''} ${ui.dpane === 'tree' ? 'pane-tree' : ''}">
     <aside class="side"><h4>図面</h4>${side}<button class="addd" data-act="addd">＋ 図面を追加</button></aside>
     <section class="sheets" id="sheets">
       <div class="shtool">
+        <span class="seg narrow-only"><button data-act="dpane" data-v="list" class="on">作業リスト</button><button data-act="dpane" data-v="tree">ツリー</button></span>
+        <select class="mid-only" id="dsel">${p.drawings.map(d => `<option value="${d.id}" ${d.id === cur.did ? 'selected' : ''}>${esc(d.no)} ${esc(d.name)}</option>`).join('')}</select>
         <label class="chk"><input type="checkbox" data-act="fade" ${ui.fadeInst ? 'checked' : ''}> インスタンスは本体以外を薄く表示(集計からも除外)</label>
         <span>作業名の頭に <b>@関係者名</b> を付けて追加すると外部作業になります</span>
       </div>
@@ -854,6 +999,7 @@ function renderDetail(){
     </section>
     <section class="treepane">
       <div class="tbar">
+        <span class="seg narrow-only"><button data-act="dpane" data-v="list">作業リスト</button><button data-act="dpane" data-v="tree" class="on">ツリー</button></span>
         <h4>作業ツリー</h4>
         <span class="seg"><button data-act="tscope" data-v="sel" class="${treeScope === 'sel' ? 'on' : ''}">選択中の図面</button><button data-act="tscope" data-v="all" class="${treeScope === 'all' ? 'on' : ''}">全図面</button></span>
         <span class="zoom"><button data-act="zoom" data-v="-">−</button><span id="zl">${Math.round(ui.zoom * 100)}%</span><button data-act="zoom" data-v="+">＋</button><button data-act="zoom" data-v="fit" title="全体を表示">全体</button><button data-act="wide" title="ツリーを広く表示">${ui.treeWide ? '⇥ 戻す' : '⇤ 広く'}</button></span>
@@ -959,7 +1105,7 @@ function onSheetsScroll(){
   if (s && s.dataset.did !== cur.did) setActiveDrawing(s.dataset.did, false);
 }
 function setActiveDrawing(did, scroll){
-  cur.did = did;
+  cur.did = did; if ($('#dsel')) $('#dsel').value = did;
   $$('.sitem').forEach(e => e.classList.toggle('on', e.dataset.did === did));
   $$('.sheet').forEach(e => e.classList.toggle('on', e.dataset.did === did));
   if (scroll) { spyLock = Date.now() + 900; const el = $('#sheet-' + did), sh = $('#sheets'); if (el) sh.scrollTo({ top: el.offsetTop - 56, behavior: 'smooth' }); }
@@ -967,7 +1113,7 @@ function setActiveDrawing(did, scroll){
 }
 
 /* ---------------- tree (DAG, banded by milestone) ---------------- */
-const NW = 178, NH = 46, GX = 40, GY = 14, PADX = 18, PADY = 60, LG = 64;
+const NW = 178, NH = 46, GX = 40, GY = 14, PADX = 18, PADY = 80, LG = 64;
 function layoutTree(p, ids){
   ids = ids.filter(i => p.tasks[i]);
   const set = new Set(ids), ghosts = [];
@@ -992,7 +1138,7 @@ function layoutTree(p, ids){
       col.forEach((id, ri) => pos[id] = { x: x0 + ci * (NW + GX), y: PADY + ri * (NH + GY), r: ri, b });
       maxRows = Math.max(maxRows, col.length);
     });
-    const w = cols.length ? cols.length * (NW + GX) - GX : 0;
+    const w = cols.length ? cols.length * (NW + GX) - GX : (b < M ? 150 : 0);
     bands.push({ b, x0, x1: x0 + w, n: cols.length });
     x = x0 + w;
     if (b < M) { lines.push({ k: b, x: x + LG / 2, ms: E.ms[b] }); x += LG; }
@@ -1026,8 +1172,11 @@ function treeSVG(p, T, print){
   T.bands.forEach((bd, i) => {
     const xa = i === 0 ? 0 : T.lines[i - 1].x, xb = i < T.lines.length ? T.lines[i].x : T.W;
     s += `<rect class="bandbg" data-band="${bd.b}" x="${xa}" y="0" width="${Math.max(0, xb - xa)}" height="${T.H}" fill="transparent"/>`;
-    for (let ci = 0; ci < bd.n; ci++) s += `<text x="${bd.x0 + ci * (NW + GX)}" y="${PADY - 10}" font-size="10" fill="#a8a6a0" font-family="ui-monospace,monospace" letter-spacing="1">STEP ${ci + 1}</text>`;
-    if (T.M && bd.b === T.M && bd.n) s += `<text x="${bd.x0}" y="18" font-size="11" fill="#9a978f">未定(締切なし)</text>`;
+    for (let ci = 0; ci < bd.n; ci++) s += `<text x="${bd.x0 + ci * (NW + GX)}" y="${PADY - 8}" font-size="10" fill="#a8a6a0" font-family="ui-monospace,monospace" letter-spacing="1">STEP ${ci + 1}</text>`;
+    if (T.M && (bd.b < T.M || bd.n)) {
+      const col = bandColor(T.E, bd.b), sx = xa + 4, sw = Math.max(0, xb - xa - 8);
+      s += `<rect x="${sx}" y="40" width="${sw}" height="20" rx="3" fill="${col}" opacity=".13"/><text x="${sx + 8}" y="54" font-size="11.5" font-weight="600" fill="${col}">${esc(trunc(periodName(T.E, bd.b), Math.max(4, Math.floor(sw / 12))))}<title>${esc(periodName(T.E, bd.b))}</title></text>`;
+    }
   });
   T.edges.forEach(e => {
     const a = T.pos[e.from], b = T.pos[e.to]; if (!a || !b) return;
@@ -1038,10 +1187,10 @@ function treeSVG(p, T, print){
   T.lines.forEach(l => {
     const col = l.ms.color || '#d2462b', cd = calDays(l.ms.date);
     s += `<g class="msl" data-k="${l.k}">
-      <path class="msp" d="M${l.x},8 V${T.H}" stroke="${col}" stroke-width="2.2" fill="none" ${cd != null && cd < 0 ? 'stroke-dasharray="6 4"' : ''}/>
-      ${print ? '' : `<path class="mshit" d="M${l.x},8 V${T.H}" stroke="transparent" stroke-width="16" fill="none"/>`}
-      <text x="${l.x + 6}" y="18" font-size="11" font-weight="600" fill="${col}">${esc(trunc(l.ms.name, 16))}</text>
-      <text x="${l.x + 6}" y="31" font-size="10" fill="${col}" font-family="ui-monospace,monospace">${esc(l.ms.date || '')}${cd != null ? (cd >= 0 ? ' あと' + cd + '日' : ' 超過') : ''}</text></g>`;
+      <path class="msp" d="M${l.x},4 V${T.H}" stroke="${col}" stroke-width="2.2" fill="none" ${cd != null && cd < 0 ? 'stroke-dasharray="6 4"' : ''}/>
+      ${print ? '' : `<path class="mshit" d="M${l.x},4 V${T.H}" stroke="transparent" stroke-width="16" fill="none"/>`}
+      <text x="${l.x - 6}" y="16" font-size="11" font-weight="600" fill="${col}" text-anchor="end">◆ ${esc(trunc(l.ms.name, 16))}</text>
+      <text x="${l.x - 6}" y="30" font-size="10" fill="${col}" font-family="ui-monospace,monospace" text-anchor="end">${esc(l.ms.date || '')}${cd != null ? (cd >= 0 ? ' あと' + cd + '日' : ' 超過') : ''}</text></g>`;
   });
   T.all.forEach(id => {
     const t = p.tasks[id], q = T.pos[id], g = T.gset.has(id), m = member(t.assignee), n = placeCount(p, id), pa = party(p, t.party);
@@ -1163,10 +1312,21 @@ function jumpToTask(tid){
 
 /* ---------------- hover highlight ---------------- */
 let hovTid = null;
+let touchTipTimer = null, lastTouch = 0;
+document.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+  lastTouch = Date.now();
+  const el = e.target.closest && e.target.closest('[data-tid]');
+  if (!el) { $$('.hl').forEach(x => x.classList.remove('hl')); hideTip(); hovTid = null; return; }
+  clearTimeout(touchTipTimer); hovTid = null;
+  el.dispatchEvent(new MouseEvent('mouseover', { clientX: e.clientX, clientY: e.clientY - 60, bubbles: true }));
+  touchTipTimer = setTimeout(hideTip, 3500);
+}, true);
 document.addEventListener('mouseover', e => {
   if (drag) return;
   const el = e.target.closest && e.target.closest('[data-tid]');
   const tid = el ? el.dataset.tid : null;
+  if (Date.now() - lastTouch < 1500 && e.isTrusted) return;   // タッチ操作直後の擬似マウスイベントは無視(タップでの強調を保持)
   if (tid !== hovTid) {
     $$('.hl').forEach(x => x.classList.remove('hl'));
     hovTid = tid;
@@ -1179,7 +1339,7 @@ document.addEventListener('mouseover', e => {
       }
       if (pl.length > 1) {
         const hp = homePlace(p, tid);
-        showTip(`<b>◆ 同一インスタンス ${pl.length}箇所</b><br>${pl.map(x => `${x === hp ? '★ ' : '・'}${esc(x.d.no)} ${esc(x.d.name)} / ${esc(x.c.name)}`).join('<br>')}<br><span style="opacity:.6">★=本体 ・ 編集はすべての箇所に即時反映</span>`, e);
+        showTip(`<b>◆ 同一インスタンス ${pl.length}箇所</b><br>${pl.map(x => `${x.c.id === hp.c.id ? '★ ' : '・'}${esc(x.d.no)} ${esc(x.d.name)} / ${esc(x.c.name)}`).join('<br>')}<br><span style="opacity:.6">★=本体 ・ 編集はすべての箇所に即時反映</span>`, e);
       } else hideTip();
     } else hideTip();
   }
@@ -1234,7 +1394,7 @@ function renderMembers(){
   const p = P(), app = $('#app'), E = eff(p), T = p.tasks;
   const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
   const L = memberLoads(p);
-  const heat = `<table class="heat"><tr><th class="l">メンバー</th><th>週あたり</th>${E.ms.map(m => `<th><span style="color:${m.color}">●</span> ${esc(trunc(m.name, 12))}<br><span style="font-family:var(--mono);font-size:10px">${esc(m.date || '')}</span></th>`).join('')}<th>未定</th><th>残り合計</th></tr>
+  const heat = `<table class="heat"><tr><th class="l">メンバー</th><th>今月</th>${E.ms.map((m, k) => `<th title="期間:${esc(periodName(E, k))}"><span style="color:${m.color}">●</span> ${esc(trunc(periodName(E, k), 11))}<br><span style="font-size:10px">◆${esc(trunc(m.name, 9))} <span style="font-family:var(--mono)">${esc((m.date || '').slice(5).replace('-', '/'))}</span></span></th>`).join('')}<th>未定</th><th>残り合計</th></tr>
     ${L.map(r => `<tr><td class="l"><span style="color:${r.m?.color || 'var(--accent)'}">●</span> ${r.m ? esc(r.m.name) : '<span style="color:var(--accent)">担当未定</span>'}</td>
       <td class="h-none" style="cursor:default">${r.m ? capOf(p, r.id) + 'h' : '—'}</td>
       ${r.bands.slice(0, E.M).map(b => `<td class="${r.m ? (b.cum ? loadCls(b.ratio) : 'h-none') : (b.cum ? 'h-over' : 'h-none')}" data-act="mjump" data-mid="${r.id}" title="累積 ${fmtH(b.cum)}h / 使える ${fmtH(b.cap)}h(区間 ${fmtH(b.h)}h)"><b>${!b.cum ? '—' : r.m ? (isFinite(b.ratio) ? Math.round(b.ratio * 100) + '%' : '∞') : fmtH(b.cum) + 'h'}</b><small>${b.cum ? `${fmtH(b.cum)} / ${r.m ? fmtH(b.cap) : '—'}h` : ''}</small></td>`).join('')}
@@ -1246,13 +1406,13 @@ function renderMembers(){
     const capSum = xp.reduce((a, x) => a + x.cap, 0);
     const maxCum = Math.max(1, ...r.bands.map(b => Math.max(b.cum, b.cap || 0)));
     const bars = r.bands.map(b => {
-      const nm = bandName(E, b.k), col = bandColor(E, b.k);
+      const nm = periodName(E, b.k) + (b.k < E.M ? ` → ◆${E.ms[b.k].name}` : ''), col = bandColor(E, b.k);
       if (b.k === E.M && !b.h) return '';
       const cls = b.ratio == null ? '' : b.ratio > 1 ? 'over' : b.ratio > .85 ? 'warn' : '';
       return `<div class="nm" style="--c:${col}" title="${esc(nm)}"><i></i>${esc(nm)}</div>
         <div class="lb" style="--c:${col}"><i style="width:${b.cum / maxCum * 100}%"></i>${b.cap != null && r.m ? `<em style="left:${Math.min(99.5, b.cap / maxCum * 100)}%" title="使える時間 ${fmtH(b.cap)}h"></em>` : ''}</div>
         <div class="num ${cls}">${b.cap != null && r.m ? `${fmtH(b.cum)} / ${fmtH(b.cap)}h ${isFinite(b.ratio) ? Math.round(b.ratio * 100) + '%' : ''}` : `${fmtH(b.cum)}h`}</div>
-        ${b.k < E.M && r.m ? `<div class="ovw" title="この区間(${b.k ? esc(E.ms[b.k - 1].date) : '本日'} 〜 ${esc(E.ms[b.k].date)})に使える時間。空欄=曜日別の稼働から自動計算"><input class="ovin ${b.manual ? 'man' : ''}" type="number" min="0" step="1" data-ov="${r.id}|${E.ms[b.k].id}" value="${b.manual ? b.icap : ''}" placeholder="${fmtH(b.manual ? 0 : b.icap)}">h${b.manual ? ' <span class="mtag">手入力</span>' : ''}</div>` : '<div></div>'}`;
+        ${b.k < E.M && r.m ? `<div class="ovw" title="この期間(${esc(periodRange(p, E, b.k).from || '')} 〜 ${esc(E.ms[b.k].date)})のうち本日以降に使える時間。空欄=月別の作業可能時間から自動計算"><input class="ovin ${b.manual ? 'man' : ''}" type="number" min="0" step="1" data-ov="${r.id}|${E.ms[b.k].id}" value="${b.manual ? b.icap : ''}" placeholder="${fmtH(b.manual ? 0 : b.icap)}">h${b.manual ? ' <span class="mtag">手入力</span>' : ''}</div>` : '<div></div>'}`;
     }).join('');
     const list = (ui.memDone ? r.mine : r.rem).slice().sort((a, b) => (E.band[a] - E.band[b]) || (T[a].done - T[b].done));
     const open = ui.memOpen[r.id || '_'] !== false;
@@ -1268,12 +1428,12 @@ function renderMembers(){
     const st = r.worst ? (r.worst.ratio > 1 ? `<span style="color:var(--accent)">● 超過:${esc(bandName(E, r.worst.k))}まで ${isFinite(r.worst.ratio) ? Math.round(r.worst.ratio * 100) + '%' : '稼働0'}</span>` : r.worst.ratio > .85 ? `<span style="color:#8a5d00">● 余裕なし(最大 ${Math.round(r.worst.ratio * 100)}%)</span>` : `<span style="color:var(--ok)">● 適正(最大 ${Math.round(r.worst.ratio * 100)}%)</span>`) : '';
     return `<section class="mcard" id="mcard-${r.id || '_'}" style="--c:${color}">
       <header><h3>${r.m ? esc(r.m.name) : '担当未定'}</h3>
-        ${r.m ? `<span class="kv">このPJに使える時間 ${schedInputs(p, r.id)}</span>` : '<span class="kv" style="color:var(--accent)">担当者を割り当ててください</span>'}
+        ${r.m ? `<span class="kv">今月 <b>${capOf(p, r.id)}h</b> ・ 標準 ${stdOf(p, r.id)}h/月</span>` : '<span class="kv" style="color:var(--accent)">担当者を割り当ててください</span>'}
         <span class="kv">残り <b>${fmtH(r.remH)}h</b>(${r.rem.length}件) ・ 完了 ${fmtH(r.doneH)}h</span>
         ${st}
-        ${xp.length > 1 || (xp.length === 1 && xp[0].q.id !== p.id) ? `<span class="xproj">全PJの残り:${xp.map(x => `<span>${esc(trunc(x.q.name, 10))} ${fmtH(x.h)}h</span>`).join('')}<span class="${capSum > 40 ? 'warn' : ''}" title="各プロジェクトの h/週 の合計">割当 計${fmtH(capSum)}h/週</span></span>` : ''}
+        ${xp.length > 1 || (xp.length === 1 && xp[0].q.id !== p.id) ? `<span class="xproj">全PJの残り:${xp.map(x => `<span>${esc(trunc(x.q.name, 10))} ${fmtH(x.h)}h</span>`).join('')}<span class="${capSum > 160 ? 'warn' : ''}" title="今月、各プロジェクトに割り当てている時間の合計">今月の割当 計${fmtH(capSum)}h</span></span>` : ''}
       </header>
-      ${E.M || r.bands[0].h ? `<div class="mbars"><div class="mbhead">締切</div><div class="mbhead">累積の残り工数(棒)と使える時間(縦線)</div><div class="mbhead" style="text-align:right">累積 残り/使える</div><div class="mbhead">区間で使える時間</div>${bars}</div>` : ''}
+      ${E.M || r.bands[0].h ? `<div class="mbars"><div class="mbhead">期間 → 締切</div><div class="mbhead">締切までの累積の残り工数(棒)と使える時間(縦線)</div><div class="mbhead" style="text-align:right">累積 残り/使える</div><div class="mbhead">期間内で使える時間</div>${bars}</div>` : ''}
       <details ${open ? 'open' : ''} data-mopen="${r.id || '_'}" style="padding:4px 0 6px"><summary style="cursor:pointer;font-size:12px;color:var(--sub);padding:4px 14px">${ui.memDone ? '担当作業' : '残っている作業'} ${list.length}件</summary>
         ${rows ? `<table class="mtasks"><tr><th></th><th>締切</th><th>作業</th><th>図面 / 作図内容</th><th>時間</th><th>担当(付け替え)</th><th></th></tr>${rows}</table>` : '<div style="padding:6px 14px;color:var(--mute);font-size:12px">ありません</div>'}
       </details>
@@ -1282,13 +1442,91 @@ function renderMembers(){
   app.innerHTML = `<div class="mv">
     <div class="lvbar"><h2>メンバー工数</h2><span class="stat">${esc(p.name)} ・ 本日 ${ymd(today0())}</span><span style="flex:1"></span>
       <label class="chk"><input type="checkbox" data-act="memdone" ${ui.memDone ? 'checked' : ''}> 完了した作業も表示</label>
-      <button class="tbtn" data-act="milestones">締切・稼働を設定</button></div>
-    <div class="note" style="max-width:1150px">各締切までに終える必要がある<b>残り工数(累積)</b>を、その人がこのプロジェクトに使える時間(曜日別の稼働 × 本日から締切までの日数、または手入力の値)と比べています。85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
+      <button class="tbtn" data-act="milestones">締切・期間を設定</button></div>
+    <div class="sec" style="max-width:1150px;margin-top:0">月別の作業可能時間(このプロジェクトに使える時間)</div>
+    <div class="mtabw">${monthTable(p)}</div>
+    <div class="note" style="max-width:1150px;margin-top:6px">月ごとに、このプロジェクトに使える時間(h)を入れてください。空欄の月は「標準」の値を使います(黄色=月ごとに入力済み)。月の時間はその月の平日に均等に割り振って計算します。休暇などで特定の期間だけ変えたい場合は、下の各メンバーの「期間内で使える時間」に直接入力して上書きできます。</div>
+    <div class="note" style="max-width:1150px">各締切までに終える必要がある<b>残り工数(累積)</b>を、その人が本日から締切までに使える時間と比べています。85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
     ${E.M ? heat : '<div class="note">締切(マイルストーン)を登録すると、締切ごとの負荷が表示されます。</div>'}
     ${cards}
   </div>`;
   app.firstElementChild.scrollTop = sc;
   $$('details[data-mopen]', app).forEach(d => d.addEventListener('toggle', () => { ui.memOpen[d.dataset.mopen] = d.open; saveUi(); }));
+}
+
+/* ---------------- calendar view ---------------- */
+function periodOfDay(p, E, d){ // d が属する期間 k(前の締切の翌日〜締切当日。最初の期間は設計開始日から)
+  for (let k = 0; k < E.M; k++) {
+    const r = periodRange(p, E, k), lo = parseD(r.from), hi = parseD(r.to); if (!hi) continue;
+    if (d > hi) continue;
+    if (!lo) return d <= hi ? k : -1;
+    if (k === 0 ? d >= lo : d > lo) return k;
+    return -1;
+  }
+  return -1;
+}
+function periodStats(p, E, k){
+  const T = p.tasks, ids = placedIds(p).filter(i => E.band[i] === k && T[i].kind !== 'ext');
+  const total = ids.reduce((a, i) => a + (+T[i].hours || 0), 0), rem = ids.filter(i => !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0);
+  const mem = S.members.map(m => { const r = ids.filter(i => T[i].assignee === m.id && !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0); const av = availInt(p, m.id, k, E).h; return { m, rem: r, av }; }).filter(x => x.rem || x.av);
+  const un = ids.filter(i => !T[i].assignee && !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0);
+  const av = mem.reduce((a, x) => a + x.av, 0);
+  const ext = placedIds(p).filter(i => E.band[i] === k && T[i].kind === 'ext' && !T[i].done).length;
+  return { ids, total, rem, av, mem, un, ext, ratio: av ? rem / av : (rem ? Infinity : 0), pct: progressOf(p, placedIds(p).filter(i => E.band[i] === k)) };
+}
+function renderCalendar(){
+  const p = P(), app = $('#app'), E = eff(p), T = p.tasks, t0 = today0();
+  const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
+  const st = E.ms.map((m, k) => periodStats(p, E, k));
+  const cls = r => r > 1 ? 'over' : r > .85 ? 'warn' : 'ok';
+  const cards = E.ms.map((m, k) => {
+    const x = st[k], r = periodRange(p, E, k), lo = parseD(r.from), wd = workdays(m.date), cd = calDays(m.date);
+    const pctw = x.av ? Math.min(100, x.rem / x.av * 100) : (x.rem ? 100 : 0);
+    return `<div class="pcard" style="--c:${m.color}" data-act="review" data-k="${k}">
+      <div class="pn">${esc(periodName(E, k))}</div>
+      <div class="pr">${lo ? `${lo.getMonth() + 1}/${lo.getDate()}` : '開始未設定'} 〜 ${fmtD(m.date)} <span>◆${esc(trunc(m.name, 12))}</span></div>
+      <div class="pb"><b>${fmtH(x.rem)}h</b> <small>残り / 使える ${fmtH(x.av)}h</small><em class="${cls(x.ratio)}">${x.av ? Math.round(x.rem / x.av * 100) + '%' : x.rem ? '—' : ''}</em></div>
+      <div class="lbar"><i class="${cls(x.ratio) === 'ok' ? '' : cls(x.ratio)}" style="width:${pctw}%"></i></div>
+      <div class="pm">${x.mem.map(y => `<span title="${esc(y.m.name)}:残り${fmtH(y.rem)}h / 使える${fmtH(y.av)}h" class="${y.av ? cls(y.rem / y.av) : y.rem ? 'over' : ''}"><i style="background:${y.m.color}"></i>${esc(y.m.name)} ${fmtH(y.rem)}/${fmtH(y.av)}</span>`).join('')}${x.un ? `<span class="over"><i></i>担当未定 ${fmtH(x.un)}h</span>` : ''}</div>
+      <div class="pf">作業 ${x.ids.length}件 ・ 全体 ${fmtH(x.total)}h ・ 達成 ${x.pct == null ? '—' : x.pct + '%'}${x.ext ? ` ・ 外部待ち ${x.ext}件` : ''}${cd != null && cd >= 0 ? ` ・ 残り${wd}営業日` : cd != null ? ' ・ 終了' : ''}</div>
+    </div>`;
+  }).join('');
+  const noBand = placedIds(p).filter(i => E.band[i] === E.M && T[i].kind !== 'ext' && !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0);
+  // items by date
+  const items = {};
+  E.ms.forEach((m, k) => { if (m.date) (items[m.date] = items[m.date] || []).push(`<div class="ci ms" style="--c:${m.color}" data-act="review" data-k="${k}" title="${esc(m.name)}">◆ ${esc(m.name)}</div>`); });
+  placedIds(p).forEach(i => { const t = T[i]; if (t.kind === 'in' || !t.due || t.done) return; const pa = party(p, t.party);
+    (items[t.due] = items[t.due] || []).push(`<div class="ci ${t.kind} ${isOverdue(t) ? 'od' : ''}" style="--c:${pa?.color || '#6b6a66'}" data-tid="${i}" data-act="jump" title="${esc((pa ? pa.name + ':' : '') + t.title)}">${t.kind === 'ext' ? '⬡' : '◯'} ${esc(t.title)}</div>`); });
+  const months = projMonths(p);
+  const dayCap = d => S.members.reduce((a, m) => { const w = d.getDay(); if (!w || w > 5) return a; const k = ymKey(d); return a + monthHours(p, m.id, k) / (wdInMonth(k) || 1); }, 0);
+  const cal = months.map(key => {
+    const [y, mo] = key.split('-').map(Number), first = new Date(y, mo - 1, 1), lead = (first.getDay() + 6) % 7;
+    const days = new Date(y, mo, 0).getDate(), cells = [];
+    for (let i = 0; i < lead; i++) cells.push('<div class="cd out"></div>');
+    for (let dd = 1; dd <= days; dd++) {
+      const d = new Date(y, mo - 1, dd), ds = ymd(d), w = d.getDay(), k = periodOfDay(p, E, d), col = k >= 0 ? E.ms[k].color : null;
+      const prevK = periodOfDay(p, E, new Date(y, mo - 1, dd - 1));
+      const showLbl = k >= 0 && (k !== prevK || (lead + dd - 1) % 7 === 0 || dd === 1);
+      const capd = dayCap(d);
+      cells.push(`<div class="cd ${w === 0 || w === 6 ? 'we' : ''} ${ds === ymd(t0) ? 'today' : ''} ${d < t0 ? 'past' : ''}">
+        ${k >= 0 ? `<div class="strip" style="--c:${col}" data-act="review" data-k="${k}">${showLbl ? `<span>${esc(periodName(E, k))}${st[k].av || st[k].rem ? ` <em class="${cls(st[k].ratio)}">${st[k].av ? Math.round(st[k].ratio * 100) + '%' : ''}</em>` : ''}</span>` : ''}</div>` : '<div class="strip none"></div>'}
+        <div class="dn">${dd}${capd && d >= t0 ? `<small title="この日にメンバー全員が使える時間の合計">${fmtH(capd)}h</small>` : ''}</div>
+        ${(items[ds] || []).join('')}
+      </div>`);
+    }
+    return `<section class="calm"><h3>${y}年 ${mo}月 <small>${wdInMonth(key)}営業日 ・ 全員で ${fmtH(S.members.reduce((a, m) => a + monthHours(p, m.id, key), 0))}h</small></h3>
+      <div class="cgrid"><div class="cw">月</div><div class="cw">火</div><div class="cw">水</div><div class="cw">木</div><div class="cw">金</div><div class="cw we">土</div><div class="cw we">日</div>${cells.join('')}</div></section>`;
+  }).join('');
+  app.innerHTML = `<div class="cv">
+    <div class="lvbar"><h2>カレンダー</h2><span class="stat">${esc(p.name)} ・ 設計開始 ${esc(p.start || '未設定')}</span><span style="flex:1"></span>
+      <button class="tbtn" data-act="milestones">締切・期間を設定</button></div>
+    ${E.M ? `<div class="sec" style="margin-top:0">期間ごとの工数(その期間に付いた作業の残り工数 / 本日以降にその期間で使える時間)</div>
+      <div class="pcards">${cards}${noBand ? `<div class="pcard" style="--c:${NOBAND}"><div class="pn">締切未定</div><div class="pr">期間に属さない作業</div><div class="pb"><b>${fmtH(noBand)}h</b> <small>残り</small></div><div class="pf">ツリーで期間に振り分けてください</div></div>` : ''}</div>` : '<div class="note">「締切・期間を設定」で締切と期間を登録すると、期間ごとの工数とカレンダー上の帯が表示されます。</div>'}
+    <div class="note" style="max-width:1100px">帯=期間(%はその期間の負荷)、◆=締切、⬡=外部の回答予定日、◯=打合せ。日付の右の小さな数字は、その日にメンバー全員がこのプロジェクトに使える時間の合計です。カードや帯をクリックすると計画レビューを開きます。</div>
+    ${cal}
+  </div>`;
+  app.firstElementChild.scrollTop = sc;
+  if (!sc) { const td = $('.cd.today', app); if (td) td.closest('.calm').scrollIntoView({ block: 'start' }); app.firstElementChild.scrollTop = Math.max(0, app.firstElementChild.scrollTop - 10); }
 }
 
 /* ---------------- party view ---------------- */
@@ -1634,27 +1872,26 @@ function editLink(lid, isNew){
 /* ---------------- milestones / review / parties / members ---------------- */
 function openMilestones(){
   const p = P();
-  const row = m => `<div class="mrow ms" data-id="${m.id}"><input type="color" value="${m.color}"><input type="text" value="${esc(m.name)}" placeholder="例:確認申請"><input type="date" value="${esc(m.date)}"><button class="ico" data-del>×</button></div>`;
-  modal('マイルストーン(提出締切)と稼働', `
-    <div class="sec" style="margin-top:0">締切</div>
+  const row = m => `<div class="msrow" data-id="${m.id}"><div class="per"><span class="lbl">期間</span><input type="text" class="pn" value="${esc(m.period || '')}" placeholder="例:法規図作図期間"></div>
+    <div class="msl2"><input type="color" value="${m.color}"><span class="lbl">◆ 締切</span><input type="text" class="mn" value="${esc(m.name)}" placeholder="例:法規図アップ"><input type="date" value="${esc(m.date)}"><button class="ico" data-del title="この締切と期間を削除">×</button></div></div>`;
+  modal('マイルストーン(締切)と期間', `
+    <div class="msstart"><span class="lbl">▶ 設計開始</span><input type="date" id="pstart" value="${esc(p.start || '')}"><span class="muted" style="font-size:11px">最初の期間はここから始まります(締切は不要)</span></div>
     <div id="msl">${msSorted(p).map(row).join('')}</div>
-    <button class="tbtn" id="msadd">＋ 締切を追加</button>
-    <div class="note">作業に締切を付けると、その作業の前提作業も自動的に同じ締切までに必要な作業になります。ツリーでは締切ごとに帯で区切られ、赤線や作業をドラッグして前後を振り分けられます。</div>
-    <div class="sec">このプロジェクトに使える時間(レビュー用)</div>
-    ${S.members.map(m => `<div class="mrow cap" data-mid="${m.id}"><span>${esc(m.name)}</span>${schedInputs(p, m.id)}</div>`).join('') || '<div class="muted">メンバーが未登録です</div>'}
+    <button class="tbtn" id="msadd" style="margin-top:6px">＋ 期間と締切を追加</button>
+    <div class="note">締切と締切のあいだを「期間」として名前を付けられます(例:法規整理完了 →〔法規図作図期間〕→ 法規図アップ)。保存すると日付順に並び替わります。<br>作業に締切を付けると、その前提作業も自動的に同じ締切までに必要な作業になります。ツリーでは期間ごとに帯で区切られ、赤線や作業をドラッグして振り分けられます。</div>
     <label class="fld" style="width:50%;margin-top:10px"><span>担当未定の作業の1日あたり時間(h)</span><input id="hpd" type="number" min="1" step="0.5" value="${p.hpd}"></label>
-    <div class="note">曜日ごとに、このプロジェクトに使える時間を入れてください(出勤しない日は0)。使える時間 = 本日から締切までの各日の時間の合計です。休暇・祝日などで変わる場合は「メンバー工数」画面で締切ごとに手入力で上書きできます。</div>`,
+    <div class="note">メンバーごとの作業可能時間(月ごと)は「メンバー工数」画面の上の表で入力します。</div>`,
     [{ label: 'キャンセル' }, { label: '保存', cls: 'pri', run(bg){
-      const ms = $$('#msl .mrow', bg).map(r => ({ id: r.dataset.id, color: $('input[type=color]', r).value, name: $('input[type=text]', r).value.trim() || '締切', date: $('input[type=date]', r).value }));
+      const ms = $$('#msl .msrow', bg).map(r => ({ id: r.dataset.id, color: $('input[type=color]', r).value, name: $('input.mn', r).value.trim() || '締切', period: $('input.pn', r).value.trim(), date: $('input[type=date]', r).value }));
+      p.start = $('#pstart', bg).value || p.start;
       const ids = new Set(ms.map(m => m.id));
       Object.values(p.tasks).forEach(t => { if (t.ms && !ids.has(t.ms)) t.ms = ''; });
       p.milestones = ms;
-      $$('.mrow.cap input[data-sched]', bg).forEach(i => { const [mid, d] = i.dataset.sched.split('|'); schedOf(p, mid)[+d] = Math.max(0, parseFloat(i.value) || 0); });
       p.hpd = parseFloat($('#hpd', bg).value) || 8;
       commit(); } }],
     { wide: true, nofocus: true, mount(bg){
-      $('#msadd', bg).onclick = () => { const d = document.createElement('div'); d.innerHTML = row({ id: uid(), color: COLORS[$$('#msl .mrow', bg).length % COLORS.length], name: '', date: '' }); $('#msl', bg).appendChild(d.firstElementChild); $('#msl .mrow:last-child input[type=text]', bg).focus(); };
-      $('#msl', bg).addEventListener('click', e => { if (e.target.closest('[data-del]')) e.target.closest('.mrow').remove(); });
+      $('#msadd', bg).onclick = () => { const d = document.createElement('div'); d.innerHTML = row({ id: uid(), color: COLORS[$$('#msl .msrow', bg).length % COLORS.length], name: '', date: '', period: '' }); $('#msl', bg).appendChild(d.firstElementChild); $('#msl .msrow:last-child input.pn', bg).focus(); };
+      $('#msl', bg).addEventListener('click', e => { if (e.target.closest('[data-del]')) e.target.closest('.msrow').remove(); });
     } });
 }
 function openReview(k){
@@ -1666,7 +1903,7 @@ function openReview(k){
     return `<tr><td><span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${KIND[t.kind]}</span> ${esc(t.title)}</td><td>${esc(pa?.name || '—')}</td><td>${t.done ? '' : t.st === 'wait' ? '依頼中' : t.kind === 'mtg' ? '予定' : '依頼前'}</td>
       <td class="n" style="color:${isOverdue(t) ? 'var(--accent)' : 'inherit'}">${t.due ? fmtD(t.due) + (isOverdue(t) ? ' 超過' : '') : t.days ? t.days + '日' : '<span style="color:var(--warn)">未設定</span>'}</td></tr>`; }).join('');
   const todo = r.ids.filter(i => !T[i].done && T[i].kind === 'in');
-  modal(`計画レビュー:${esc(r.ms.name)}`, `
+  modal(`計画レビュー:${esc(r.ms.name)}<span style="font-weight:400;font-size:12px;color:var(--sub);margin-left:10px">期間:${esc(periodName(E, k))}</span>`, `
     <div class="kpis">
       <div class="kpi"><span>締切</span><b>${esc(r.ms.date || '—')}</b><span>${r.cal != null ? (r.cal >= 0 ? 'あと' + r.cal + '日' : Math.abs(r.cal) + '日超過') : ''}</span></div>
       <div class="kpi"><span>達成率(この締切までの作業)</span><b>${r.pct == null ? '—' : r.pct + '%'}</b><span>${r.ids.filter(i => T[i].done).length}/${r.ids.length}件</span></div>
@@ -1678,7 +1915,7 @@ function openReview(k){
     ${memRows ? `<table class="rvtab"><tr><th>担当</th><th class="n">残り工数</th><th class="n">使える時間</th><th>負荷</th><th class="n">負荷率</th></tr>${memRows}</table>` : '<div class="muted">残っている社内作業はありません</div>'}
     <div class="sec">外部・打合せ(未完了)</div>
     ${extRows ? `<table class="rvtab"><tr><th>内容</th><th>関係者</th><th>状態</th><th class="n">回答予定</th></tr>${extRows}</table>` : '<div class="muted">待ちはありません</div>'}
-    <div class="note">対象 = この締切が付いた作業と、その前提作業すべて(前の締切の分も含む累積)。使える時間は「マイルストーン」設定の h/週 から計算します。最短所要は、担当者が並行作業できると仮定した日数です(同じ人の重なりは負荷率で判定)。</div>`,
+    <div class="note">対象 = この締切が付いた作業と、その前提作業すべて(前の締切の分も含む累積)。使える時間は「メンバー工数」画面の月別の作業可能時間から計算します。最短所要は、担当者が並行作業できると仮定した日数です(同じ人の重なりは負荷率で判定)。</div>`,
     [{ label: '締切・稼働を編集', cls: 'left', run(){ setTimeout(openMilestones, 0); } }, { label: '閉じる', cls: 'pri' }], { wide: true, nofocus: true });
 }
 function openParties(){
@@ -2110,6 +2347,10 @@ document.addEventListener('click', e => {
       ui.zoom = Math.round(ui.zoom * 100) / 100; saveUi(); $('#zl').textContent = Math.round(ui.zoom * 100) + '%'; return renderTree();
     }
     case 'wide': ui.treeWide = !ui.treeWide; saveUi(); return render();
+    case 'dpane': ui.dpane = a.dataset.v; saveUi(); $('.dv').classList.toggle('pane-tree', ui.dpane === 'tree'); if (ui.dpane === 'tree') renderTree(); return;
+    case 'hmore': return openMenu(a, [
+      { label: 'マイルストーン(締切・期間)', run: openMilestones }, { label: 'メンバー', run: openMembers },
+      { label: 'PDF書き出し', run: openPdf }, { label: '設定・共有', run: openSettings }]);
     case 'tscope': treeScope = a.dataset.v; $$('[data-act=tscope]').forEach(b => b.classList.toggle('on', b === a)); return renderTree();
     case 'chain': { const li = a.closest('.task'); return toggleChain(li.dataset.did, li.dataset.cid, +li.dataset.i); }
     case 'more': return taskMenu(a);
@@ -2125,6 +2366,7 @@ document.addEventListener('click', e => {
 });
 document.addEventListener('change', e => {
   const el = e.target, p = P();
+  if (el.id === 'dsel') return setActiveDrawing(el.value, true);
   if (el.id === 'projSel') {
     if (el.value === '__new') { el.value = cur.pid; return prompt2('新規プロジェクト', 'プロジェクト名', '', nm => { const np = newProject(nm || '新規プロジェクト'); S.projects.push(np); cur.pid = np.id; cur.did = null; commit(); }); }
     cur.pid = el.value; cur.did = null; lsSet('zumentask.lastpid', cur.pid); history.replaceState(null, '', '?p=' + cur.pid); return render();
@@ -2135,7 +2377,9 @@ document.addEventListener('change', e => {
     if (el.dataset.f === 'no' && sortDrawings(p)) { flashDid = d.id; toast(`${d.no} を番号順の位置へ移動しました`); }
     return commit();
   }
-  if (el.dataset.sched && !el.closest('.mbg')) { const [mid, d] = el.dataset.sched.split('|'); schedOf(p, mid)[+d] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
+  if (el.dataset.mstd) { p.mstd[el.dataset.mstd] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
+  if (el.dataset.mcap) { const [mid, k] = el.dataset.mcap.split('|'); p.mcap[mid] = p.mcap[mid] || {};
+    if (el.value === '') delete p.mcap[mid][k]; else p.mcap[mid][k] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
   if (el.dataset.ov) { const [mid, msid] = el.dataset.ov.split('|'); p.capOv[mid] = p.capOv[mid] || {};
     if (el.value === '') delete p.capOv[mid][msid]; else p.capOv[mid][msid] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
   if (el.dataset.cf) { const box = el.closest('.content'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.name = el.value.trim() || c.name; return commit(); }
