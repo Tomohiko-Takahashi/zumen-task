@@ -59,8 +59,8 @@ input,select,textarea{font:inherit;color:inherit}
 .j-over{color:var(--accent)} .j-warn{color:#8a5d00}
 .msadd{border:1px dashed var(--line);background:none;border-radius:8px;width:120px;color:var(--sub);font-size:12px}
 .msadd:hover{color:var(--ink);border-color:var(--ink)}
-.dlist{position:relative;width:800px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-.drow{display:grid;grid-template-columns:24px 96px 1fr 80px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
+.dlist{position:relative;width:830px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.drow,.crow{display:grid;grid-template-columns:22px 20px 96px 1fr 84px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
 .drow:last-of-type{border-bottom:0}
 .drow.head{height:34px;font-size:11px;color:var(--sub);letter-spacing:.06em;background:#faf9f6;border-radius:8px 8px 0 0;border-bottom:1px solid var(--line)}
 .drow.head div{padding:0 8px}
@@ -68,6 +68,54 @@ input,select,textarea{font:inherit;color:inherit}
 .drow.hl{background:var(--accent-s)!important}
 .drow.dragover{box-shadow:inset 0 2px 0 var(--accent)}
 .drow.flash{animation:flash 1.4s}
+.caret{border:0;background:none;color:var(--sub);font-size:10px;width:20px;height:24px;padding:0;border-radius:4px;justify-self:end}
+.caret:hover{background:var(--line2);color:var(--ink)}
+.caret.none{visibility:hidden}
+.crow{height:30px;background:#fbfaf7;border-bottom:1px solid var(--line2);font-size:12px}
+.crow .cn{grid-column:4;padding-left:20px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.crow .cn::before{content:"└ ";color:var(--line)}
+.crow .cn:hover{color:var(--ink);text-decoration:underline}
+.crow .cm{grid-column:5;font-family:var(--mono);font-size:10.5px;color:var(--mute);padding:0 8px;white-space:nowrap}
+.crow .prog{grid-column:6;cursor:pointer}
+.crow .sbar{height:5px}
+.crow .ico{grid-column:7}
+.tbtn.sm{padding:3px 8px;font-size:11.5px}
+/* member view */
+.mv{height:100%;overflow:auto;padding:24px 36px 80px}
+.heat{border-collapse:separate;border-spacing:3px;font-size:12px;margin-bottom:18px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px}
+.heat th{font-size:11px;color:var(--sub);font-weight:500;padding:4px 8px;text-align:center;white-space:nowrap}
+.heat th.l{text-align:left}
+.heat td{padding:6px 10px;border-radius:5px;text-align:center;font-family:var(--mono);min-width:110px;cursor:pointer}
+.heat td.l{text-align:left;font-family:var(--sans);background:none;min-width:90px;cursor:default}
+.heat td b{display:block;font-size:14px}
+.heat td small{font-size:10px;color:var(--sub)}
+.h-ok{background:#e3f2e9}.h-warn{background:#fcefcf}.h-over{background:#f9d9d1}.h-none{background:#f3f1ec;color:var(--mute)}
+.h-over b{color:var(--accent)}
+.mcard{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:8px;margin-bottom:16px;max-width:1150px}
+.mcard>header{display:flex;align-items:center;gap:14px;padding:10px 14px;border-bottom:1px solid var(--line2);flex-wrap:wrap}
+.mcard>header h3{margin:0;font-size:15px}
+.mcard .capin{width:56px;border:1px solid var(--line);border-radius:4px;padding:2px 5px;font-family:var(--mono);text-align:right}
+.mcard .kv{font-size:11.5px;color:var(--sub);font-family:var(--mono)}
+.mcard .kv b{color:var(--ink);font-size:13px}
+.xproj{font-size:11px;color:var(--sub);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.xproj span{background:var(--bg);border-radius:10px;padding:1px 8px;font-family:var(--mono)}
+.xproj .warn{background:var(--accent-s);color:var(--accent)}
+.mbars{padding:10px 14px 4px;display:grid;grid-template-columns:170px 1fr 150px;gap:6px 12px;align-items:center;font-size:12px}
+.mbars .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mbars .nm i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:var(--c)}
+.lb{position:relative;height:14px;background:var(--line2);border-radius:3px;overflow:hidden}
+.lb>i{position:absolute;top:0;bottom:0;left:0;background:var(--c);opacity:.85}
+.lb>em{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.mbars .num{font-family:var(--mono);font-size:11px;text-align:right}
+.mbars .num.over{color:var(--accent);font-weight:600}
+.mbars .num.warn{color:#8a5d00}
+.mtasks{width:100%;border-collapse:collapse;font-size:12.5px}
+.mtasks th{font-size:11px;color:var(--sub);font-weight:500;text-align:left;padding:5px 8px;border-bottom:1px solid var(--line2);background:#faf9f6}
+.mtasks td{padding:3px 8px;border-bottom:1px solid var(--line2)}
+.mtasks tr.isdone td{color:var(--mute)} .mtasks tr.isdone .ttl{text-decoration:line-through;color:var(--mute)}
+.mtasks .pl{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.mtasks details{padding:0}
+.mtasks .hrs{width:50px}
 .grip{color:var(--mute);cursor:grab;text-align:center;font-size:11px;letter-spacing:-2px;user-select:none}
 .cell{border:1px solid transparent;background:none;padding:5px 8px;border-radius:4px;width:100%;min-width:0}
 .cell:hover{border-color:var(--line)} .cell:focus{border-color:var(--ink);background:#fff;outline:0}
@@ -134,7 +182,7 @@ input,select,textarea{font:inherit;color:inherit}
 .trow{display:grid;grid-template-columns:22px 20px minmax(0,1fr) auto auto 22px 96px auto 24px;align-items:center;gap:4px;height:32px;padding-right:4px}
 .task:hover{background:#f7f6f2}
 .task.hl{background:var(--inst-s)!important;box-shadow:inset 3px 0 0 var(--inst)}
-.task.flash{animation:flash 1.2s}
+.task.flash,.content.flash{animation:flash 1.2s}
 @keyframes flash{0%,40%{background:#ffe8a3}}
 .tcell{display:flex;align-items:center;gap:4px;min-width:0}
 .ttl{border:1px solid transparent;background:none;padding:4px 6px;border-radius:4px;min-width:0;width:100%}
@@ -324,6 +372,7 @@ svg .bandbg.on{fill:var(--accent-s);opacity:.7}
   <div class="tabs">
     <button data-view="list">図面リスト</button>
     <button data-view="detail">詳細・ツリー</button>
+    <button data-view="member">メンバー工数</button>
     <button data-view="party">関係者</button>
   </div>
   <div class="sp"></div>
@@ -457,7 +506,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{} }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -626,7 +675,7 @@ function render(){
   const ae = document.activeElement;
   if (syncRendering && ae && $('#app').contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) { pendingRender = true; return; }
   renderHeader();
-  if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else renderDetail();
+  if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else if (cur.view === 'member') renderMembers(); else renderDetail();
 }
 document.addEventListener('focusout', () => { if (pendingRender) { pendingRender = false; setTimeout(render, 0); } });
 
@@ -649,7 +698,9 @@ function segBar(p, ids){
 }
 
 /* ---------------- list view ---------------- */
-const ROW = 40, HEAD = 34;
+const ROW = 40, HEAD = 34, CROW = 30;
+const isOpenD = id => ui.openD.includes(id);
+function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? d.contents.length * CROW : 0); }); return { c, H: y }; }
 function msCards(p){
   const E = eff(p);
   const cards = E.ms.map((m, k) => {
@@ -670,6 +721,7 @@ function renderList(){
   const hours = placedIds(p).filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (+p.tasks[i].hours || 0), 0);
   const rows = p.drawings.map((d, i) => `
     <div class="drow" data-did="${d.id}" data-idx="${i}">
+      <button class="caret ${d.contents.length ? '' : 'none'}" data-act="tog" title="作図内容を表示">${isOpenD(d.id) ? '▼' : '▶'}</button>
       ${p.autoSort === false ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No.">
       <input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">
@@ -678,7 +730,8 @@ function renderList(){
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
-    </div>`).join('');
+    </div>${isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (+p.tasks[x].hours || 0), 0);
+      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn" data-act="opencontent">${esc(c.name)}</span><span class="cm">${ids.filter(x => p.tasks[x].done).length}/${ids.length}件·${fmtH(h)}h</span><div class="prog" data-act="opencontent">${segBar(p, ids)}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
@@ -690,8 +743,9 @@ function renderList(){
       <label class="chk"><input type="checkbox" data-act="showlinks" ${ui.showLinks ? 'checked' : ''}> 関係線を表示</label>
     </div>
     ${msCards(p)}
+    <div style="display:flex;gap:6px;margin-bottom:8px"><button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button></div>
     <div class="dlist" id="dlist">
-      <div class="drow head"><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率(締切ごと)</div><div></div><div></div><div title="関係線">⇄</div></div>
+      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率(締切ごと)</div><div></div><div></div><div title="関係線">⇄</div></div>
       ${rows}
       <button class="addrowbtn" data-act="addd">＋ 図面を追加</button>
       ${ui.showLinks ? linkSVG(p) : ''}
@@ -717,10 +771,10 @@ function laneLinks(p){
 }
 function linkSVG(p){
   const { L, nl } = laneLinks(p);
-  const yc = i => HEAD + i * ROW + ROW / 2, LX = 34 + nl * 30 + 4;
+  const RL = rowLayout(p), yc = i => RL.c[i], LX = 34 + nl * 30 + 4;
   L.forEach(o => o.my = (yc(o.a) + yc(o.b)) / 2);
   [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 23); return o.ly; }, -1e9);
-  const H = Math.max(HEAD + p.drawings.length * ROW, ...L.map(o => o.ly + 12)), W = LX + 230;
+  const H = Math.max(RL.H, ...L.map(o => o.ly + 12)), W = LX + 230;
   const paths = L.map(o => {
     const x = 34 + o.lane * 30, y1 = yc(o.a), y2 = yc(o.b), s = y2 > y1 ? 1 : -1, r = 8;
     const d = `M7,${y1} H${x - r} Q${x},${y1} ${x},${y1 + s * r} V${y2 - s * r} Q${x},${y2} ${x - r},${y2} H11`;
@@ -737,7 +791,7 @@ function linkSVG(p){
 }
 
 /* ---------------- detail view ---------------- */
-let focusAfter = null, scrollToDid = null, focusMemo = null;
+let focusAfter = null, scrollToDid = null, focusMemo = null, scrollToCid = null;
 function renderDetail(){
   const p = P(), app = $('#app');
   if (!cur.did || !p.drawings.some(d => d.id === cur.did)) cur.did = p.drawings[0]?.id || null;
@@ -780,6 +834,7 @@ function renderDetail(){
   if (focusAfter) { const el = $(`.addtask input[data-cid="${focusAfter}"]`); if (el) el.focus(); focusAfter = null; }
   if (focusMemo) { const el = $(`.tmemo textarea[data-key="${focusMemo}"]`); if (el) { el.focus(); el.selectionStart = el.value.length; } focusMemo = null; }
   if (scrollToDid) { const el = $('#sheet-' + scrollToDid); if (el) { sh.scrollTop = el.offsetTop - 56; } scrollToDid = null; }
+  if (scrollToCid) { const el = $(`.content[data-cid="${scrollToCid}"]`); if (el) { sh.scrollTop += el.getBoundingClientRect().top - sh.getBoundingClientRect().top - 56; el.classList.add('flash'); } scrollToCid = null; }
 }
 function sheetHTML(p, d){
   const out = p.links.filter(l => l.from === d.id), inn = p.links.filter(l => l.to === d.id);
@@ -1097,6 +1152,96 @@ function showTip(html, e){ const t = $('#tip'); t.innerHTML = html; t.style.disp
 function placeTip(e){ const t = $('#tip'); let x = e.clientX + 14, y = e.clientY + 16; if (x + t.offsetWidth > innerWidth - 8) x = e.clientX - t.offsetWidth - 10; if (y + t.offsetHeight > innerHeight - 8) y = e.clientY - t.offsetHeight - 10; t.style.left = x + 'px'; t.style.top = y + 'px'; }
 function hideTip(){ $('#tip').style.display = 'none'; }
 
+/* ---------------- member workload view ---------------- */
+function memberLoads(p){
+  const E = eff(p), T = p.tasks, M = E.M;
+  const ids = placedIds(p).filter(i => T[i].kind !== 'ext');
+  const wd = E.ms.map(m => workdays(m.date) ?? 0);
+  const people = [...S.members.map(m => ({ id: m.id, m })), { id: '', m: null }];
+  return people.map(r => {
+    const mine = ids.filter(i => (T[i].assignee || '') === r.id);
+    const rem = mine.filter(i => !T[i].done);
+    const perDay = r.m ? capOf(p, r.id) / 5 : 0;
+    let cum = 0;
+    const bands = [];
+    for (let k = 0; k <= M; k++) {
+      const h = rem.filter(i => E.band[i] === k).reduce((a, i) => a + (+T[i].hours || 0), 0);
+      cum += h;
+      if (k < M) {
+        const cap = perDay * wd[k], icap = perDay * (wd[k] - (k ? wd[k - 1] : 0));
+        bands.push({ k, h, cum, cap, icap, ratio: cap ? cum / cap : (cum ? Infinity : 0), past: calDays(E.ms[k].date) < 0 });
+      } else bands.push({ k, h, cum, cap: null, ratio: null });
+    }
+    const remH = rem.reduce((a, i) => a + (+T[i].hours || 0), 0), doneH = mine.filter(i => T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0);
+    const worst = bands.filter(b => b.ratio != null && b.cum > 0).reduce((w, b) => (!w || b.ratio > w.ratio) ? b : w, null);
+    return { ...r, mine, rem, remH, doneH, bands, worst, perDay };
+  }).filter(r => r.m || r.mine.length);
+}
+const loadCls = r => r == null ? 'h-none' : r > 1 ? 'h-over' : r > .85 ? 'h-warn' : 'h-ok';
+function crossProject(mid){
+  return S.projects.map(q => { const h = Object.values(q.tasks).filter(t => t.assignee === mid && !t.done && t.kind !== 'ext' && placedIds(q).includes(t.id)).reduce((a, t) => a + (+t.hours || 0), 0);
+    return { q, h, cap: capOf(q, mid) }; }).filter(x => x.h > 0);
+}
+function renderMembers(){
+  const p = P(), app = $('#app'), E = eff(p), T = p.tasks;
+  const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
+  const L = memberLoads(p);
+  const heat = `<table class="heat"><tr><th class="l">メンバー</th><th>週あたり</th>${E.ms.map(m => `<th><span style="color:${m.color}">●</span> ${esc(trunc(m.name, 12))}<br><span style="font-family:var(--mono);font-size:10px">${esc(m.date || '')}</span></th>`).join('')}<th>未定</th><th>残り合計</th></tr>
+    ${L.map(r => `<tr><td class="l"><span style="color:${r.m?.color || 'var(--accent)'}">●</span> ${r.m ? esc(r.m.name) : '<span style="color:var(--accent)">担当未定</span>'}</td>
+      <td class="h-none" style="cursor:default">${r.m ? capOf(p, r.id) + 'h' : '—'}</td>
+      ${r.bands.slice(0, E.M).map(b => `<td class="${r.m ? (b.cum ? loadCls(b.ratio) : 'h-none') : (b.cum ? 'h-over' : 'h-none')}" data-act="mjump" data-mid="${r.id}" title="累積 ${fmtH(b.cum)}h / 使える ${fmtH(b.cap)}h(区間 ${fmtH(b.h)}h)"><b>${!b.cum ? '—' : r.m ? (isFinite(b.ratio) ? Math.round(b.ratio * 100) + '%' : '∞') : fmtH(b.cum) + 'h'}</b><small>${b.cum ? `${fmtH(b.cum)} / ${r.m ? fmtH(b.cap) : '—'}h` : ''}</small></td>`).join('')}
+      <td class="h-none" data-act="mjump" data-mid="${r.id}"><b>${r.bands[E.M].h ? fmtH(r.bands[E.M].h) + 'h' : '—'}</b></td>
+      <td class="h-none" data-act="mjump" data-mid="${r.id}"><b>${fmtH(r.remH)}h</b></td></tr>`).join('')}</table>`;
+  const cards = L.map(r => {
+    const color = r.m ? r.m.color : '#a8a6a0';
+    const xp = r.m ? crossProject(r.id) : [];
+    const capSum = xp.reduce((a, x) => a + x.cap, 0);
+    const maxCum = Math.max(1, ...r.bands.map(b => Math.max(b.cum, b.cap || 0)));
+    const bars = r.bands.map(b => {
+      const nm = bandName(E, b.k), col = bandColor(E, b.k);
+      if (b.k === E.M && !b.h) return '';
+      const cls = b.ratio == null ? '' : b.ratio > 1 ? 'over' : b.ratio > .85 ? 'warn' : '';
+      return `<div class="nm" style="--c:${col}" title="${esc(nm)}"><i></i>${esc(nm)}</div>
+        <div class="lb" style="--c:${col}"><i style="width:${b.cum / maxCum * 100}%"></i>${b.cap != null && r.m ? `<em style="left:${Math.min(99.5, b.cap / maxCum * 100)}%" title="使える時間 ${fmtH(b.cap)}h"></em>` : ''}</div>
+        <div class="num ${cls}">${b.cap != null && r.m ? `${fmtH(b.cum)} / ${fmtH(b.cap)}h ${isFinite(b.ratio) ? Math.round(b.ratio * 100) + '%' : ''}` : `${fmtH(b.cum)}h`}</div>`;
+    }).join('');
+    const list = (ui.memDone ? r.mine : r.rem).slice().sort((a, b) => (E.band[a] - E.band[b]) || (T[a].done - T[b].done));
+    const open = ui.memOpen[r.id || '_'] !== false;
+    const rows = list.map(i => { const t = T[i], b = E.band[i], pl = [...new Set(places(p, i).map(x => x.d.no))].join(', ');
+      return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''}">
+        <td style="width:24px"><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}></td>
+        <td style="width:150px;white-space:nowrap"><span style="color:${bandColor(E, b)}">●</span> <span style="font-size:11px">${esc(trunc(bandName(E, b), 10))}</span></td>
+        <td><div class="tcell">${t.kind === 'mtg' ? `<span class="kt mtg" style="--c:${party(p, t.party)?.color || '#6b6a66'}">打合せ</span>` : ''}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
+        <td class="pl" style="width:110px">${esc(pl)}</td>
+        <td style="width:70px"><span class="rw"><input class="hrs" type="number" min="0" step="0.5" data-tf="hours" value="${t.hours || ''}" placeholder="0">h</span></td>
+        <td style="width:110px"><select class="asg" data-tf="assignee" style="--c:${member(t.assignee)?.color || '#d5d2ca'}"><option value="">担当—</option>${S.members.map(mm => `<option value="${mm.id}" ${mm.id === t.assignee ? 'selected' : ''}>${esc(mm.name)}</option>`).join('')}</select></td>
+        <td style="width:28px"><button class="ico" data-act="jump" title="詳細画面で開く">›</button></td></tr>`; }).join('');
+    const st = r.worst ? (r.worst.ratio > 1 ? `<span style="color:var(--accent)">● 超過:${esc(bandName(E, r.worst.k))}まで ${isFinite(r.worst.ratio) ? Math.round(r.worst.ratio * 100) + '%' : '稼働0'}</span>` : r.worst.ratio > .85 ? `<span style="color:#8a5d00">● 余裕なし(最大 ${Math.round(r.worst.ratio * 100)}%)</span>` : `<span style="color:var(--ok)">● 適正(最大 ${Math.round(r.worst.ratio * 100)}%)</span>`) : '';
+    return `<section class="mcard" id="mcard-${r.id || '_'}" style="--c:${color}">
+      <header><h3>${r.m ? esc(r.m.name) : '担当未定'}</h3>
+        ${r.m ? `<span class="kv">このPJに <input class="capin" type="number" min="0" step="1" data-cap="${r.id}" value="${capOf(p, r.id)}"> h/週</span>` : '<span class="kv" style="color:var(--accent)">担当者を割り当ててください</span>'}
+        <span class="kv">残り <b>${fmtH(r.remH)}h</b>(${r.rem.length}件) ・ 完了 ${fmtH(r.doneH)}h</span>
+        ${st}
+        ${xp.length > 1 || (xp.length === 1 && xp[0].q.id !== p.id) ? `<span class="xproj">全PJの残り:${xp.map(x => `<span>${esc(trunc(x.q.name, 10))} ${fmtH(x.h)}h</span>`).join('')}<span class="${capSum > 40 ? 'warn' : ''}" title="各プロジェクトの h/週 の合計">割当 計${fmtH(capSum)}h/週</span></span>` : ''}
+      </header>
+      ${E.M || r.bands[0].h ? `<div class="mbars">${bars}</div>` : ''}
+      <details ${open ? 'open' : ''} data-mopen="${r.id || '_'}" style="padding:4px 0 6px"><summary style="cursor:pointer;font-size:12px;color:var(--sub);padding:4px 14px">${ui.memDone ? '担当作業' : '残っている作業'} ${list.length}件</summary>
+        ${rows ? `<table class="mtasks"><tr><th></th><th>締切</th><th>作業</th><th>図面</th><th>時間</th><th>担当(付け替え)</th><th></th></tr>${rows}</table>` : '<div style="padding:6px 14px;color:var(--mute);font-size:12px">ありません</div>'}
+      </details>
+    </section>`;
+  }).join('');
+  app.innerHTML = `<div class="mv">
+    <div class="lvbar"><h2>メンバー工数</h2><span class="stat">${esc(p.name)} ・ 本日 ${ymd(today0())}</span><span style="flex:1"></span>
+      <label class="chk"><input type="checkbox" data-act="memdone" ${ui.memDone ? 'checked' : ''}> 完了した作業も表示</label>
+      <button class="tbtn" data-act="milestones">締切・稼働を設定</button></div>
+    <div class="note" style="max-width:1150px">各締切までに終える必要がある<b>残り工数(累積)</b>を、その人がこのプロジェクトに使える時間(h/週 ÷ 5 × 本日から締切までの営業日)と比べています。85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
+    ${E.M ? heat : '<div class="note">締切(マイルストーン)を登録すると、締切ごとの負荷が表示されます。</div>'}
+    ${cards}
+  </div>`;
+  app.firstElementChild.scrollTop = sc;
+  $$('details[data-mopen]', app).forEach(d => d.addEventListener('toggle', () => { ui.memOpen[d.dataset.mopen] = d.open; saveUi(); }));
+}
+
 /* ---------------- party view ---------------- */
 function renderParties(){
   const p = P(), app = $('#app'), T = p.tasks;
@@ -1228,7 +1373,7 @@ function taskMenu(btn){
     { head: '種別' },
     ...Object.keys(KIND).map(k => ({ label: `${t.kind === k ? '✓ ' : '　'}${{in:'社内作業', ext:'外部依頼・回答待ち', mtg:'打合せ・確認'}[k]}`, run: () => setKind(tid, k) })),
     '-',
-    { label: '◆ インスタンスとして他の作図内容にも配置…', run: () => placeTask(tid) },
+    { label: serialRun(p, findDC(p, did, cid).c, i).length > 1 ? '◆ インスタンス配置…(直列グループごとも可)' : '◆ インスタンスとして他の作図内容にも配置…', run: () => placeTask(tid, cid) },
     ...(n > 1 && hp.c.id !== cid ? [{ label: '★ ここを本体にする', run: () => { t.home = cid; commit(); toast('本体をこの配置に変更しました'); } }] : []),
     { label: '独立したコピーを作る(この箇所だけ別作業に)', run: () => detachTask(did, cid, i) },
     '-',
@@ -1288,30 +1433,101 @@ function editTask(tid){
       $('#eq', bg).addEventListener('input', e => { const q = e.target.value.toLowerCase(); $$('#edl label', bg).forEach(l => l.style.display = l.dataset.q.toLowerCase().includes(q) ? '' : 'none'); });
     } });
 }
-function placeTask(tid){
+// 直列グループ:作図内容の中で「↓直列」でつながっている連続した作業のまとまり
+function serialRun(p, c, i){
+  const linked = k => k > 0 && p.tasks[c.items[k]]?.deps.includes(c.items[k - 1]);
+  let a = i, b = i; while (linked(a)) a--; while (b + 1 < c.items.length && linked(b + 1)) b++;
+  return c.items.slice(a, b + 1);
+}
+function serialGroups(p, c){
+  const out = []; let i = 0;
+  while (i < c.items.length) { const g = serialRun(p, c, i); if (g.length > 1) out.push(g); i = c.items.indexOf(g[g.length - 1]) + 1; }
+  return out;
+}
+function copyTasksInto(p, ids, c){ // 独立コピー:グループ内の前後関係はコピー同士でつなぎ直す
+  const map = {}; ids.forEach(id => map[id] = uid());
+  ids.forEach(id => { const nt = Object.assign(JSON.parse(JSON.stringify(p.tasks[id])), { id: map[id], home: '', done: false });
+    nt.deps = nt.deps.map(x => map[x] || x); p.tasks[nt.id] = nt; c.items.push(nt.id); });
+  return ids.map(id => map[id]);
+}
+function placeTask(tid, srcCid){
   const p = P(), t = p.tasks[tid], hp = homePlace(p, tid);
-  const list = p.drawings.map(d => `<div class="grp">${esc(d.no)} ${esc(d.name)}</div>` + d.contents.map(c =>
-    `<label><input type="checkbox" data-did="${d.id}" data-cid="${c.id}" ${c.items.includes(tid) ? 'checked' : ''}>${esc(c.name)}<span class="where"><input type="radio" name="home" value="${c.id}" ${hp && hp.c.id === c.id ? 'checked' : ''} title="本体"> 本体</span></label>`).join('')).join('');
-  modal('◆ インスタンスの配置先', `<div class="note">「<b>${esc(t.title)}</b>」を配置する作図内容を選んでください。すべて同一の作業として扱われ、どこで編集しても全箇所へ即時に反映されます。<br>「本体」は集計の基準になる配置です(薄く表示するとき、本体以外が薄くなります)。</div><div class="cl">${list}</div>`,
+  const src = srcCid ? p.drawings.flatMap(d => d.contents).find(c => c.id === srcCid) : hp?.c;
+  const grp = src ? serialRun(p, src, src.items.indexOf(tid)) : [tid];
+  const all = src ? [...src.items] : [tid];
+  const scopes = [['one', 'この作業だけ', [tid]]];
+  if (grp.length > 1) scopes.push(['grp', `直列グループごと(${grp.length}件)`, grp]);
+  if (src && all.length > 1 && all.length !== grp.length) scopes.push(['all', `「${src.name}」の作業すべて(${all.length}件)`, all]);
+  let scope = grp.length > 1 ? 'grp' : 'one', mode = 'inst';
+  const ids = () => scopes.find(x => x[0] === scope)[2];
+  const listHTML = () => {
+    const I = ids();
+    return p.drawings.map(d => `<div class="grp">${esc(d.no)} ${esc(d.name)}</div>` + d.contents.map(c => {
+      const n = I.filter(i => c.items.includes(i)).length, isSrc = src && c.id === src.id;
+      if (mode === 'copy') return `<label class="${isSrc ? '' : ''}"><input type="checkbox" data-did="${d.id}" data-cid="${c.id}">${esc(c.name)}${isSrc ? '<span class="where">(元の場所)</span>' : ''}</label>`;
+      return `<label><input type="checkbox" data-did="${d.id}" data-cid="${c.id}" data-n="${n}" ${n === I.length ? 'checked' : ''}>${esc(c.name)}${n && n < I.length ? `<span class="where" style="color:var(--warn)">一部配置済み ${n}/${I.length}</span>` : ''}
+        ${scope === 'one' ? `<span class="where"><input type="radio" name="home" value="${c.id}" ${hp && hp.c.id === c.id ? 'checked' : ''} title="本体"> 本体</span>` : ''}</label>`;
+    }).join('')).join('');
+  };
+  const preview = () => { const I = ids(); return `<div class="note" style="margin:8px 0">${I.map((i, k) => `${k && p.tasks[i].deps.includes(I[k - 1]) ? ' <b style="color:var(--accent)">↓</b> ' : k ? ' ∥ ' : ''}${esc(trunc(p.tasks[i].title, 18))}`).join('')}</div>`; };
+  modal('◆ インスタンスの配置先', `
+    ${scopes.length > 1 ? `<div class="fld"><span>配置する範囲</span><div class="seg" id="psc">${scopes.map(x => `<button data-v="${x[0]}" class="${x[0] === scope ? 'on' : ''}">${esc(x[1])}</button>`).join('')}</div></div>` : ''}
+    <div class="fld"><span>配置のしかた</span><div class="seg" id="pmd"><button data-v="inst" class="on">◆ インスタンス(同一作業)</button><button data-v="copy">独立コピー(別作業として複製)</button></div></div>
+    <div id="ppv">${preview()}</div>
+    <div class="note" id="pnote"></div>
+    <div class="cl" id="pcl">${listHTML()}</div>`,
     [{ label: 'キャンセル' }, { label: '反映', cls: 'pri', run(bg){
-      const boxes = $$('.cl input[type=checkbox]', bg);
-      if (!boxes.some(b => b.checked)) { toast('最低1箇所は必要です(削除はメニューから)'); return false; }
-      boxes.forEach(b => { const { c } = findDC(p, b.dataset.did, b.dataset.cid); const has = c.items.includes(tid);
-        if (b.checked && !has) c.items.push(tid); if (!b.checked && has) c.items = c.items.filter(x => x !== tid); });
-      const h = $('input[name=home]:checked', bg); if (h && boxes.find(b => b.dataset.cid === h.value)?.checked) t.home = h.value;
-      commit(); toast('配置を更新しました'); } }]);
+      const I = ids(), boxes = $$('#pcl input[type=checkbox]', bg);
+      if (mode === 'copy') {
+        const tg = boxes.filter(b => b.checked); if (!tg.length) { toast('コピー先を選んでください'); return false; }
+        tg.forEach(b => copyTasksInto(p, I, findDC(p, b.dataset.did, b.dataset.cid).c));
+        commit(); toast(`${I.length}件を${tg.length}箇所に独立コピーしました`); return;
+      }
+      // インスタンス:チェック=全件を配置(不足分を順番どおり追加)、チェックなし=その作図内容から外す
+      const after = {}; boxes.forEach(b => { const { c } = findDC(p, b.dataset.did, b.dataset.cid); after[c.id] = b.checked ? 'add' : (+b.dataset.n ? 'remove' : 'none'); });
+      const lost = I.filter(i => !p.drawings.some(d => d.contents.some(c => after[c.id] === 'add' || (c.items.includes(i) && after[c.id] !== 'remove'))));
+      if (lost.length) { toast('すべての配置を外すことはできません(削除は作業メニューから)'); return false; }
+      boxes.forEach(b => { const { c } = findDC(p, b.dataset.did, b.dataset.cid);
+        if (after[c.id] === 'add') I.forEach(i => { if (!c.items.includes(i)) c.items.push(i); });
+        if (after[c.id] === 'remove') { c.items = c.items.filter(x => !I.includes(x)); I.forEach(i => { if (p.tasks[i].home === c.id) p.tasks[i].home = ''; }); } });
+      const h = $('input[name=home]:checked', bg); if (h && after[h.value] === 'add') t.home = h.value;
+      commit(); toast(I.length > 1 ? `${I.length}件をグループごと配置しました` : '配置を更新しました'); } }],
+    { wide: true, nofocus: true, mount(bg){
+      const note = () => $('#pnote', bg).innerHTML = mode === 'inst'
+        ? 'チェックした作図内容に、選んだ範囲の作業を<b>同一インスタンス</b>として配置します(どこで編集しても全箇所に即時反映)。直列のつながりはそのまま保たれます。チェックを外すと、その作図内容から外れます。'
+        : 'チェックした作図内容に、選んだ範囲の作業を<b>別の作業として複製</b>します。グループ内の直列・並列のつながりはコピー同士でつなぎ直されます(完了状態はリセット)。';
+      const redraw = () => { $('#pcl', bg).innerHTML = listHTML(); $('#ppv', bg).innerHTML = preview(); note();
+        $$('#pcl input[data-n]', bg).forEach(b => { const n = +b.dataset.n; if (n && n < ids().length) b.indeterminate = true; }); };
+      const seg = (id, set) => $(id, bg)?.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; set(b.dataset.v); $$(id + ' button', bg).forEach(x => x.classList.toggle('on', x === b)); redraw(); });
+      seg('#psc', v => scope = v); seg('#pmd', v => mode = v); redraw();
+    } });
 }
 function insertExisting(did, cid){
   const p = P(), { c } = findDC(p, did, cid);
   const ids = placedIds(p).filter(id => !c.items.includes(id));
   const where = id => places(p, id).map(x => x.d.no + '/' + x.c.name).join(', ');
-  modal(`◆ 既存作業を「${esc(c.name)}」に配置`, `<div class="note">他の図面の作業を<b>同一インスタンス</b>としてここに配置します(コピーではなく同じ作業)。</div>
+  const groups = []; p.drawings.forEach(d => d.contents.forEach(cc => { if (cc.id === c.id) return;
+    serialGroups(p, cc).forEach(g => { const miss = g.filter(i => !c.items.includes(i)); if (miss.length && !groups.some(o => o.g.join() === g.join())) groups.push({ g, d, cc }); }); }));
+  modal(`◆ 既存作業を「${esc(c.name)}」に配置`, `
+    <div class="fld"><span>配置のしかた</span><div class="seg" id="imd"><button data-v="inst" class="on">◆ インスタンス(同一作業)</button><button data-v="copy">独立コピー(別作業として複製)</button></div></div>
     <input id="iq" placeholder="作業名・図面番号で絞り込み…" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:7px 9px;margin-bottom:8px">
-    <div class="cl" id="il">${ids.map(id => `<button class="pick" data-id="${id}" data-q="${esc(p.tasks[id].title + ' ' + where(id))}">${esc(p.tasks[id].title)}<small>${esc(where(id))}</small></button>`).join('') || '<div class="grp">配置できる作業がありません</div>'}</div>`,
+    <div class="cl" id="il">
+      ${groups.length ? `<div class="grp">直列グループ(まとめて配置)</div>` + groups.map((o, k) => `<button class="pick" data-g="${k}" data-q="${esc(o.g.map(i => p.tasks[i].title).join(' ') + ' ' + o.d.no + ' ' + o.cc.name)}">
+        ${o.g.map((i, n) => (n ? ' <b style="color:var(--accent)">↓</b> ' : '') + esc(trunc(p.tasks[i].title, 14))).join('')}<small>${esc(o.d.no)}/${esc(o.cc.name)} ・ ${o.g.length}件</small></button>`).join('') : ''}
+      ${ids.length ? `<div class="grp">作業(1件ずつ)</div>` + ids.map(id => `<button class="pick" data-id="${id}" data-q="${esc(p.tasks[id].title + ' ' + where(id))}">${esc(p.tasks[id].title)}<small>${esc(where(id))}</small></button>`).join('') : ''}
+      ${!groups.length && !ids.length ? '<div class="grp">配置できる作業がありません</div>' : ''}
+    </div>`,
     [{ label: '閉じる' }],
     { mount(bg){
+      let mode = 'inst';
+      $('#imd', bg).addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; mode = b.dataset.v; $$('#imd button', bg).forEach(x => x.classList.toggle('on', x === b)); });
       $('#iq', bg).addEventListener('input', e => { const q = e.target.value.toLowerCase(); $$('.pick', bg).forEach(l => l.style.display = l.dataset.q.toLowerCase().includes(q) ? '' : 'none'); });
-      $$('.pick', bg).forEach(b => b.onclick = () => { c.items.push(b.dataset.id); closeModal(); commit(); toast('インスタンスとして配置しました'); });
+      $$('.pick', bg).forEach(b => b.onclick = () => {
+        const I = b.dataset.g != null ? groups[+b.dataset.g].g : [b.dataset.id];
+        if (mode === 'copy') copyTasksInto(p, I, c); else I.forEach(i => { if (!c.items.includes(i)) c.items.push(i); });
+        closeModal(); commit();
+        toast(mode === 'copy' ? `${I.length}件を独立コピーしました` : I.length > 1 ? `直列グループ${I.length}件をインスタンスとして配置しました` : 'インスタンスとして配置しました');
+      });
     } });
 }
 function contentMenu(btn){
@@ -1819,6 +2035,13 @@ document.addEventListener('click', e => {
     case 'settings': return openSettings();
     case 'review': return openReview(+a.dataset.k);
     case 'pmode': p.progressMode = a.dataset.v; return commit();
+    case 'tog': { const id = did; ui.openD = isOpenD(id) ? ui.openD.filter(x => x !== id) : [...ui.openD, id]; saveUi(); return render(); }
+    case 'openall': ui.openD = p.drawings.map(d => d.id); saveUi(); return render();
+    case 'closeall': ui.openD = []; saveUi(); return render();
+    case 'opencontent': { const r = a.closest('.crow'); cur.view = 'detail'; cur.did = r.dataset.did; scrollToCid = r.dataset.cid; linking = null; return render(); }
+    case 'memdone': ui.memDone = a.checked; saveUi(); return render();
+    case 'mjump': { const el = $('#mcard-' + (a.dataset.mid || '_')); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
+    case 'jump': { const tid = tidOf(), hp = homePlace(p, tid); if (!hp) return; cur.view = 'detail'; cur.did = hp.d.id; scrollToDid = hp.d.id; render(); return setTimeout(() => jumpToTask(tid), 60); }
     case 'autosort': p.autoSort = a.checked; if (a.checked) sortDrawings(p); return commit();
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
@@ -1842,7 +2065,7 @@ document.addEventListener('click', e => {
     case 'chain': { const li = a.closest('.task'); return toggleChain(li.dataset.did, li.dataset.cid, +li.dataset.i); }
     case 'more': return taskMenu(a);
     case 'edit': return editTask(tidOf());
-    case 'place': return placeTask(tidOf());
+    case 'place': return placeTask(tidOf(), a.closest('[data-cid]')?.dataset.cid);
     case 'memo': { const li = a.closest('.task'); const key = li.dataset.tid + li.dataset.cid; if (memoOpen.has(key)) memoOpen.delete(key); else { memoOpen.add(key); focusMemo = key; } return render(); }
     case 'st': { const t = p.tasks[tidOf()]; if (t.done) { t.done = false; t.st = 'wait'; } else if (t.st === 'req') t.st = 'wait'; else { t.done = true; } return commit(); }
     case 'insert': { const c = a.closest('.content'); return insertExisting(c.dataset.did, c.dataset.cid); }
@@ -1863,6 +2086,7 @@ document.addEventListener('change', e => {
     if (el.dataset.f === 'no' && sortDrawings(p)) { flashDid = d.id; toast(`${d.no} を番号順の位置へ移動しました`); }
     return commit();
   }
+  if (el.dataset.cap) { p.cap[el.dataset.cap] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
   if (el.dataset.cf) { const box = el.closest('.content'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.name = el.value.trim() || c.name; return commit(); }
   if (el.dataset.tf) {
     const host = el.closest('[data-tid]'), t = p.tasks[host.dataset.tid], f = el.dataset.tf;
