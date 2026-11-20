@@ -113,7 +113,11 @@ input,select,textarea{font:inherit;color:inherit}
 .mtasks th{font-size:11px;color:var(--sub);font-weight:500;text-align:left;padding:5px 8px;border-bottom:1px solid var(--line2);background:#faf9f6}
 .mtasks td{padding:3px 8px;border-bottom:1px solid var(--line2)}
 .mtasks tr.isdone td{color:var(--mute)} .mtasks tr.isdone .ttl{text-decoration:line-through;color:var(--mute)}
-.mtasks .pl{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.mtasks .pl{font-size:11.5px;color:var(--sub)}
+.plc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px;line-height:1.5}
+.plc a{font-family:var(--mono);font-size:11px;color:var(--ink);cursor:pointer;border-bottom:1px dotted var(--mute)}
+.plc b{font-weight:600;color:var(--ink)} .plc span{color:var(--line)}
+.plc.sub{opacity:.6;font-size:11px}
 .mtasks details{padding:0}
 .mtasks .hrs{width:50px}
 .wk{display:inline-flex;align-items:center;gap:3px;margin-left:4px;vertical-align:middle}
@@ -1190,6 +1194,12 @@ function placeTip(e){ const t = $('#tip'); let x = e.clientX + 14, y = e.clientY
 function hideTip(){ $('#tip').style.display = 'none'; }
 
 /* ---------------- member workload view ---------------- */
+// 配置箇所を「A-101 平面図 / 1F平面図」の形で(本体を先頭、インスタンスは◆)
+function placesHTML(p, tid){
+  const pl = places(p, tid), hp = homePlace(p, tid); if (!pl.length) return '';
+  const sorted = [hp, ...pl.filter(x => x.c.id !== hp.c.id)];
+  return sorted.map((x, n) => `<div class="plc${n ? ' sub' : ''}" title="${esc(x.d.no + ' ' + x.d.name + ' / ' + x.c.name)}">${n ? '◆ ' : ''}<a data-act="goto" data-did="${x.d.id}">${esc(x.d.no)}</a> ${esc(x.d.name)} <span>/</span> <b>${esc(x.c.name)}</b></div>`).join('');
+}
 function memberLoads(p){
   const E = eff(p), T = p.tasks, M = E.M;
   const ids = placedIds(p).filter(i => T[i].kind !== 'ext');
@@ -1246,12 +1256,12 @@ function renderMembers(){
     }).join('');
     const list = (ui.memDone ? r.mine : r.rem).slice().sort((a, b) => (E.band[a] - E.band[b]) || (T[a].done - T[b].done));
     const open = ui.memOpen[r.id || '_'] !== false;
-    const rows = list.map(i => { const t = T[i], b = E.band[i], pl = [...new Set(places(p, i).map(x => x.d.no))].join(', ');
+    const rows = list.map(i => { const t = T[i], b = E.band[i], hp = homePlace(p, i), pl = placesHTML(p, i);
       return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''}">
         <td style="width:24px"><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}></td>
         <td style="width:150px;white-space:nowrap"><span style="color:${bandColor(E, b)}">●</span> <span style="font-size:11px">${esc(trunc(bandName(E, b), 10))}</span></td>
         <td><div class="tcell">${t.kind === 'mtg' ? `<span class="kt mtg" style="--c:${party(p, t.party)?.color || '#6b6a66'}">打合せ</span>` : ''}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
-        <td class="pl" style="width:110px">${esc(pl)}</td>
+        <td class="pl" style="width:260px">${pl}</td>
         <td style="width:70px"><span class="rw"><input class="hrs" type="number" min="0" step="0.5" data-tf="hours" value="${t.hours || ''}" placeholder="0">h</span></td>
         <td style="width:110px"><select class="asg" data-tf="assignee" style="--c:${member(t.assignee)?.color || '#d5d2ca'}"><option value="">担当—</option>${S.members.map(mm => `<option value="${mm.id}" ${mm.id === t.assignee ? 'selected' : ''}>${esc(mm.name)}</option>`).join('')}</select></td>
         <td style="width:28px"><button class="ico" data-act="jump" title="詳細画面で開く">›</button></td></tr>`; }).join('');
@@ -1265,7 +1275,7 @@ function renderMembers(){
       </header>
       ${E.M || r.bands[0].h ? `<div class="mbars"><div class="mbhead">締切</div><div class="mbhead">累積の残り工数(棒)と使える時間(縦線)</div><div class="mbhead" style="text-align:right">累積 残り/使える</div><div class="mbhead">区間で使える時間</div>${bars}</div>` : ''}
       <details ${open ? 'open' : ''} data-mopen="${r.id || '_'}" style="padding:4px 0 6px"><summary style="cursor:pointer;font-size:12px;color:var(--sub);padding:4px 14px">${ui.memDone ? '担当作業' : '残っている作業'} ${list.length}件</summary>
-        ${rows ? `<table class="mtasks"><tr><th></th><th>締切</th><th>作業</th><th>図面</th><th>時間</th><th>担当(付け替え)</th><th></th></tr>${rows}</table>` : '<div style="padding:6px 14px;color:var(--mute);font-size:12px">ありません</div>'}
+        ${rows ? `<table class="mtasks"><tr><th></th><th>締切</th><th>作業</th><th>図面 / 作図内容</th><th>時間</th><th>担当(付け替え)</th><th></th></tr>${rows}</table>` : '<div style="padding:6px 14px;color:var(--mute);font-size:12px">ありません</div>'}
       </details>
     </section>`;
   }).join('');
@@ -1297,12 +1307,12 @@ function renderParties(){
     ids.sort((a, b) => (T[a].done - T[b].done) || (T[a].due || '9999').localeCompare(T[b].due || '9999'));
     return `<section class="pgroup" style="--c:${g.color}">
       <header><span class="dot"></span><h3>${esc(g.name)}</h3><span class="cnt">未完了 ${open.length}件${od.length ? ` ・ <span style="color:var(--accent)">期限超過 ${od.length}件</span>` : ''}</span></header>
-      ${ids.length ? `<table class="ptab"><tr><th style="width:80px">状態</th><th>内容</th><th style="width:150px">図面</th><th style="width:124px">回答予定日/日付</th><th style="width:130px">締切</th><th style="width:80px">止めている</th><th style="width:28%">備考</th></tr>
+      ${ids.length ? `<table class="ptab"><tr><th style="width:80px">状態</th><th>内容</th><th style="width:260px">図面 / 作図内容</th><th style="width:124px">回答予定日/日付</th><th style="width:130px">締切</th><th style="width:80px">止めている</th><th style="width:28%">備考</th></tr>
       ${ids.map(i => { const t = T[i], pl = places(p, i), b = E.band[i];
         return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''}">
           <td>${stChip(t)}</td>
           <td><div class="tcell"><span class="kt ${t.kind}" style="--c:${g.color}">${KIND[t.kind]}</span><input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
-          <td class="pl">${[...new Map(pl.map(x => [x.d.id, x.d])).values()].map(d => `<a data-act="goto" data-did="${d.id}">${esc(d.no)}</a>`).join('')}</td>
+          <td>${placesHTML(p, i)}</td>
           <td><input type="date" class="due ${isOverdue(t) ? 'over' : ''}" data-tf="due" value="${esc(t.due)}"></td>
           <td style="white-space:nowrap"><span style="font-size:11px;color:${bandColor(E, b)}" title="${esc(bandName(E, b))}">● ${esc(trunc(bandName(E, b), 10))}</span></td>
           <td class="blk">${succCount(i) ? `後続 ${succCount(i)}件` : ''}</td>
@@ -1757,9 +1767,9 @@ function partyPrintHTML(p){
     const ids = all.filter(i => (T[i].party || '') === g.id && !T[i].done).sort((a, b) => (T[a].due || '9999').localeCompare(T[b].due || '9999'));
     if (!ids.length) return '';
     return `<div class="pparty"><h3><i style="background:${g.color}"></i>${esc(g.name)}<span style="font-weight:400;font-size:.85em;color:#555">(${ids.length}件)</span></h3>
-      <table><colgroup><col style="width:5%"><col style="width:12mm"><col style="width:35%"><col style="width:16mm"><col style="width:20mm"><col style="width:22mm"><col></colgroup>
+      <table><colgroup><col style="width:5%"><col style="width:12mm"><col style="width:30%"><col style="width:34mm"><col style="width:16mm"><col style="width:22mm"><col></colgroup>
       <tr><th>No.</th><th>種別</th><th>内容</th><th>図面</th><th>状態</th><th>回答予定/日付</th><th>備考</th></tr>
-      ${ids.map((i, n) => { const t = T[i]; return `<tr><td class="n">${n + 1}</td><td>${KIND[t.kind]}</td><td>${esc(t.title)}</td><td class="mono">${[...new Set(places(p, i).map(x => x.d.no))].map(esc).join(', ')}</td>
+      ${ids.map((i, n) => { const t = T[i]; return `<tr><td class="n">${n + 1}</td><td>${KIND[t.kind]}</td><td>${esc(t.title)}</td><td>${places(p, i).map(x => `<span class="mono">${esc(x.d.no)}</span> ${esc(x.c.name)}`).join('<br>')}</td>
         <td>${t.st === 'wait' ? '依頼中' : t.kind === 'mtg' ? '予定' : '依頼前'}</td><td class="${isOverdue(t) ? 'over' : ''} mono">${esc(t.due || (t.days ? t.days + '日' : ''))}${isOverdue(t) ? ' 超過' : ''}</td><td>${esc(t.memo)}</td></tr>`; }).join('')}</table></div>`;
   }).join('');
 }
