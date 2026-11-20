@@ -84,8 +84,8 @@ input,select,textarea{font:inherit;color:inherit}
 .j-over{color:var(--accent)} .j-warn{color:#8a5d00}
 .msadd{border:1px dashed var(--line);background:none;border-radius:8px;width:120px;color:var(--sub);font-size:12px}
 .msadd:hover{color:var(--ink);border-color:var(--ink)}
-.dlist{position:relative;width:830px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-.drow,.crow{display:grid;grid-template-columns:22px 20px 96px 1fr 84px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
+.dlist{position:relative;width:866px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.drow,.crow{display:grid;grid-template-columns:22px 20px 96px 1fr 120px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
 .drow:last-of-type{border-bottom:0}
 .drow.head{height:34px;font-size:11px;color:var(--sub);letter-spacing:.06em;background:#faf9f6;border-radius:8px 8px 0 0;border-bottom:1px solid var(--line)}
 .drow.head div{padding:0 8px}
@@ -97,9 +97,14 @@ input,select,textarea{font:inherit;color:inherit}
 .caret:hover{background:var(--line2);color:var(--ink)}
 .caret.none{visibility:hidden}
 .crow{height:30px;background:#fbfaf7;border-bottom:1px solid var(--line2);font-size:12px}
-.crow .cn{grid-column:4;padding-left:20px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.crow .cn{grid-column:4;padding-left:20px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:8px;align-items:baseline}
+.crow .cn>span{cursor:pointer;overflow:hidden;text-overflow:ellipsis}
+.crow .cn em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--mute);margin-left:auto;padding-right:6px}
+.crow .csc{grid-column:5;font-family:var(--mono);font-size:11.5px;padding:2px 6px;height:24px}
+.cell.ro{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.chead .csc{flex:none;width:76px;font-family:var(--mono);font-size:12px;font-weight:400}
 .crow .cn::before{content:"└ ";color:var(--line)}
-.crow .cn:hover{color:var(--ink);text-decoration:underline}
+.crow .cn>span:hover{color:var(--ink);text-decoration:underline}
 .crow .cm{grid-column:5;font-family:var(--mono);font-size:10.5px;color:var(--mute);padding:0 8px;white-space:nowrap}
 .crow .prog{grid-column:6;cursor:pointer}
 .crow .sbar{height:5px}
@@ -156,7 +161,13 @@ input,select,textarea{font:inherit;color:inherit}
 .ovin.man{border:1px solid var(--warn);background:#fdf3dc}
 .mtag{font-size:10px;color:#8a5d00}
 .mbhead{font-size:10.5px;color:var(--mute)}
-.grip{color:var(--mute);cursor:grab;text-align:center;font-size:11px;letter-spacing:-2px;user-select:none}
+.grip{color:var(--mute);cursor:grab;text-align:center;font-size:13px;letter-spacing:-2px;user-select:none;touch-action:none;padding:8px 0}
+.grip:hover{color:var(--ink)}
+.drow.dragging{z-index:5;background:#fff!important;box-shadow:0 6px 18px rgba(0,0,0,.15);opacity:.95;transition:none}
+.drow.dragafter{box-shadow:inset 0 -2px 0 var(--accent)}
+.cell[readonly]{color:var(--sub);cursor:default}
+.cell[readonly]:hover{border-color:transparent}
+#numMode{border:1px solid var(--line);border-radius:6px;padding:3px 6px;background:#fff;font-size:12px}
 .cell{border:1px solid transparent;background:none;padding:5px 8px;border-radius:4px;width:100%;min-width:0}
 .cell:hover{border-color:var(--line)} .cell:focus{border-color:var(--ink);background:#fff;outline:0}
 .cell.no,.cell.sc{font-family:var(--mono);font-size:12px}
@@ -206,7 +217,7 @@ input,select,textarea{font:inherit;color:inherit}
 .sheet{background:var(--paper);border:1px solid var(--line);border-radius:8px;margin-bottom:18px}
 .sheet.on{border-color:#b9b5ab;box-shadow:0 1px 6px rgba(0,0,0,.05)}
 .shead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.shead .cell.no{width:84px} .shead .cell.nm{flex:1;font-size:15px;font-weight:600;min-width:120px} .shead .cell.sc{width:70px}
+.shead .cell.no{width:84px} .shead .cell.nm{flex:1;font-size:15px;font-weight:600;min-width:120px} .shead .cell.sc{width:auto;max-width:200px;font-family:var(--mono);font-size:12px;color:var(--sub);cursor:default}
 .shead .prog{width:200px;cursor:default}
 .rel{padding:6px 14px;border-bottom:1px solid var(--line2);font-size:12px;color:var(--sub);display:flex;flex-direction:column;gap:2px;background:#fcfbf9}
 .rel a{color:var(--ink);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--mute)}
@@ -467,7 +478,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
 .pr .ptitle h1{font-size:1.6em;margin:0;font-weight:600}
 .pr .ptitle .meta{font-family:var(--mono);font-size:.85em;text-align:right;line-height:1.5}
 .pr .plist{position:relative}
-.pr .prow{display:grid;grid-template-columns:24mm 1fr 20mm 52mm;align-items:center;border-bottom:.2mm solid #bbb;box-sizing:border-box}
+.pr .prow{display:grid;grid-template-columns:24mm 1fr 30mm 52mm;align-items:center;border-bottom:.2mm solid #bbb;box-sizing:border-box}
 .pr .prow.h{border-bottom:.35mm solid #000;font-size:.8em;color:#555}
 .pr .prow>div{padding:0 2mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr .mono{font-family:var(--mono)}
@@ -599,13 +610,13 @@ function seedProject(){
   const ev  = t('軒先・パラペット納まり検討', {assignee:'m1', hours:4, deps:[xs]});
   const kn  = t('矩計図の作図', {assignee:'m3', hours:6, deps:[ev, cl, win], ms:M2.id});
   const xg  = t('事前相談(斜線・採光)', {kind:'mtg', party:PG.id, due:addDays(30), hours:2, assignee:'m1', ms:M2.id});
-  const C = (name, items) => ({id: uid(), name, items});
+  const C = (name, items, scale) => ({id: uid(), name, items, scale});
   const D = (no, name, scale, contents) => ({id: uid(), no, name, scale, contents});
-  const dA101 = D('A-101', '平面図', '1/100', [C('1F平面図', [xe, r1, ps, st, f1, xk, fur]), C('2F平面図', [r1, ps, f2])]);
-  const dA201 = D('A-201', '立面図', '1/100', [C('東・西立面図', [el, win, xg]), C('南・北立面図', [el, win])]);
-  const dA301 = D('A-301', '断面図', '1/100', [C('A-A断面図', [r1, mt, cl, sec])]);
-  const dA401 = D('A-401', '矩計図', '1/30', [C('矩計図(南側)', [cl, win, kn])]);
-  const dA501 = D('A-501', '部分詳細図', '1/10', [C('軒先詳細', [xs, ev])]);
+  const dA101 = D('A-101', '平面図', '', [C('1F平面図', [xe, r1, ps, st, f1, xk, fur], '1/100'), C('2F平面図', [r1, ps, f2], '1/100'), C('キッチン拡大平面図', [], '1/30')]);
+  const dA201 = D('A-201', '立面図', '', [C('東・西立面図', [el, win, xg], '1/100'), C('南・北立面図', [el, win], '1/100')]);
+  const dA301 = D('A-301', '断面図', '', [C('A-A断面図', [r1, mt, cl, sec], '1/100')]);
+  const dA401 = D('A-401', '矩計図', '', [C('矩計図(南側)', [cl, win, kn], '1/30')]);
+  const dA501 = D('A-501', '部分詳細図', '', [C('軒先詳細', [xs, ev], '1/5'), C('開口部詳細', [], '1/10')]);
   p.drawings = [dA101, dA201, dA301, dA401, dA501];
   p.links = [
     {id: uid(), from: dA501.id, to: dA401.id, memo: '軒先納まりの検討が終わったら矩計図に反映'},
@@ -628,14 +639,14 @@ function normalize(s){
     p.milestones.forEach(m => { m.period = m.period || ''; });
     p.pdf = Object.assign(defaultPdf(), p.pdf || {}); p.pdf.m = Object.assign({t:15,r:15,b:15,l:20}, p.pdf.m); p.pdf.inc = Object.assign(defaultPdf().inc, p.pdf.inc);
     p.progressMode = p.progressMode || 'count';
-    if (p.autoSort == null) p.autoSort = true;
+    if (!p.numMode) p.numMode = p.autoSort === false ? 'manual' : 'sort';   // sort=番号順に整列 / renumber=並び順で通し番号 / manual=手動
     Object.values(p.tasks).forEach(t => {
       t.deps = (t.deps || []).filter(d => p.tasks[d] && d !== t.id);
       t.kind = t.kind || 'in'; t.memo = t.memo || ''; t.ms = t.ms || ''; t.home = t.home || ''; t.party = t.party || '';
       t.st = t.st || 'req'; t.due = t.due || ''; t.days = +t.days || 0; t.hours = +t.hours || 0;
       if (t.ms && !p.milestones.some(m => m.id === t.ms)) t.ms = '';
     });
-    p.drawings.forEach(d => { d.contents = d.contents || []; d.contents.forEach(c => c.items = [...new Set((c.items || []).filter(i => p.tasks[i]))]); });
+    p.drawings.forEach(d => { d.contents = d.contents || []; d.contents.forEach(c => { c.items = [...new Set((c.items || []).filter(i => p.tasks[i]))]; if (c.scale == null) c.scale = d.scale || ''; }); });
   });
   return s;
 }
@@ -676,6 +687,8 @@ function undo(){
 }
 
 /* ---------------- model helpers ---------------- */
+// スケールは作図内容ごと。図面のスケール表記は作図内容のスケールを重複なくカンマ区切りで
+const dScales = d => [...new Set(d.contents.map(c => (c.scale || '').trim()).filter(Boolean))].join(', ');
 const dTaskIds = d => { const s = new Set(); d.contents.forEach(c => c.items.forEach(i => s.add(i))); return [...s]; };
 function places(p, tid){ const r = []; p.drawings.forEach(d => d.contents.forEach(c => { if (c.items.includes(tid)) r.push({d, c}); })); return r; }
 const placeCount = (p, tid) => places(p, tid).length;
@@ -906,16 +919,16 @@ function renderList(){
   const rows = p.drawings.map((d, i) => `
     <div class="drow" data-did="${d.id}" data-idx="${i}">
       <button class="caret ${d.contents.length ? '' : 'none'}" data-act="tog" title="作図内容を表示">${isOpenD(d.id) ? '▼' : '▶'}</button>
-      ${p.autoSort === false ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
-      <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No.">
+      ${p.numMode !== 'sort' ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
+      <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
       <input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">
-      <input class="cell sc" data-f="scale" value="${esc(d.scale)}" placeholder="1/100">
+      <span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
       <div class="prog" data-act="open">${segBar(p, dTaskIds(d))}</div>
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
     </div>${isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (+p.tasks[x].hours || 0), 0);
-      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn" data-act="opencontent">${esc(c.name)}</span><span class="cm">${ids.filter(x => p.tasks[x].done).length}/${ids.length}件·${fmtH(h)}h</span><div class="prog" data-act="opencontent">${segBar(p, ids)}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
+      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span><em>${ids.filter(x => p.tasks[x].done).length}/${ids.length}件·${fmtH(h)}h</em></span><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${segBar(p, ids)}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
@@ -923,7 +936,11 @@ function renderList(){
       <span class="stat">図面 ${p.drawings.length}枚 ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}</span>
       <span style="flex:1"></span>
       <span class="seg" title="達成率の計算方法"><button data-act="pmode" data-v="count" class="${p.progressMode === 'count' ? 'on' : ''}">件数</button><button data-act="pmode" data-v="hours" class="${p.progressMode === 'hours' ? 'on' : ''}">工数</button></span>
-      <label class="chk" title="オフにすると⋮⋮のドラッグで自由に並べ替えできます"><input type="checkbox" data-act="autosort" ${p.autoSort !== false ? 'checked' : ''}> 番号順に自動整列</label>
+      <span class="chk">並び:<select id="numMode" title="図面の並べ方と番号の付け方">
+        <option value="sort" ${p.numMode === 'sort' ? 'selected' : ''}>番号順に自動整列</option>
+        <option value="renumber" ${p.numMode === 'renumber' ? 'selected' : ''}>ドラッグ順に通し番号</option>
+        <option value="manual" ${p.numMode === 'manual' ? 'selected' : ''}>手動(番号はそのまま)</option></select>
+        ${p.numMode === 'renumber' ? `<button class="tbtn sm" data-act="numrule">採番ルール</button>` : ''}</span>
       <label class="chk"><input type="checkbox" data-act="showlinks" ${ui.showLinks ? 'checked' : ''}> 関係線を表示</label>
     </div>
     ${msCards(p)}
@@ -936,7 +953,7 @@ function renderList(){
     </div>
     ${E.M ? `<div class="legendms">${E.ms.map((m, k) => `<span style="--c:${m.color}"><i></i>${esc(m.name)}</span>`).join('')}<span style="--c:${NOBAND}"><i></i>未定</span><span>(帯の幅=作業量、濃い部分=完了分。カーソルで内訳)</span></div>` : ''}
     <div class="hint">
-      ・達成率または <b>›</b> をクリックで詳細へ。番号を書き換えると自動で番号順に並び替わります(「番号順に自動整列」をオフにすると <b>⋮⋮</b> で手動並べ替え)。締切カードをクリックで計画レビュー。<br>
+      ・達成率または <b>›</b> をクリックで詳細へ。並び「ドラッグ順に通し番号」では <b>⋮⋮</b> をドラッグして並べ替えると番号が自動で振り直されます(「番号順に自動整列」では番号を書き換えると並び替わります)。締切カードをクリックで計画レビュー。<br>
       ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
     </div>
   </div>`;
@@ -1037,6 +1054,7 @@ function sheetHTML(p, d){
     return `<div class="content" data-cid="${c.id}" data-did="${d.id}">
       <div class="chead">
         <input class="cell" data-cf="name" value="${esc(c.name)}" placeholder="作図内容">
+        <input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール">
         <span class="meta">${dn2}/${counted.length}件 · ${fmtH(hrs)}h</span>
         <button class="ico" data-act="cmore" title="作図内容メニュー">⋯</button>
       </div>
@@ -1047,9 +1065,9 @@ function sheetHTML(p, d){
   }).join('');
   return `<article class="sheet ${d.id === cur.did ? 'on' : ''}" id="sheet-${d.id}" data-did="${d.id}">
     <div class="shead">
-      <input class="cell no" data-f="no" value="${esc(d.no)}">
+      <input class="cell no" data-f="no" value="${esc(d.no)}" ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
       <input class="cell nm" data-f="name" value="${esc(d.name)}">
-      <input class="cell sc" data-f="scale" value="${esc(d.scale)}">
+      <span class="cell sc ro" title="作図内容ごとのスケール">${esc(dScales(d)) || '—'}</span>
       <div class="prog">${segBar(p, dTaskIds(d))}</div>
       <button class="ico" data-act="dmore" title="図面メニュー">⋯</button>
     </div>
@@ -1617,12 +1635,36 @@ function prompt2(title, label, val, onOk){
 
 /* ---------------- actions ---------------- */
 const noCmp = (a, b) => { if (!a.no && !b.no) return 0; if (!a.no) return 1; if (!b.no) return -1; return String(a.no).localeCompare(String(b.no), 'ja', { numeric: true, sensitivity: 'base' }); };
-function sortDrawings(p){ if (p.autoSort === false) return false; const before = p.drawings.map(d => d.id).join(); p.drawings.sort(noCmp); return before !== p.drawings.map(d => d.id).join(); }
+function sortDrawings(p){ if (p.numMode !== 'sort') return false; const before = p.drawings.map(d => d.id).join(); p.drawings.sort(noCmp); return before !== p.drawings.map(d => d.id).join(); }
+function guessRule(p){ // 先頭の図面番号から採番ルールを推定(例:A-101 → 接頭辞「A-」、101から、3桁)
+  const m = String(p.drawings[0]?.no || 'A-101').match(/^(.*?)(\d+)(\D*)$/);
+  return m ? { prefix: m[1], start: +m[2], width: m[2].length, step: 1, suffix: m[3] } : { prefix: 'A-', start: 101, width: 3, step: 1, suffix: '' };
+}
+const ruleNo = (r, i) => r.prefix + String(r.start + i * r.step).padStart(r.width, '0') + (r.suffix || '');
+function renumber(p){ if (p.numMode !== 'renumber') return; const r = p.numRule || (p.numRule = guessRule(p)); p.drawings.forEach((d, i) => d.no = ruleNo(r, i)); }
+function arrange(p){ sortDrawings(p); renumber(p); }
+function openNumRule(enabling){
+  const p = P(), r = Object.assign(guessRule(p), p.numRule || {});
+  const prev = rr => p.drawings.slice(0, 6).map((d, i) => `<div style="display:flex;gap:10px;font-size:12px"><span class="muted" style="font-family:var(--mono);width:80px;text-decoration:line-through">${esc(d.no)}</span>→<b style="font-family:var(--mono)">${esc(ruleNo(rr, i))}</b><span>${esc(d.name)}</span></div>`).join('') + (p.drawings.length > 6 ? `<div class="muted" style="font-size:11px">…ほか${p.drawings.length - 6}枚(最後:${esc(ruleNo(rr, p.drawings.length - 1))})</div>` : '');
+  modal(enabling ? 'ドラッグ順に通し番号を振る' : '採番ルール', `
+    <div class="note">図面リストの並び順に、上から通し番号を振ります。以後は ⋮⋮ をドラッグして並べ替えたり、図面を追加・削除したりすると、番号が自動で振り直されます(図面番号の欄は自動入力になります)。</div>
+    <div class="row4">
+      <label class="fld"><span>接頭辞</span><input id="nr_p" value="${esc(r.prefix)}"></label>
+      <label class="fld"><span>開始番号</span><input id="nr_s" type="number" min="0" value="${r.start}"></label>
+      <label class="fld"><span>桁数(0埋め)</span><input id="nr_w" type="number" min="1" max="6" value="${r.width}"></label>
+      <label class="fld"><span>増分</span><input id="nr_t" type="number" min="1" value="${r.step}"></label>
+    </div>
+    <div class="sec">プレビュー</div><div id="nr_pv">${prev(r)}</div>`,
+    [{ label: 'キャンセル' }, { label: enabling ? '通し番号を振る' : '振り直す', cls: 'pri', run(bg){
+      p.numRule = { prefix: $('#nr_p', bg).value, start: parseInt($('#nr_s', bg).value) || 0, width: Math.max(1, parseInt($('#nr_w', bg).value) || 1), step: Math.max(1, parseInt($('#nr_t', bg).value) || 1), suffix: r.suffix || '' };
+      p.numMode = 'renumber'; renumber(p); commit(); toast('通し番号を振りました(元に戻すは ⌘/Ctrl+Z)'); } }],
+    { mount(bg){ bg.addEventListener('input', () => { const rr = { prefix: $('#nr_p', bg).value, start: parseInt($('#nr_s', bg).value) || 0, width: Math.max(1, parseInt($('#nr_w', bg).value) || 1), step: Math.max(1, parseInt($('#nr_t', bg).value) || 1), suffix: r.suffix || '' }; $('#nr_pv', bg).innerHTML = prev(rr); }); } });
+}
 let flashDid = null;
 function addDrawing(){
   const p = P();
-  const d = { id: uid(), no: nextNo(p), name: '新規図面', scale: '1/100', contents: [{ id: uid(), name: '作図内容', items: [] }] };
-  p.drawings.push(d); sortDrawings(p); cur.did = d.id; scrollToDid = d.id; flashDid = d.id; commit();
+  const d = { id: uid(), no: nextNo(p), name: '新規図面', scale: '', contents: [{ id: uid(), name: '作図内容', items: [], scale: '1/100' }] };
+  p.drawings.push(d); arrange(p); cur.did = d.id; scrollToDid = d.id; flashDid = d.id; commit();
 }
 function addTask(did, cid, title){
   const p = P(), { c } = findDC(p, did, cid); if (!c || !title) return;
@@ -1839,7 +1881,7 @@ function drawingMenu(btn, did){
         const map = {}; const nd = JSON.parse(JSON.stringify(d)); nd.id = uid(); nd.no = d.no + '’'; nd.name = d.name + '(複製)';
         nd.contents.forEach(c => { c.id = uid(); c.items = c.items.map(tid => { if (!map[tid]) { const id = uid(); map[tid] = id; p.tasks[id] = Object.assign(JSON.parse(JSON.stringify(p.tasks[tid])), { id, home: '' }); } return map[tid]; }); });
         Object.values(map).forEach(id => p.tasks[id].deps = p.tasks[id].deps.map(x => map[x] || x));
-        p.drawings.splice(p.drawings.indexOf(d) + 1, 0, nd); cur.did = nd.id; scrollToDid = nd.id; commit(); } },
+        p.drawings.splice(p.drawings.indexOf(d) + 1, 0, nd); arrange(p); cur.did = nd.id; scrollToDid = nd.id; commit(); } },
     '-',
     { label: '図面を削除', danger: true, run: () => deleteDrawing(did) },
   ]);
@@ -1847,7 +1889,7 @@ function drawingMenu(btn, did){
 function deleteDrawing(did){
   const p = P(), d = p.drawings.find(x => x.id === did);
   confirmBox(`図面「${esc(d.no)} ${esc(d.name)}」を削除します。他の図面に配置のない作業も削除されます。`, () => {
-    p.drawings = p.drawings.filter(x => x.id !== did); p.links = p.links.filter(l => l.from !== did && l.to !== did); gcTasks(p); commit(); });
+    p.drawings = p.drawings.filter(x => x.id !== did); p.links = p.links.filter(l => l.from !== did && l.to !== did); gcTasks(p); renumber(p); commit(); });
 }
 function pickLinkTarget(from){
   const p = P();
@@ -2027,7 +2069,7 @@ function doPrint(only){
     const withLinks = inc.links && p.links.length, gw = withLinks ? Math.min(90, cw * 0.36) : 0;
     h += `<div class="plist" style="width:${cw - gw}mm">
       <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率</div></div>
-      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div>${esc(d.name)}</div><div class="mono">${esc(d.scale)}</div>
+      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div>${esc(d.name)}</div><div class="mono">${esc(dScales(d))}</div>
         <div class="pbar prog" style="padding:0 2mm">${segBar(p, dTaskIds(d))}</div></div>`).join('')}
       ${withLinks ? printLinks(p, gw, rowH, headH) : ''}</div>`;
   }
@@ -2036,10 +2078,10 @@ function doPrint(only){
       const pr = dProgress(p, d);
       const out = p.links.filter(l => l.from === d.id), inn = p.links.filter(l => l.to === d.id);
       const dn = id => { const x = p.drawings.find(z => z.id === id); return x ? x.no + ' ' + x.name : ''; };
-      h += `<div class="psheet"><h2><span class="mono">${esc(d.no)}</span>${esc(d.name)}<span class="mono">${esc(d.scale)}</span><span class="r">達成率 ${pr == null ? '—' : pr + '%'}</span></h2>`;
+      h += `<div class="psheet"><h2><span class="mono">${esc(d.no)}</span>${esc(d.name)}<span class="mono">${esc(dScales(d))}</span><span class="r">達成率 ${pr == null ? '—' : pr + '%'}</span></h2>`;
       if (out.length || inn.length) h += `<div class="prel">${out.map(l => `→ ${esc(dn(l.to))}:${esc(l.memo)}`).concat(inn.map(l => `← ${esc(dn(l.from))}:${esc(l.memo)}`)).join('<br>')}</div>`;
       if (inc.detail) d.contents.forEach(c => {
-        h += `<div class="pc"><h3>${esc(c.name)}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
+        h += `<div class="pc"><h3>${esc(c.name)}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
           <tr><th></th><th>作業</th><th>担当/関係者</th><th style="text-align:right">時間/期日</th><th>締切</th><th>前提作業</th><th>共有</th></tr>
         ${c.items.map((tid, i) => { const t = T[tid]; const m = member(t.assignee), pa = party(p, t.party); const n = placeCount(p, tid), b = E.band[tid];
           const who = t.kind === 'in' ? (m ? esc(m.name) : '') : `${KIND[t.kind]}:${esc(pa?.name || '')}`;
@@ -2328,7 +2370,7 @@ document.addEventListener('click', e => {
     case 'memdone': ui.memDone = a.checked; saveUi(); return render();
     case 'mjump': { const el = $('#mcard-' + (a.dataset.mid || '_')); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     case 'jump': { const tid = tidOf(), hp = homePlace(p, tid); if (!hp) return; cur.view = 'detail'; cur.did = hp.d.id; scrollToDid = hp.d.id; render(); return setTimeout(() => jumpToTask(tid), 60); }
-    case 'autosort': p.autoSort = a.checked; if (a.checked) sortDrawings(p); return commit();
+    case 'numrule': return openNumRule();
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
     case 'openonly': ui.openOnly = a.checked; saveUi(); return render();
@@ -2361,12 +2403,17 @@ document.addEventListener('click', e => {
     case 'insert': { const c = a.closest('.content'); return insertExisting(c.dataset.did, c.dataset.cid); }
     case 'cmore': return contentMenu(a);
     case 'dmore': return drawingMenu(a, did);
-    case 'addc': { const d = p.drawings.find(x => x.id === did); const c = { id: uid(), name: '作図内容', items: [] }; d.contents.push(c); focusAfter = c.id; return commit(); }
+    case 'addc': { const d = p.drawings.find(x => x.id === did); const c = { id: uid(), name: '作図内容', items: [], scale: d.contents[d.contents.length - 1]?.scale || '1/100' }; d.contents.push(c); focusAfter = c.id; return commit(); }
   }
 });
 document.addEventListener('change', e => {
   const el = e.target, p = P();
   if (el.id === 'dsel') return setActiveDrawing(el.value, true);
+  if (el.id === 'numMode') {
+    const v = el.value;
+    if (v === 'renumber') { el.value = p.numMode; return openNumRule(true); }
+    p.numMode = v; arrange(p); return commit();
+  }
   if (el.id === 'projSel') {
     if (el.value === '__new') { el.value = cur.pid; return prompt2('新規プロジェクト', 'プロジェクト名', '', nm => { const np = newProject(nm || '新規プロジェクト'); S.projects.push(np); cur.pid = np.id; cur.did = null; commit(); }); }
     cur.pid = el.value; cur.did = null; lsSet('zumentask.lastpid', cur.pid); history.replaceState(null, '', '?p=' + cur.pid); return render();
@@ -2382,6 +2429,7 @@ document.addEventListener('change', e => {
     if (el.value === '') delete p.mcap[mid][k]; else p.mcap[mid][k] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
   if (el.dataset.ov) { const [mid, msid] = el.dataset.ov.split('|'); p.capOv[mid] = p.capOv[mid] || {};
     if (el.value === '') delete p.capOv[mid][msid]; else p.capOv[mid][msid] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
+  if (el.dataset.csc) { const box = el.closest('[data-cid]'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.scale = el.value.trim(); return commit(); }
   if (el.dataset.cf) { const box = el.closest('.content'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.name = el.value.trim() || c.name; return commit(); }
   if (el.dataset.tf) {
     const host = el.closest('[data-tid]'), t = p.tasks[host.dataset.tid], f = el.dataset.tf;
@@ -2409,12 +2457,37 @@ document.addEventListener('keydown', e => {
 $$('.tabs button').forEach(b => b.onclick = () => { cur.view = b.dataset.view; linking = null; hideBanner(); render(); });
 $('#sync').onclick = openSettings;
 
-let dragIdx = null;
-document.addEventListener('mousedown', e => { const g = e.target.closest && e.target.closest('.grip'); if (g) g.closest('.drow').draggable = true; });
-document.addEventListener('dragstart', e => { const r = e.target.closest && e.target.closest('.drow'); if (!r) return; dragIdx = +r.dataset.idx; e.dataTransfer.effectAllowed = 'move'; try { e.dataTransfer.setData('text/plain', ''); } catch(_) {} });
-document.addEventListener('dragover', e => { const r = e.target.closest && e.target.closest('.drow:not(.head)'); if (dragIdx == null || !r) return; e.preventDefault(); $$('.drow.dragover').forEach(x => x.classList.remove('dragover')); r.classList.add('dragover'); });
-document.addEventListener('drop', e => { const r = e.target.closest && e.target.closest('.drow:not(.head)'); if (dragIdx == null || !r) return; e.preventDefault(); const p = P(), to = +r.dataset.idx; const [d] = p.drawings.splice(dragIdx, 1); p.drawings.splice(to, 0, d); dragIdx = null; commit(); });
-document.addEventListener('dragend', () => { dragIdx = null; $$('.drow').forEach(x => { x.draggable = false; x.classList.remove('dragover'); }); });
+/* 図面の並べ替え(マウス・タッチ共通)。⋮⋮ をつかんで上下にドラッグ */
+let rowDrag = null;
+document.addEventListener('pointerdown', e => {
+  const g = e.target.closest && e.target.closest('.drow .grip'); if (!g || e.button > 0) return;
+  e.preventDefault();
+  const row = g.closest('.drow');
+  rowDrag = { from: +row.dataset.idx, did: row.dataset.did, y0: e.clientY, row, to: null };
+  row.classList.add('dragging');
+});
+document.addEventListener('pointermove', e => {
+  if (!rowDrag) return;
+  rowDrag.row.style.transform = `translateY(${e.clientY - rowDrag.y0}px)`;
+  const rows = $$('.drow:not(.head)').filter(r => r !== rowDrag.row);
+  let to = rows.length, mark = null;
+  for (let i = 0; i < rows.length; i++) { const rc = rows[i].getBoundingClientRect(); if (e.clientY < rc.top + rc.height / 2) { to = +rows[i].dataset.idx; mark = rows[i]; break; } }
+  if (to > rowDrag.from) to--;   // 自分を抜いた位置に換算
+  if (mark === null && rows.length) to = rows.length;
+  rowDrag.to = to;
+  $$('.drow.dragover,.drow.dragafter').forEach(x => x.classList.remove('dragover', 'dragafter'));
+  if (mark) mark.classList.add('dragover'); else if (rows.length) rows[rows.length - 1].classList.add('dragafter');
+});
+document.addEventListener('pointerup', () => {
+  if (!rowDrag) return;
+  const d = rowDrag; rowDrag = null;
+  d.row.style.transform = ''; d.row.classList.remove('dragging');
+  $$('.drow.dragover,.drow.dragafter').forEach(x => x.classList.remove('dragover', 'dragafter'));
+  if (d.to == null || d.to === d.from) return;
+  const p = P(), [dr] = p.drawings.splice(d.from, 1); p.drawings.splice(d.to, 0, dr);
+  renumber(p); flashDid = dr.id; commit();
+  if (p.numMode === 'renumber') toast(`${dr.name} を移動し、番号を振り直しました`);
+});
 window.addEventListener('afterprint', () => { $('#printArea').innerHTML = ''; });
 
 /* ---------------- boot ---------------- */
