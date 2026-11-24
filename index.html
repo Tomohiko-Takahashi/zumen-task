@@ -226,7 +226,7 @@ body.resizing{cursor:col-resize!important;user-select:none}
 .sitem .st{color:#e0a100;font-size:10.5px;margin-left:3px}
 .sitem .pc{font-family:var(--mono);font-size:11px;text-align:right;color:var(--sub)}
 .side .addd{margin:10px 14px;border:1px dashed var(--line);background:none;border-radius:6px;padding:6px;width:calc(100% - 28px);color:var(--sub)}
-.sheets{overflow:auto;padding:0 22px 120px}
+.sheets{overflow:auto;padding:0 22px 55vh}
 .shtool{position:sticky;top:0;z-index:3;background:var(--bg);padding:12px 0 10px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--sub)}
 .sheet{background:var(--paper);border:1px solid var(--line);border-radius:8px;margin-bottom:18px}
 .sheet.on{border-color:#b9b5ab;box-shadow:0 1px 6px rgba(0,0,0,.05)}
@@ -589,7 +589,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
   .dv.wide{grid-template-columns:minmax(300px,32%) minmax(0,1fr)}
   .dv .side{display:none}
   .mid-only{display:inline-block!important;border:1px solid var(--line);border-radius:6px;padding:5px 6px;background:#fff;max-width:240px}
-  .sheets{padding:0 14px 120px}
+  .sheets{padding:0 14px 55vh}
 }
 @media (max-width:1000px){
   .dv,.dv.wide{grid-template-columns:1fr!important;grid-template-rows:1fr!important}
@@ -600,7 +600,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
   .narrow-only{display:inline-flex!important}
   select.narrow-only{display:inline-block!important;border:1px solid var(--line);border-radius:6px;padding:4px 6px;background:#fff;max-width:220px}
   [data-act=wide]{display:none}
-  .sheets{padding:0 12px 120px}
+  .sheets{padding:0 12px 55vh}
   .cd{min-height:78px}
   .pcard{width:calc(50% - 5px)}
 }
@@ -690,6 +690,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
 <div id="printArea"></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
 
+<script src="team.js"></script><!-- チーム接続情報(任意)。index.html を更新しても消えないよう別ファイル -->
 <script>
 const SRC0 = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;   // 配布用HTML生成のための自身のソース
 /* =========================================================
@@ -700,7 +701,10 @@ const SRC0 = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;   // 配�
 // ▼ チーム配布用:App keyとリフレッシュトークンを埋め込むと、メンバーはURLを開くだけで同じデータを共有できます
 const EMBED = { appKey: '', refresh: '', token: '', path: '' };   // 平文(非推奨:URLを知る誰でも接続可能)
 // ▼ 「設定・共有 → 配布用HTMLを作成」で自動的に書き込まれる、チームパスコードで暗号化した接続情報
-const EMBED_ENC = 'cbCxLWCfwoN1CGIafqKupQ==.k8vTQhiiMczVwUK1.sb5/F51P2byppSjh7ErQ8L78MoPezpXwnEW4mFpAOq15UWrnRh6WZwKUyFRffGt5uVw5umijB8xfcOWkbIlpemdejmuzOJbKVKZrF2KKrs2gjw3CGvCoI+wrex6vQsDqQRUv1WXlkZTfj89Z7SPc3MRMcuK/zrRpjuaJZgM0sGsFZsgDQmDViyqNUhqPUfSEbsWi2EdEIg==';
+const EMBED_ENC = '';
+const TEAM = window.ZT_TEAM || {};
+const ENC = TEAM.enc || EMBED_ENC;          // 暗号化した接続情報(team.js 優先)
+const TEAM_PASS = TEAM.pass || '';          // team.js にパスコードが入っていれば、メンバーは入力不要
 
 const LS_KEY = 'zumentask.v1', CFG_KEY = 'zumentask.cfg', UI_KEY = 'zumentask.ui';
 const PAPER = { A4:[210,297], A3:[297,420], B4:[257,364], A2:[420,594] };
@@ -1328,7 +1332,7 @@ function renderDetail(){
   if (tbScroll) { $('#treebox').scrollLeft = tbScroll[0]; $('#treebox').scrollTop = tbScroll[1]; }
   if (focusAfter) { const el = $(`.addtask input[data-cid="${focusAfter}"]`); if (el) el.focus(); focusAfter = null; }
   if (focusMemo) { const el = $(`.tmemo textarea[data-key="${focusMemo}"]`); if (el) { el.focus(); el.selectionStart = el.value.length; } focusMemo = null; }
-  if (scrollToDid) { const el = $('#sheet-' + scrollToDid); if (el) { sh.scrollTop = el.offsetTop - 56; } scrollToDid = null; }
+  if (scrollToDid) { const el = $('#sheet-' + scrollToDid); if (el) { spyLock = Date.now() + 300; sh.scrollTop = sheetScrollTop(el); } scrollToDid = null; }
   if (scrollToCid) { const el = $(`.content[data-cid="${scrollToCid}"]`); if (el) { sh.scrollTop += el.getBoundingClientRect().top - sh.getBoundingClientRect().top - 56; el.classList.add('flash'); } scrollToCid = null; }
 }
 function sheetHTML(p, d){
@@ -1417,17 +1421,26 @@ function taskLI(p, d, c, tid, i){
   </li>`;
 }
 let spyLock = 0;
+const SPY = .45;   // リスト表示域の上から45%の位置(ほぼ中央)にある図面を「選択中」にする
 function onSheetsScroll(){
   if (Date.now() < spyLock) return;
-  const sh = $('#sheets'), top = sh.getBoundingClientRect().top + 60;
-  const s = $$('.sheet', sh).find(el => el.getBoundingClientRect().bottom > top);
-  if (s && s.dataset.did !== cur.did) setActiveDrawing(s.dataset.did, false);
+  const sh = $('#sheets'), r = sh.getBoundingClientRect(), mid = r.top + r.height * SPY;
+  let best = null, bd = Infinity;
+  $$('.sheet', sh).forEach(el => { const b = el.getBoundingClientRect(); const dd = (mid >= b.top && mid <= b.bottom) ? 0 : Math.min(Math.abs(b.top - mid), Math.abs(b.bottom - mid)); if (dd < bd) { bd = dd; best = el; } });
+  if (best && best.dataset.did !== cur.did) setActiveDrawing(best.dataset.did, false);
 }
+function sheetScrollTop(el){ // 図面がリストの中央付近に来るスクロール位置(長い図面は上端を少し下げて表示)
+  const sh = $('#sheets'), mid = sh.clientHeight * SPY, h = el.offsetHeight;
+  const topAt = Math.max(56, Math.min(mid - h / 2, mid - 40));
+  return Math.max(0, el.offsetTop - topAt);
+}
+// 作業を触った図面も選択中にする
+document.addEventListener('focusin', e => { const sh = e.target.closest && e.target.closest('#sheets .sheet'); if (sh && sh.dataset.did !== cur.did) { spyLock = Date.now() + 400; setActiveDrawing(sh.dataset.did, false); } });
 function setActiveDrawing(did, scroll){
   cur.did = did; if ($('#dsel')) $('#dsel').value = did;
   $$('.sitem').forEach(e => e.classList.toggle('on', e.dataset.did === did));
   $$('.sheet').forEach(e => e.classList.toggle('on', e.dataset.did === did));
-  if (scroll) { spyLock = Date.now() + 900; const el = $('#sheet-' + did), sh = $('#sheets'); if (el) sh.scrollTo({ top: el.offsetTop - 56, behavior: 'smooth' }); }
+  if (scroll) { spyLock = Date.now() + 900; const el = $('#sheet-' + did), sh = $('#sheets'); if (el) sh.scrollTo({ top: sheetScrollTop(el), behavior: 'smooth' }); }
   if (treeScope === 'sel') renderTree();
 }
 
@@ -2690,7 +2703,7 @@ function openSettings(){
       <button class="tbtn" id="bdisc" ${on ? '' : 'disabled'}>連携解除</button>
       <label class="chk"><input type="checkbox" id="sauto" ${cfg.auto ? 'checked' : ''}> 自動同期</label>
     </div>
-    ${EMBED_ENC && !on ? `<div class="note" style="background:var(--inst-s)">このページにはチームの接続情報が入っています。<button class="tbtn" id="bunlock" style="margin-left:6px">パスコードで接続</button></div>` : ''}
+    ${ENC && !on ? `<div class="note" style="background:var(--inst-s)">このページにはチームの接続情報が入っています。<button class="tbtn" id="bunlock" style="margin-left:6px">パスコードで接続</button></div>` : ''}
     <details><summary style="cursor:pointer;font-size:12px;color:var(--sub)">アクセストークンを直接入力する(上級)</summary>
       <label class="fld" style="margin-top:8px"><span>Access token(短期トークンは約4時間で失効)</span><input id="tk" value="${esc(cfg.token)}"></label></details>
     <div class="note">
@@ -2701,12 +2714,18 @@ function openSettings(){
     </div>
     <div class="sec">チームに配布 ${cfg.refresh ? '' : '<span class="muted">(Dropbox連携後に使えます)</span>'}</div>
     <div class="row2">
-      <label class="fld"><span>チームパスコード(8文字以上)</span><input id="dpw" type="password" autocomplete="new-password" ${cfg.refresh ? '' : 'disabled'}></label>
-      <label class="fld"><span>確認のためもう一度</span><input id="dpw2" type="password" autocomplete="new-password" ${cfg.refresh ? '' : 'disabled'}></label>
+      <label class="fld"><span>チームパスコード(8文字以上)</span><input id="dpw" type="text" autocomplete="off" value="${esc(TEAM_PASS || 'INDIGOWAIWAI')}" ${cfg.refresh ? '' : 'disabled'}></label>
+      <label class="fld"><span>&nbsp;</span><label class="chk" style="padding-top:8px"><input type="checkbox" id="dembed" ${TEAM_PASS || !ENC ? 'checked' : ''}> パスコードも埋め込む(メンバーは入力不要で自動接続)</label></label>
     </div>
-    <button class="tbtn pri" id="bdist" ${cfg.refresh ? '' : 'disabled'}>配布用HTMLを作成(index.htmlをダウンロード)</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <button class="tbtn pri" id="bteam" ${cfg.refresh ? '' : 'disabled'}>team.js を作成(ダウンロード)</button>
+      <button class="tbtn" id="bdist" ${cfg.refresh ? '' : 'disabled'} title="旧方式:index.html に直接埋め込む">旧方式:index.html に埋め込む</button>
+      ${TEAM.enc ? `<span style="font-size:11.5px;color:var(--ok)">● team.js 読み込み済み${TEAM_PASS ? '(パスコード埋め込みあり)' : ''}</span>` : ''}
+    </div>
     <div class="note" style="margin-top:10px">
-      ダウンロードした <code>index.html</code> をGitHubリポジトリに上書きアップロードし、共有アドレスをメンバーに送ってください。メンバーは初回だけパスコードを入力すれば、あなたのDropboxのデータを一緒に編集できます。<br>
+      <b>おすすめ:team.js 方式</b> — ダウンロードした <code>team.js</code> を、GitHubリポジトリの index.html と同じ場所にアップロードします(最初の1回だけ)。以後 index.html を新しい版に上書きしても、接続情報は消えません。<br>
+      パスコードを埋め込むと、メンバーはアドレスを開くだけで自動接続されます。<b>ただしその場合、アドレスを知っている人は誰でもデータを読み書きできます</b>(GitHub Pages のページは公開のため)。アドレスはチーム内だけで共有してください。<br>
+      <span class="muted">旧方式:</span>ダウンロードした <code>index.html</code> をGitHubリポジトリに上書きアップロードし、共有アドレスをメンバーに送ってください。メンバーは初回だけパスコードを入力すれば、あなたのDropboxのデータを一緒に編集できます。<br>
       ・接続情報はパスコードで暗号化して埋め込むので、URLだけ知っている人には読めません。<b>パスコードはURLと別の経路(口頭・別チャット)で伝えてください。</b><br>
       ・メンバーを外したい時は、Dropbox側でアプリの連携を解除してから再連携し、新しいパスコードで作り直します。<br>
       ・同じプロジェクトを数秒以内に同時編集した場合は、後から保存した側が優先されます。
@@ -2724,10 +2743,15 @@ function openSettings(){
     $('#bsync', bg).onclick = () => { stash(); sync(true); };
     $('#bdisc', bg).onclick = () => { cfg.token = ''; cfg.refresh = ''; saveCfg(); rev = null; access = { tok: null, exp: 0 }; closeModal(); setStatus(); toast('連携を解除しました(このブラウザのみ)'); };
     if ($('#bunlock', bg)) $('#bunlock', bg).onclick = () => { closeModal(); openUnlock(); };
-    $('#bdist', bg).onclick = async () => {
-      const a = $('#dpw', bg).value, b = $('#dpw2', bg).value;
+    $('#bteam', bg).onclick = async () => {
+      const a = $('#dpw', bg).value.trim();
       if (a.length < 8) return toast('パスコードは8文字以上にしてください');
-      if (a !== b) return toast('確認用のパスコードが一致しません');
+      if (!crypto.subtle) return toast('https(GitHub Pages)で開いてください');
+      stash(); await buildTeamJs(a, $('#dembed', bg).checked); toast('team.js を作成しました。index.html と同じ場所にアップロードしてください');
+    };
+    $('#bdist', bg).onclick = async () => {
+      const a = $('#dpw', bg).value.trim();
+      if (a.length < 8) return toast('パスコードは8文字以上にしてください');
       if (!crypto.subtle) return toast('https(GitHub Pages)で開いてください');
       stash(); await buildDist(a); toast('配布用のindex.htmlを作成しました');
     };
@@ -2775,16 +2799,24 @@ function openUnlock(){
     [{ label: 'ローカルだけで使う', cls: 'left', run(){ lsSet('zumentask.localonly', '1'); } }, { label: '接続', cls: 'pri', run(bg){ tryUnlock(bg); return false; } }],
     { mount(bg){ $('#upw', bg).addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) tryUnlock(bg); }); } });
 }
+async function unlockWith(pw){
+  const c = await decryptCfg(ENC, pw);   // パスコードが違うと例外
+  Object.assign(cfg, { appKey: c.appKey, refresh: c.refresh, path: c.path || cfg.path, token: '' }); saveCfg(); lsSet('zumentask.localonly', '');
+  access = { tok: null, exp: 0 }; rev = null; dirty = false;
+  toast('チームのDropboxに接続しました');
+  await sync(true);
+}
 async function tryUnlock(bg){
   const pw = $('#upw', bg).value; if (!pw) return;
   $('#uerr', bg).textContent = '確認中…';
-  try {
-    const c = await decryptCfg(EMBED_ENC, pw);
-    Object.assign(cfg, { appKey: c.appKey, refresh: c.refresh, path: c.path || cfg.path, token: '' }); saveCfg(); lsSet('zumentask.localonly', '');
-    access = { tok: null, exp: 0 }; rev = null; dirty = false;
-    closeModal(); toast('チームのDropboxに接続しました');
-    await sync(true);
-  } catch(e) { $('#uerr', bg).textContent = 'パスコードが違います'; }
+  try { await decryptCfg(ENC, pw); closeModal(); await unlockWith(pw); }
+  catch(e) { $('#uerr', bg).textContent = 'パスコードが違います'; }
+}
+async function buildTeamJs(pass, withPass){
+  const enc = await encryptCfg({ appKey: cfg.appKey, refresh: cfg.refresh, path: cfg.path }, pass);
+  const js = `// ZUMEN/TASK チーム接続情報 — index.html と同じ場所(GitHubリポジトリの同じ階層)に置いてください\n// 作成: ${new Date().toLocaleString('ja-JP')}\nwindow.ZT_TEAM = { enc: '${enc}', pass: '${withPass ? pass.replace(/\\/g, '\\\\').replace(/'/g, "\\'") : ''}' };\n`;
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([js], { type: 'text/javascript' })); a.download = 'team.js'; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
 }
 async function buildDist(pass){
   let src = null;
@@ -3064,7 +3096,10 @@ lsSet('zumentask.lastpid', cur.pid);
 render(); setStatus();
 handleOAuth().then(() => {
   if (syncEnabled() && !qs.get('code')) sync();
-  else if (!syncEnabled() && EMBED_ENC && !lsGet('zumentask.localonly')) openUnlock();
+  else if (!syncEnabled() && ENC && !lsGet('zumentask.localonly')) {
+    if (TEAM_PASS) unlockWith(TEAM_PASS).catch(() => openUnlock());   // パスコード埋め込み済み:自動接続
+    else openUnlock();
+  }
 });
 </script>
 </body>
