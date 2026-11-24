@@ -53,7 +53,7 @@ input,select,textarea{font:inherit;color:inherit}
 .seg button.on{background:var(--ink);color:#fff}
 .chk{display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--sub);cursor:pointer}
 .mscards{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:stretch}
-.mscard{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:8px;padding:10px 12px;width:210px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+.mscard{background:var(--paper);border:1px solid var(--line);border-top:3px solid var(--c);border-radius:8px;padding:10px 12px;width:260px;cursor:pointer;display:flex;flex-direction:column;gap:3px}
 .mscard:hover{border-color:#b9b5ab;border-top-color:var(--c)}
 .mscard .n{font-weight:600;font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mscard .pd{font-size:10.5px;color:var(--c);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:color-mix(in srgb,var(--c) 10%,transparent);border-radius:3px;padding:1px 5px;align-self:flex-start;max-width:100%}
@@ -130,7 +130,7 @@ input,select,textarea{font:inherit;color:inherit}
 .xproj{font-size:11px;color:var(--sub);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .xproj span{background:var(--bg);border-radius:10px;padding:1px 8px;font-family:var(--mono)}
 .xproj .warn{background:var(--accent-s);color:var(--accent)}
-.mbars{padding:10px 14px 4px;display:grid;grid-template-columns:170px 1fr 150px 130px;gap:6px 12px;align-items:center;font-size:12px}
+.mbars{padding:10px 14px 4px;display:grid;grid-template-columns:200px 1fr 120px;gap:6px 12px;align-items:center;font-size:12px}
 .mbars .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mbars .nm i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:5px;background:var(--c)}
 .lb{position:relative;height:14px;background:var(--line2);border-radius:3px;overflow:hidden}
@@ -405,6 +405,53 @@ svg .bandbg.on{fill:var(--accent-s);opacity:.7}
 #toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:9px 16px;border-radius:20px;font-size:12.5px;z-index:90;opacity:0;transition:opacity .2s;pointer-events:none}
 #toast.on{opacity:1}
 
+
+/* 左下の小計パネル */
+#totals{position:fixed;left:max(12px,env(safe-area-inset-left));bottom:max(12px,env(safe-area-inset-bottom));z-index:40;width:190px;background:rgba(255,255,255,.96);backdrop-filter:blur(6px);border:1px solid var(--line);border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.12);padding:8px 10px 9px;font-size:12px}
+#totals.flt{border-color:var(--inst);box-shadow:0 0 0 2px var(--inst-s),0 6px 20px rgba(0,0,0,.12)}
+#totals .th{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--sub);font-weight:600}
+#totals.flt .th span{color:var(--inst)}
+#totals .tn3{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:4px 0 5px;font-family:var(--mono)}
+#totals .tn3 small{display:block;font-family:var(--sans);font-size:10px;color:var(--sub)}
+#totals .tn3 b{font-size:16px} #totals .tn3 b.d{color:var(--ok)} #totals .tn3 b.r{color:var(--accent)}
+#totals .tbar{height:5px;background:var(--line2);border-radius:3px;overflow:hidden} #totals .tbar i{display:block;height:100%;background:var(--ok)}
+#totals .tf{font-size:10.5px;color:var(--sub);margin-top:4px}
+#totals .tc{font-size:11px;margin-top:5px;padding-top:5px;border-top:1px solid var(--line2);display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-family:var(--mono)}
+#totals .tc .gap{margin-left:auto;font-family:var(--sans);font-size:10.5px;font-weight:700;border-radius:8px;padding:0 6px}
+#totals .tclr{margin-top:6px;width:100%;border:0;background:var(--inst);color:#fff;border-radius:6px;padding:4px;font-size:11.5px}
+#totals.min{width:auto;padding:0;border-radius:18px}
+#totals.min button{border:0;background:none;padding:6px 12px;font-size:12px;display:flex;gap:6px;align-items:center}
+#totals.min b{font-family:var(--mono)} #totals.min i{font-style:normal;font-size:10px;color:#fff;background:var(--inst);border-radius:8px;padding:0 6px}
+@media print{#totals{display:none!important}}
+.side{padding-bottom:200px}
+
+/* 時間バー(達成 / 作業 / 持ち) */
+.hb{display:flex;flex-direction:column;gap:3px;min-width:0}
+.hbt{position:relative;height:12px;background:#efede7;border-radius:3px;overflow:visible}
+.hb.sm .hbt{height:8px}
+.hbt .hp{position:absolute;left:0;top:0;bottom:0;background:color-mix(in srgb,var(--c,#1c1c1a) 28%,#fff);border-radius:3px 0 0 3px}
+.hbt .hx{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(45deg,#f3b2a3 0 4px,#e98a74 4px 8px);border-radius:0 3px 3px 0}
+.hbt .hd{position:absolute;left:0;top:0;bottom:0;background:var(--c,#1c1c1a);border-radius:3px 0 0 3px}
+.hbt em{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;background:var(--ink)}
+.hbn{display:flex;align-items:baseline;gap:4px;font-size:11px;color:var(--sub);font-family:var(--mono);white-space:nowrap;flex-wrap:wrap}
+.hbn b{font-size:13px;color:var(--ink)}
+.hb.sm .hbn b{font-size:12px}
+.hbn .d b{color:var(--c,var(--ink))}
+.hbn .sl{color:var(--mute)}
+.hbn .u{margin-left:-2px}
+.hbr{font-size:10.5px;color:#8a5d00;font-family:var(--mono)} .hbr b{color:var(--ink)}
+.hbn .gap{margin-left:auto;font-family:var(--sans);font-size:10.5px;font-weight:700;border-radius:8px;padding:0 6px}
+.gap.ok{background:#e3f2e9;color:var(--ok)} .gap.warn{background:#fcefcf;color:#8a5d00} .gap.over{background:#f9d9d1;color:var(--accent)}
+.pb1{flex:1;height:6px;background:var(--line2);border-radius:3px;overflow:hidden;min-width:40px}
+.pb1 i{display:block;height:100%;background:var(--ink)} .pb1 i.full{background:var(--ok)}
+.ptab2{border-collapse:separate;border-spacing:4px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px;font-size:12px}
+.ptab2 th{font-size:11px;color:var(--sub);font-weight:500;padding:4px 8px;white-space:nowrap}
+.ptab2 th.l{text-align:left;color:var(--c,var(--ink));font-weight:600;min-width:180px}
+.ptab2 th.l small{display:block;font-weight:400;color:var(--sub);font-size:10px}
+.ptab2 td{padding:7px 10px;border-radius:6px;background:#f7f6f2;min-width:170px;vertical-align:middle}
+.ptab2 td.tot{background:#eef1f7}
+.ptab2 tr.curr th.l,.ptab2 tr.curr td{box-shadow:inset 0 0 0 2px #f08a24}
+.mbars .ovw input{width:60px}
 
 /* urgency (今期・遅れ) */
 .uc{font-size:10px;font-weight:700;border-radius:8px;padding:1px 7px;white-space:nowrap;flex:none;color:#fff}
@@ -686,6 +733,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
 </div>
 <div id="app"></div>
 <div id="tip"></div>
+<div id="totals"></div>
 <div id="toast"></div>
 <div id="printArea"></div>
 <input type="file" id="fileIn" accept=".json,application/json" hidden>
@@ -803,7 +851,7 @@ function normalize(s){
     p.milestones = p.milestones || []; p.parties = p.parties || []; p.cap = p.cap || {}; p.hpd = +p.hpd || 8; p.sched = p.sched || {}; p.capOv = p.capOv || {}; p.mstd = p.mstd || {}; p.mcap = p.mcap || {}; if (!p.start) p.start = ymd(new Date(p.updatedAt || Date.now()));
     p.milestones.forEach(m => { m.period = m.period || ''; });
     p.pdf = Object.assign(defaultPdf(), p.pdf || {}); p.pdf.m = Object.assign({t:15,r:15,b:15,l:20}, p.pdf.m); p.pdf.inc = Object.assign(defaultPdf().inc, p.pdf.inc);
-    p.progressMode = p.progressMode || 'count';
+    p.progressMode = 'hours';   // 達成率は時間ベースで統一
     if (!p.numMode) p.numMode = p.autoSort === false ? 'manual' : 'sort';   // sort=番号順に整列 / renumber=並び順で通し番号 / manual=手動
     Object.values(p.tasks).forEach(t => {
       t.deps = (t.deps || []).filter(d => p.tasks[d] && d !== t.id);
@@ -822,7 +870,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ hlNow:true, flt:{}, bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ totMin:false, hlNow:true, flt:{}, bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -1028,14 +1076,34 @@ const capOf = (p, mid) => monthHours(p, mid, ymKey(today0()));   // 今月の h/
 const perDayOf = (p, mid) => { const k = ymKey(today0()); return monthHours(p, mid, k) / (wdInMonth(k) || 21); };
 function periodRange(p, E, k){ return { from: k ? E.ms[k - 1].date : (p.start || ''), to: E.ms[k].date }; }
 const periodName = (E, k) => k >= E.M ? '未定(締切なし)' : (E.ms[k].period || (k ? `${E.ms[k - 1].name} 〜 ${E.ms[k].name}` : `設計開始 〜 ${E.ms[k].name}`));
-function availInt(p, mid, k, E){ // 期間 k(前の締切の翌日 or 設計開始 〜 締切k当日)のうち、本日以降に使える時間。手入力があればそれを優先
-  const ms = E.ms[k], ov = p.capOv[mid]?.[ms.id];
-  if (ov != null && ov !== '') return { h: +ov, manual: true };
-  const to = parseD(ms.date); if (!to) return { h: 0, manual: false };
+// 期間 k の持ち時間。full = 期間全体(前の締切の翌日 or 設計開始 〜 締切当日)、rem = そのうち本日以降。
+// 手入力(capOv)は「その期間の持ち時間」として扱い、本日以降分は日数で按分
+function periodCap(p, mid, k, E){
+  const ms = E.ms[k], to = parseD(ms && ms.date); if (!to) return { full: 0, rem: 0, manual: false };
   const r = periodRange(p, E, k), lo = parseD(r.from), t0 = today0();
   let from = lo ? new Date(lo) : new Date(t0); if (k && lo) from.setDate(from.getDate() + 1);
-  if (from < t0) from = new Date(t0);
-  return { h: Math.round(hoursBetween(p, mid, from, new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1)) * 10) / 10, manual: false };
+  const end = new Date(to.getFullYear(), to.getMonth(), to.getDate() + 1);
+  const full = from < end ? hoursBetween(p, mid, from, end) : 0;
+  const remFrom = from < t0 ? t0 : from, rem = remFrom < end ? hoursBetween(p, mid, remFrom, end) : 0;
+  const ov = p.capOv[mid]?.[ms.id];
+  if (ov != null && ov !== '') { const f = +ov; return { full: f, rem: r1(full ? f * rem / full : (remFrom < end ? f : 0)), manual: true }; }
+  return { full: r1(full), rem: r1(rem), manual: false };
+}
+function availInt(p, mid, k, E){ const c = periodCap(p, mid, k, E); return { h: c.rem, manual: c.manual }; }
+const capFull = (p, k, E, mid) => mid ? periodCap(p, mid, k, E).full : S.members.reduce((a, m) => a + periodCap(p, m.id, k, E).full, 0);
+function hoursOf(p, ids){ let plan = 0, done = 0; ids.forEach(i => { const t = p.tasks[i]; if (!t || t.kind === 'ext') return; const h = +t.hours || 0; plan += h; if (t.done) done += h; }); return { plan: r1(plan), done: r1(done) }; }
+// 持ち時間に対する作業時間と達成時間のバー。濃い=達成、薄い=作業時間、縦線=持ち時間(超えた分は赤)
+function hbar(cap, plan, done, o = {}){
+  const sc = Math.max(cap || 0, plan, 0.001), over = cap != null && plan > cap + 0.05;
+  // 進行中の期間は「残りの作業」と「本日以降の持ち時間」で余裕/不足を判定(過ぎた日の持ち時間は使えないため)
+  const inProg = cap != null && o.rem != null && o.rem < cap - 0.05;
+  const gap = cap == null ? null : inProg ? r1(o.rem - (plan - done)) : r1(cap - plan);
+  return `<div class="hb ${o.sm ? 'sm' : ''}" style="${o.c ? `--c:${o.c}` : ''}">
+    <div class="hbt"><i class="hp" style="width:${Math.min(plan, cap ?? plan) / sc * 100}%"></i>${over ? `<i class="hx" style="left:${cap / sc * 100}%;width:${(plan - cap) / sc * 100}%"></i>` : ''}<i class="hd" style="width:${done / sc * 100}%"></i>${cap != null ? `<em style="left:${Math.min(100, cap / sc * 100)}%" title="持ち時間 ${fmtH(cap)}h"></em>` : ''}</div>
+    <div class="hbn"><span class="d" title="達成した作業時間">達成 <b>${fmtH(done)}</b></span><span class="sl">/</span><span class="p" title="必要な作業時間の合計">作業 <b>${fmtH(plan)}</b></span>${cap != null ? `<span class="sl">/</span><span class="c" title="この期間に使える時間">持ち <b>${fmtH(cap)}</b></span>` : ''}<span class="u">h</span>
+      ${gap != null && (plan || cap) ? `<span class="gap ${gap < 0 ? 'over' : gap < (inProg ? o.rem : cap) * .15 ? 'warn' : 'ok'}" title="${inProg ? `残りの作業 ${fmtH(r1(plan - done))}h に対し、本日以降の持ち時間 ${fmtH(o.rem)}h` : '持ち時間 − 作業時間'}">${gap < 0 ? '不足 ' + fmtH(-gap) : '余裕 ' + fmtH(gap)}h</span>` : ''}</div>
+    ${inProg ? `<div class="hbr">進行中:残りの作業 <b>${fmtH(r1(plan - done))}</b>h / 本日以降の持ち <b>${fmtH(o.rem)}</b>h</div>` : ''}
+  </div>`;
 }
 const availCum = (p, mid, k, E) => { let h = 0; for (let j = 0; j <= k; j++) h += availInt(p, mid, j, E).h; return h; };
 function projMonths(p){
@@ -1159,6 +1227,31 @@ function render(){
   document.body.dataset.view = cur.view;
   if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else if (cur.view === 'member') renderMembers(); else if (cur.view === 'cal') renderCalendar(); else renderDetail();
   if (board) renderBoard();
+  renderTotals();
+}
+// 画面左下:作業時間の小計(絞り込みに連動、スクロールしても固定)
+function renderTotals(){
+  const el = $('#totals'); if (!el) return;
+  const p = P(), E = eff(p), f = flt(), useF = cur.view !== 'list' && fltActive();
+  const ids = placedIds(p).filter(i => p.tasks[i].kind !== 'ext' && (!useF || taskMatch(p, i)));
+  const hs = hoursOf(p, ids), rem = r1(hs.plan - hs.done), n = ids.length, nOpen = ids.filter(i => !p.tasks[i].done).length;
+  let cap = null, capRem = null, capLbl = '';
+  if (useF && f.band !== '' && f.band != null && f.band !== 'none') {   // 期間で絞り込んでいれば、その期間の持ち時間も出す
+    const k = +f.band; if (E.ms[k]) {
+      const mems = f.mem && f.mem !== '__none' ? [f.mem] : S.members.map(m => m.id);
+      cap = r1(mems.reduce((a, mid) => a + periodCap(p, mid, k, E).full, 0)); capRem = r1(mems.reduce((a, mid) => a + periodCap(p, mid, k, E).rem, 0));
+      capLbl = periodName(E, k) + (f.mem && f.mem !== '__none' ? '・' + (member(f.mem)?.name || '') : '');
+    }
+  }
+  const pct = hs.plan ? Math.round(hs.done / hs.plan * 100) : null;
+  if (ui.totMin) { el.className = 'min'; el.innerHTML = `<button data-act="totmin" title="小計を開く">Σ <b>${fmtH(hs.plan)}h</b>${useF ? '<i>絞込</i>' : ''}</button>`; return; }
+  el.className = useF ? 'flt' : '';
+  el.innerHTML = `<div class="th"><span>${useF ? '絞り込み中の小計' : 'プロジェクト全体'}</span><button class="ico" data-act="totmin" title="小さくする">–</button></div>
+    <div class="tn3"><div><small>作業</small><b>${fmtH(hs.plan)}</b>h</div><div><small>達成</small><b class="d">${fmtH(hs.done)}</b>h</div><div><small>残り</small><b class="r">${fmtH(rem)}</b>h</div></div>
+    <div class="tbar"><i style="width:${pct || 0}%"></i></div>
+    <div class="tf">${n}件(未完了 ${nOpen})・達成率 ${pct == null ? '—' : pct + '%'}</div>
+    ${cap != null ? `<div class="tc" title="${esc(capLbl)}の持ち時間">持ち <b>${fmtH(cap)}</b>h(本日以降 ${fmtH(capRem)}h)<span class="gap ${capRem - rem < 0 ? 'over' : 'ok'}">${capRem - rem < 0 ? '不足 ' + fmtH(r1(rem - capRem)) : '余裕 ' + fmtH(r1(capRem - rem))}h</span></div>` : ''}
+    ${useF ? '<button class="tclr" data-act="fclear">絞り込みを解除</button>' : ''}`;
 }
 document.addEventListener('focusout', () => { if (pendingRender) { pendingRender = false; setTimeout(render, 0); } });
 
@@ -1184,15 +1277,17 @@ function segBar(p, ids){
 const ROW = 40, HEAD = 34, CROW = 30;
 const isOpenD = id => ui.openD.includes(id);
 function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? d.contents.length * CROW : 0); }); return { c, H: y }; }
+const pctBar = pr => `<div class="pb1"><i class="${pr === 100 ? 'full' : ''}" style="width:${pr || 0}%"></i></div><span class="pct ${pr == null ? 'muted' : ''}">${pr == null ? '—' : pr + '%'}</span>`;
 function msCards(p){
   const E = eff(p);
   const cards = E.ms.map((m, k) => {
-    const r = review(p, k), cd = r.cal;
+    const r = review(p, k), cd = r.cal, hs = hoursOf(p, placedIds(p).filter(i => E.band[i] === k)), cap = r1(capFull(p, k, E)), capR = r1(S.members.reduce((a, mm) => a + periodCap(p, mm.id, k, E).rem, 0));
     return `<div class="mscard ${k === curPhase(p) ? 'cur' : ''}" data-act="review" data-k="${k}" style="--c:${m.color}">${k === curPhase(p) ? '<span class="curtag">現在の期間</span>' : ''}
       <div class="pd" title="期間:${esc(periodName(E, k))}">${esc(periodName(E, k))}</div>
       <div class="n" title="${esc(m.name)}">◆ ${esc(m.name)}</div>
       <div class="d">${esc(m.date || '日付未設定')}${cd != null ? ` ・ ${cd >= 0 ? 'あと' + cd + '日' : Math.abs(cd) + '日超過'}` : ''}</div>
-      <div class="big">${r.pct == null ? '—' : r.pct + '%'}<small>残 ${fmtH(r.remH)}h / ${r.D ?? '—'}営業日</small></div>
+      <div class="big">${hs.plan ? Math.round(hs.done / hs.plan * 100) + '%' : '—'}<small>達成(時間)</small></div>
+      ${hbar(cap, hs.plan, hs.done, { c: m.color, rem: capR })}
       <div class="judge j-${r.status}"><i></i>${JUDGE[r.status]}${r.reasons.length ? ':' + esc(r.reasons.slice(0, 2).join('、')) : ''}</div>
     </div>`;
   }).join('');
@@ -1210,19 +1305,18 @@ function renderList(){
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
       <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れの未了作業">遅${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了作業">今${u.now}</span>` : ''); })()}${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
       <span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
-      <div class="prog" data-act="open">${segBar(p, dTaskIds(d))}</div>
+      <div class="prog" data-act="open">${pctBar(progressOf(p, dTaskIds(d)))}</div>
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
     </div>${isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
-      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span><button class="bbtn sm" data-act="board" title="洗い出しボードを開く">▦</button>${zchkMini(c)}<em>${ids.filter(x => p.tasks[x].done).length}/${ids.length}件·${fmtH(h)}h</em></span><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${segBar(p, ids)}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
+      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
       <h2>${esc(p.name)}</h2>
       <span class="stat">図面 ${p.drawings.length}枚 ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}</span>
       <span style="flex:1"></span>
-      <span class="seg" title="達成率の計算方法"><button data-act="pmode" data-v="count" class="${p.progressMode === 'count' ? 'on' : ''}">件数</button><button data-act="pmode" data-v="hours" class="${p.progressMode === 'hours' ? 'on' : ''}">工数</button></span>
       <span class="chk">並び:<select id="numMode" title="図面の並べ方と番号の付け方">
         <option value="sort" ${p.numMode === 'sort' ? 'selected' : ''}>番号順に自動整列</option>
         <option value="renumber" ${p.numMode === 'renumber' ? 'selected' : ''}>ドラッグ順に通し番号</option>
@@ -1234,12 +1328,11 @@ function renderList(){
     ${phaseBanner(p)}
     <div style="display:flex;gap:6px;margin-bottom:8px"><button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button></div>
     <div class="dlist" id="dlist">
-      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率(締切ごと)</div><div></div><div></div><div title="関係線">⇄</div></div>
+      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div title="完了した作業時間 ÷ 作業時間の合計">達成率(時間)</div><div></div><div></div><div title="関係線">⇄</div></div>
       ${rows}
       <button class="addrowbtn" data-act="addd">＋ 図面を追加</button>
       ${ui.showLinks ? linkSVG(p) : ''}
     </div>
-    ${E.M ? `<div class="legendms">${E.ms.map((m, k) => `<span style="--c:${m.color}"><i></i>${esc(m.name)}</span>`).join('')}<span style="--c:${NOBAND}"><i></i>未定</span><span>(帯の幅=作業量、濃い部分=完了分。カーソルで内訳)</span></div>` : ''}
     <div class="hint">
       ・達成率または <b>›</b> をクリックで詳細へ。並び「ドラッグ順に通し番号」では <b>⋮⋮</b> をドラッグして並べ替えると番号が自動で振り直されます(「番号順に自動整列」では番号を書き換えると並び替わります)。締切カードをクリックで計画レビュー。<br>
       ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
@@ -1771,7 +1864,11 @@ function renderMembers(){
     const maxCum = Math.max(1, ...r.bands.map(b => Math.max(b.cum, b.cap || 0)));
     const bars = r.bands.map(b => {
       const nm = periodName(E, b.k) + (b.k < E.M ? ` → ◆${E.ms[b.k].name}` : ''), col = bandColor(E, b.k);
-      if (b.k === E.M && !b.h) return '';
+      const hs = hoursOf(p, r.mine.filter(i => E.band[i] === b.k && taskMatch(p, i))), pc = r.m && b.k < E.M ? periodCap(p, r.id, b.k, E) : null;
+      if (b.k === E.M && !hs.plan) return '';
+      return `<div class="nm" style="--c:${col}" title="${esc(nm)}"><i></i>${esc(nm)}</div>
+        <div>${hbar(pc ? pc.full : null, hs.plan, hs.done, { c: col, rem: pc ? pc.rem : null })}</div>
+        ${pc ? `<div class="ovw" title="この期間(${esc(periodRange(p, E, b.k).from || '')} 〜 ${esc(E.ms[b.k].date)})の持ち時間。空欄=月別の作業可能時間から自動計算"><input class="ovin ${pc.manual ? 'man' : ''}" type="number" min="0" step="1" data-ov="${r.id}|${E.ms[b.k].id}" value="${pc.manual ? pc.full : ''}" placeholder="${fmtH(pc.full)}">h${pc.manual ? ' <span class="mtag">手入力</span>' : ''}</div>` : '<div></div>'}`;
       const cls = b.ratio == null ? '' : b.ratio > 1 ? 'over' : b.ratio > .85 ? 'warn' : '';
       return `<div class="nm" style="--c:${col}" title="${esc(nm)}"><i></i>${esc(nm)}</div>
         <div class="lb" style="--c:${col}"><i style="width:${b.cum / maxCum * 100}%"></i>${b.cap != null && r.m ? `<em style="left:${Math.min(99.5, b.cap / maxCum * 100)}%" title="使える時間 ${fmtH(b.cap)}h"></em>` : ''}</div>
@@ -1787,7 +1884,9 @@ function renderMembers(){
         const av = r.m && b < E.M ? availInt(p, r.id, b, E).h : null, cls = av != null ? (av ? (gr / av > 1 ? 'over' : gr / av > .85 ? 'warn' : 'ok') : (gr ? 'over' : 'ok')) : '';
         const kNow = curPhase(p);
         head = `<tr class="grp ${b === kNow && b < E.M ? 'curg' : b < kNow ? 'lateg' : ''}"><td colspan="7" style="--c:${bandColor(E, b)}"><span class="gn">${b === kNow && b < E.M ? '<span class="uc now">現在の期間</span> ' : b < kNow ? '<span class="uc late">締切済み</span> ' : ''}● ${esc(periodName(E, b))}${b < E.M ? ` <small>→ ◆${esc(E.ms[b].name)} ${esc(E.ms[b].date || '')}</small>` : ''}</span>
-          <span class="gs">${g.length}件 ・ 計 <b>${fmtH(gh)}h</b> ・ 残 <b>${fmtH(gr)}h</b>${av != null ? ` ・ 期間内で使える ${fmtH(av)}h <em class="${cls}">${av ? Math.round(gr / av * 100) + '%' : ''}</em>` : ''}</span></td></tr>`; }
+          <span class="gs">${(() => { const hs = hoursOf(p, g), pc = r.m && b < E.M ? periodCap(p, r.id, b, E) : null; if (!pc) return `達成 <b>${fmtH(hs.done)}</b> / 作業 <b>${fmtH(hs.plan)}</b> h`;
+            const inProg = pc.rem < pc.full - 0.05, gap = inProg ? r1(pc.rem - (hs.plan - hs.done)) : r1(pc.full - hs.plan);
+            return `達成 <b>${fmtH(hs.done)}</b> / 作業 <b>${fmtH(hs.plan)}</b> / 持ち <b>${fmtH(pc.full)}</b> h${inProg ? `(本日以降 ${fmtH(pc.rem)}h)` : ''} <em class="${gap < 0 ? 'over' : 'ok'}">${gap < 0 ? '不足 ' + fmtH(-gap) : '余裕 ' + fmtH(gap)}h</em>`; })()}</span></td></tr>`; }
       return head + `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, i)}">
         <td style="width:24px"><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}></td>
         <td style="width:150px;white-space:nowrap"><span style="color:${bandColor(E, b)}">●</span> <span style="font-size:11px">${esc(trunc(bandName(E, b), 10))}</span></td>
@@ -1804,7 +1903,7 @@ function renderMembers(){
         ${st}
         ${xp.length > 1 || (xp.length === 1 && xp[0].q.id !== p.id) ? `<span class="xproj">全PJの残り:${xp.map(x => `<span>${esc(trunc(x.q.name, 10))} ${fmtH(x.h)}h</span>`).join('')}<span class="${capSum > 160 ? 'warn' : ''}" title="今月、各プロジェクトに割り当てている時間の合計">今月の割当 計${fmtH(capSum)}h</span></span>` : ''}
       </header>
-      ${E.M || r.bands[0].h ? `<div class="mbars"><div class="mbhead">期間 → 締切</div><div class="mbhead">締切までの累積の残り工数(棒)と使える時間(縦線)</div><div class="mbhead" style="text-align:right">累積 残り/使える</div><div class="mbhead">期間内で使える時間</div>${bars}</div>` : ''}
+      ${E.M || r.bands[0].h ? `<div class="mbars"><div class="mbhead">期間 → 締切</div><div class="mbhead">達成 / 作業 / 持ち時間(濃い=達成、薄い=作業、縦線=持ち時間)</div><div class="mbhead">持ち時間(上書き)</div>${bars}</div>` : ''}
       <details ${open ? 'open' : ''} data-mopen="${r.id || '_'}" style="padding:4px 0 6px"><summary style="cursor:pointer;font-size:12px;color:var(--sub);padding:4px 14px">${ui.memDone ? '担当作業' : '残っている作業'} ${list.length}件</summary>
         ${rows ? `<table class="mtasks"><tr><th></th><th>締切</th><th>作業</th><th>図面 / 作図内容</th><th>時間</th><th>担当(付け替え)</th><th></th></tr>${rows}</table>` : '<div style="padding:6px 14px;color:var(--mute);font-size:12px">ありません</div>'}
       </details>
@@ -1817,12 +1916,11 @@ function renderMembers(){
     <div class="sec" style="max-width:1150px;margin-top:0">月別の作業可能時間(このプロジェクトに使える時間)</div>
     <div class="mtabw">${monthTable(p)}</div>
     <div class="note" style="max-width:1150px;margin-top:6px">月ごとに、このプロジェクトに使える時間(h)を入れてください。空欄の月は「標準」の値を使います(黄色=月ごとに入力済み)。月の時間はその月の平日に均等に割り振って計算します。休暇などで特定の期間だけ変えたい場合は、下の各メンバーの「期間内で使える時間」に直接入力して上書きできます。</div>
-    <div class="note" style="max-width:1150px">各締切までに終える必要がある<b>残り工数(累積)</b>を、その人が本日から締切までに使える時間と比べています。85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
-    ${E.M ? heat : '<div class="note">締切(マイルストーン)を登録すると、締切ごとの負荷が表示されます。</div>'}
+    <div class="note" style="max-width:1150px;display:none">85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
     ${phaseBanner(p)}
-    <div class="sec" style="max-width:1150px">期間ごとのボリューム(残り工数 / 計)${fltActive() ? ' ― 絞り込み中' : ''}</div>
+    <div class="sec" style="max-width:1150px">期間ごとの時間(達成 / 作業 / 持ち時間)${fltActive() ? ' ― 絞り込み中' : ''}</div>
     ${fltBar({ noMember: false })}
-    ${volTable(p)}
+    ${E.M ? periodTable(p) : '<div class="note">締切(マイルストーン)を登録すると、期間ごとの時間が表示されます。</div>'}
     ${cards}
   </div>`;
   app.firstElementChild.scrollTop = sc;
@@ -2023,8 +2121,7 @@ function renderCalendar(){
     return `<div class="pcard" style="--c:${m.color}" data-act="review" data-k="${k}">
       <div class="pn">${esc(periodName(E, k))}</div>
       <div class="pr">${lo ? `${lo.getMonth() + 1}/${lo.getDate()}` : '開始未設定'} 〜 ${fmtD(m.date)} <span>◆${esc(trunc(m.name, 12))}</span></div>
-      <div class="pb"><b>${fmtH(x.rem)}h</b> <small>残り / 使える ${fmtH(x.av)}h</small><em class="${cls(x.ratio)}">${x.av ? Math.round(x.rem / x.av * 100) + '%' : x.rem ? '—' : ''}</em></div>
-      <div class="lbar"><i class="${cls(x.ratio) === 'ok' ? '' : cls(x.ratio)}" style="width:${pctw}%"></i></div>
+      ${hbar(r1(capFull(p, k, E)), r1(x.total), r1(x.total - x.rem), { c: m.color, rem: r1(x.av) })}
       <div class="pm">${x.mem.map(y => `<span title="${esc(y.m.name)}:残り${fmtH(y.rem)}h / 使える${fmtH(y.av)}h" class="${y.av ? cls(y.rem / y.av) : y.rem ? 'over' : ''}"><i style="background:${y.m.color}"></i>${esc(y.m.name)} ${fmtH(y.rem)}/${fmtH(y.av)}</span>`).join('')}${x.un ? `<span class="over"><i></i>担当未定 ${fmtH(x.un)}h</span>` : ''}</div>
       <div class="pf">作業 ${x.ids.length}件 ・ 全体 ${fmtH(x.total)}h ・ 達成 ${x.pct == null ? '—' : x.pct + '%'}${x.ext ? ` ・ 外部待ち ${x.ext}件` : ''}${cd != null && cd >= 0 ? ` ・ 残り${wd}営業日` : cd != null ? ' ・ 終了' : ''}</div>
     </div>`;
@@ -2067,6 +2164,23 @@ function renderCalendar(){
   if (!sc) { const td = $('.cd.today', app); if (td) td.closest('.calm').scrollIntoView({ block: 'start' }); app.firstElementChild.scrollTop = Math.max(0, app.firstElementChild.scrollTop - 10); }
 }
 
+function periodTable(p){
+  const E = eff(p), T = p.tasks;
+  const ids = placedIds(p).filter(i => T[i].kind !== 'ext' && taskMatch(p, i));
+  const cols = [...S.members.map(m => ({ id: m.id, m })), { id: '', m: null }].filter(c => c.m || ids.some(i => !T[i].assignee));
+  const bands = [...Array(E.M + 1).keys()].filter(b => b < E.M || ids.some(i => E.band[i] === E.M));
+  const sel = (b, mid) => ids.filter(i => E.band[i] === b && (mid === '*' || (T[i].assignee || '') === mid));
+  const kNow = curPhase(p);
+  const rows = bands.map(b => {
+    const col = bandColor(E, b);
+    const cells = cols.map(c => { const hs = hoursOf(p, sel(b, c.id)), pc = c.m && b < E.M ? periodCap(p, c.id, b, E) : null;
+      return `<td>${hs.plan || pc ? hbar(pc ? pc.full : null, hs.plan, hs.done, { sm: true, c: col, rem: pc ? pc.rem : null }) : '<span class="muted">—</span>'}</td>`; }).join('');
+    const all = hoursOf(p, sel(b, '*')), capAll = b < E.M ? r1(capFull(p, b, E)) : null, remAll = b < E.M ? r1(S.members.reduce((a, mm) => a + periodCap(p, mm.id, b, E).rem, 0)) : null;
+    return `<tr class="${b === kNow && b < E.M ? 'curr' : ''}"><th class="l" style="--c:${col}">${b === kNow && b < E.M ? '<span class="uc now">現在</span> ' : ''}<span>● ${esc(trunc(periodName(E, b), 16))}</span>${b < E.M ? `<small>→ ◆${esc(trunc(E.ms[b].name, 10))} ${esc(E.ms[b].date || '')}</small>` : ''}</th>${cells}<td class="tot">${hbar(capAll, all.plan, all.done, { sm: true, c: col, rem: remAll })}</td></tr>`;
+  }).join('');
+  return `<div class="mtabw"><table class="ptab2"><tr><th class="l">期間</th>${cols.map(c => `<th><span style="color:${c.m?.color || 'var(--accent)'}">●</span> ${c.m ? esc(c.m.name) : '担当未定'}</th>`).join('')}<th>チーム合計</th></tr>${rows}</table></div>
+    <div class="note" style="max-width:1150px;margin-top:4px">各マス:<b>達成</b>(完了した作業の時間)/ <b>作業</b>(その期間の作業時間の合計)/ <b>持ち</b>(その期間に使える時間)。バーの濃い部分が達成、薄い部分が作業時間、縦線が持ち時間で、作業時間が持ち時間を超えた分は赤になります。「余裕/不足」は 持ち時間 − 作業時間 です。持ち時間は月別の作業可能時間から期間全体(期間の初日〜締切日)で計算します。</div>`;
+}
 function volTable(p){
   const E = eff(p), T = p.tasks;
   const ids = placedIds(p).filter(i => T[i].kind !== 'ext' && taskMatch(p, i));
@@ -2628,7 +2742,7 @@ function doPrint(only){
     h += `<div class="plist" style="width:${cw - gw}mm">
       <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率</div></div>
       ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div>${esc(d.name)}</div><div class="mono">${esc(dScales(d))}</div>
-        <div class="pbar prog" style="padding:0 2mm">${segBar(p, dTaskIds(d))}</div></div>`).join('')}
+        <div class="pbar prog" style="padding:0 2mm">${pctBar(progressOf(p, dTaskIds(d)))}</div></div>`).join('')}
       ${withLinks ? printLinks(p, gw, rowH, headH) : ''}</div>`;
   }
   if (inc.detail || inc.tree) {
@@ -2964,6 +3078,7 @@ document.addEventListener('click', e => {
     case 'fzone': ui.flt = Object.assign(flt(), { zone: a.dataset.v }); saveUi(); return render();
     case 'fstar': ui.flt = Object.assign(flt(), { star: !flt().star }); saveUi(); return render();
     case 'fclear': ui.flt = {}; saveUi(); return render();
+    case 'totmin': ui.totMin = !ui.totMin; saveUi(); return renderTotals();
     case 'fdue': ui.flt = Object.assign(flt(), { urg: 'due' }); saveUi(); if (cur.view === 'list') { cur.view = 'detail'; } return render();
     case 'hlnow': ui.hlNow = a.checked; saveUi(); return render();
     case 'evenalloc': { const t = p.tasks[tidOf()]; delete t.alloc; commit(); return toast('合計を均等に配分し直しました'); }
