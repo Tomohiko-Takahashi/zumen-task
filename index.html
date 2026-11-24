@@ -406,6 +406,67 @@ svg .bandbg.on{fill:var(--accent-s);opacity:.7}
 #toast.on{opacity:1}
 
 
+/* urgency (今期・遅れ) */
+.uc{font-size:10px;font-weight:700;border-radius:8px;padding:1px 7px;white-space:nowrap;flex:none;color:#fff}
+.uc.now{background:#f08a24} .uc.late{background:var(--accent)}
+.task.u-now:not(.done){background:linear-gradient(90deg,#ffe9d4,#fff6ee 55%,transparent);box-shadow:inset 4px 0 0 #f08a24}
+.task.u-late:not(.done){background:linear-gradient(90deg,#fdd9d0,#fff1ed 55%,transparent);box-shadow:inset 4px 0 0 var(--accent)}
+.task.starred.u-now:not(.done),.task.starred.u-late:not(.done){background:linear-gradient(90deg,#fff1b8,#fff8e0 55%,transparent)}
+.task.u-now .ttl,.task.u-late .ttl{font-weight:600}
+tr.u-now:not(.isdone) td{background:#fff3e6} tr.u-now:not(.isdone) td:first-child{box-shadow:inset 4px 0 0 #f08a24}
+tr.u-late:not(.isdone) td{background:#fdebe6} tr.u-late:not(.isdone) td:first-child{box-shadow:inset 4px 0 0 var(--accent)}
+.bcard.u-now:not(.done){border-left-color:#f08a24;background:#fff6ee}
+.bcard.u-late:not(.done){border-left-color:var(--accent);background:#fff1ed}
+.su{font-size:9.5px;font-weight:700;color:#fff;border-radius:7px;padding:0 5px;margin-left:3px;font-family:var(--mono);white-space:nowrap}
+.su.now{background:#f08a24} .su.late{background:var(--accent)}
+.pbanner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:8px;padding:7px 12px;margin-bottom:10px;font-size:12.5px;max-width:1150px}
+.pbanner .pbn b{color:var(--c)} .pbanner .pbc{display:inline-flex;gap:6px}
+.pbanner .mono{font-family:var(--mono);font-size:11.5px}
+.mscard.cur{box-shadow:0 0 0 2px var(--c);position:relative}
+.curtag{position:absolute;top:-9px;right:8px;background:var(--c);color:#fff;font-size:10px;font-weight:700;border-radius:8px;padding:1px 8px}
+.mtasks tr.grp.curg td{box-shadow:inset 0 0 0 2px #f08a24}
+.mtasks tr.grp.lateg td{opacity:.95}
+
+/* filters */
+.fbar{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px 8px;margin-bottom:10px;font-size:12px;max-width:1150px}
+.fbar.active{border-color:var(--inst);box-shadow:0 0 0 2px var(--inst-s)}
+.fico{font-size:11px;color:var(--sub);font-weight:600;margin-right:2px}
+.fq{border:1px solid var(--line);border-radius:6px;padding:4px 8px;width:170px;font-size:12px}
+.fq.on{border-color:var(--inst);background:var(--inst-s)}
+.fsel{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--line);border-radius:6px;padding:0 0 0 6px;background:#fff}
+.fsel span{font-size:10.5px;color:var(--sub)}
+.fsel select{border:0;background:none;font-size:12px;padding:3px 2px;max-width:170px}
+.fsel.on{border-color:var(--inst);background:var(--inst-s)}
+.fseg{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
+.fseg button{border:0;background:none;padding:3px 8px;font-size:11.5px;color:var(--sub)}
+.fseg button[style]{color:var(--c);font-weight:700}
+.fseg button.on{background:var(--ink);color:#fff}
+.fseg button.on[style]{background:var(--c);color:#fff}
+.fstar{border:1px solid var(--line);background:#fff;border-radius:6px;padding:2px 8px;color:#cfcbc2;font-size:14px}
+.fstar.on{color:#e0a100;border-color:#e0a100;background:#fff8d6}
+.fclear{border:0;background:var(--inst);color:#fff;border-radius:6px;padding:4px 10px;font-size:11.5px;margin-left:auto}
+.fres{font-size:12px;color:var(--inst);margin:-4px 0 10px}
+.sitem.fout{opacity:.35}
+.fhit{color:var(--inst);font-weight:600}
+svg .tn.dim{opacity:.18}
+.vol{border-collapse:separate;border-spacing:3px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px;font-size:12px}
+.vol th{font-size:11px;color:var(--sub);font-weight:500;padding:4px 8px;white-space:nowrap}
+.vol th.l{text-align:left;color:var(--c,var(--ink));font-weight:600;min-width:170px}
+.vol th.l small{display:block;font-weight:400;color:var(--sub);font-size:10px}
+.vol td{padding:6px 10px;border-radius:5px;text-align:center;font-family:var(--mono);min-width:110px;background:#f7f6f2;position:relative}
+.vol td b{display:block;font-size:14px}
+.vol td small{font-size:10px;color:var(--sub)}
+.vol td em{position:absolute;top:3px;right:5px;font-style:normal;font-size:10px;font-weight:700}
+.vol td.h-over em{color:var(--accent)} .vol td.h-warn em{color:#b07a00} .vol td.h-ok em{color:var(--ok)}
+.vol td.vz{color:var(--mute);background:#faf9f6}
+.vol td.vt{background:#eef1f7}
+.vol tr.vsum th,.vol tr.vsum td{border-top:2px solid var(--line)}
+.vol tr.vsum td{background:#efede7}
+.mtasks tr.grp td{background:color-mix(in srgb,var(--c) 9%,#fff);border-left:4px solid var(--c);padding:6px 10px;font-size:12px}
+.mtasks tr.grp .gn{font-weight:700;color:var(--c)} .mtasks tr.grp .gn small{font-weight:400;color:var(--sub);margin-left:4px}
+.mtasks tr.grp .gs{float:right;font-family:var(--mono);font-size:11px;color:var(--sub)} .mtasks tr.grp .gs b{color:var(--ink)}
+.mtasks tr.grp em{font-style:normal;font-weight:700;margin-left:4px}
+
 /* zones & board */
 .zd{border:0;border-radius:3px;font-size:9.5px;font-weight:700;color:#fff;background:var(--c);width:16px;height:16px;padding:0;line-height:16px;flex:none;cursor:pointer;opacity:.85}
 .zd:hover{opacity:1}
@@ -757,7 +818,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ hlNow:true, flt:{}, bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -817,6 +878,74 @@ function zchkMini(c){
   return `<span class="zmini" title="${ZONES.map(z => `${z.n}:CL確認${zchk(c, z.k).cl ? '済 ' + zchk(c, z.k).cl : '未'}/社内確認${zchk(c, z.k).in ? '済 ' + zchk(c, z.k).in : '未'}`).join('\n')}">${ZONES.map(z => `<span style="--c:${z.c}"><b>${z.s}</b><i class="${zchk(c, z.k).cl ? 'on' : ''}"></i><i class="${zchk(c, z.k).in ? 'on' : ''}"></i></span>`).join('')}</span>`;
 }
 const zoneDot = t => { const z = ZMAP[zoneOf(t)]; return `<button class="zd" data-act="zone" style="--c:${z.c}" title="ゾーン:${z.n}(クリックで切替)">${z.s}</button>`; };
+// ---- 今期(今日が入っている期間)と遅れ ----
+function curPhase(p){ const E = eff(p), t0 = today0(); let k = E.ms.findIndex(m => { const d = parseD(m.date); return d && d >= t0; }); if (k < 0) k = E.M; return k; }
+function urg(p, tid){ // 'late' = 締切を過ぎた期間の未了 / 'now' = 今期の未了
+  const t = p.tasks[tid]; if (!t || t.done || ui.hlNow === false) return null;
+  const E = eff(p), b = E.band[tid], k = curPhase(p);
+  if (b < k) return 'late'; if (b === k && k < E.M) return 'now'; return null;
+}
+const urgCls = (p, tid) => { const u = urg(p, tid); return u ? 'u-' + u : ''; };
+function urgChip(p, tid){
+  const u = urg(p, tid); if (!u) return '';
+  const E = eff(p), ms = E.ms[E.band[tid]], cd = ms ? calDays(ms.date) : null;
+  return u === 'late' ? `<span class="uc late" title="締切(${esc(ms?.name || '')} ${esc(ms?.date || '')})を過ぎています">遅れ${cd != null ? ' ' + Math.abs(cd) + '日' : ''}</span>`
+    : `<span class="uc now" title="今期の締切 ${esc(ms?.name || '')} ${esc(ms?.date || '')}">今期${cd != null ? ' あと' + cd + '日' : ''}</span>`;
+}
+const urgCount = (p, ids) => { const a = { now: 0, late: 0 }; ids.forEach(i => { const u = urg(p, i); if (u) a[u]++; }); return a; };
+function phaseBanner(p){
+  const E = eff(p); if (!E.M) return '';
+  const k = curPhase(p), ids = placedIds(p), c = urgCount(p, ids);
+  const ms = E.ms[k], cd = ms ? calDays(ms.date) : null;
+  return `<div class="pbanner" style="--c:${k < E.M ? ms.color : 'var(--accent)'}">
+    <span class="pbn">${k < E.M ? `現在の期間:<b>${esc(periodName(E, k))}</b> → ◆${esc(ms.name)} <span class="mono">${esc(ms.date)}</span>(あと${cd}日)` : '<b>すべての締切を過ぎています</b>'}</span>
+    <span class="pbc"><span class="uc now">今期の未了 ${c.now}件</span>${c.late ? `<span class="uc late">遅れ ${c.late}件</span>` : ''}</span>
+    <button class="tbtn sm" data-act="fdue">これだけ表示</button>
+    <label class="chk"><input type="checkbox" data-act="hlnow" ${ui.hlNow !== false ? 'checked' : ''}> 強調表示</label>
+  </div>`;
+}
+// ---- フィルター(詳細・メンバー工数・ツリー共通) ----
+const FLT0 = { q:'', urg:'', mem:'', zone:'', st:'', band:'', pre:'', chk:'', kind:'', star:false };
+const flt = () => Object.assign({}, FLT0, ui.flt || {});
+const fltCount = () => { const f = flt(); return Object.keys(FLT0).filter(k => f[k] && f[k] !== FLT0[k]).length; };
+const fltActive = () => fltCount() > 0;
+function taskMatch(p, tid, cid){
+  const t = p.tasks[tid]; if (!t) return false; const f = flt();
+  if (f.q) { const q = f.q.toLowerCase(); if (!((t.title || '') + ' ' + (t.memo || '')).toLowerCase().includes(q)) return false; }
+  if (f.mem) { if (f.mem === '__none' ? (t.kind === 'ext' || t.assignee) : t.assignee !== f.mem) return false; }
+  if (f.zone && zoneOf(t) !== f.zone) return false;
+  if (f.urg) { const save = ui.hlNow; ui.hlNow = true; const u = urg(p, tid); ui.hlNow = save; if (f.urg === 'due' ? !u : u !== 'late') return false; }
+  if (f.st === 'open' && t.done) return false;
+  if (f.st === 'done' && !t.done) return false;
+  if (f.band !== '' && f.band != null) { const E = eff(p), b = E.band[tid]; if (f.band === 'none' ? b !== E.M : b !== +f.band) return false; }
+  if (f.pre) { const ps = prereqState(p, tid); const k = ps ? ps.kind : null;
+    if (f.pre === 'none' && k !== 'none') return false; if (f.pre === 'open' && k !== 'open') return false; if (f.pre === 'any' && k !== 'none' && k !== 'open') return false; }
+  if (f.chk) { const z = zoneOf(t), cs = cid ? [findCont(p, cid)].filter(Boolean) : places(p, tid).map(x => x.c);
+    if (!cs.some(c => !zchk(c, z)[f.chk])) return false; }
+  if (f.kind && t.kind !== f.kind) return false;
+  if (f.star && !t.star) return false;
+  return true;
+}
+const findCont = (p, cid) => { for (const d of p.drawings) for (const c of d.contents) if (c.id === cid) return c; return null; };
+function fltBar(opts = {}){
+  const p = P(), f = flt(), E = eff(p), n = fltCount();
+  const sel = (k, label, options) => `<label class="fsel ${f[k] ? 'on' : ''}"><span>${label}</span><select data-flt="${k}">${options.map(([v, l]) => `<option value="${esc(v)}" ${String(f[k]) === String(v) ? 'selected' : ''}>${esc(l)}</option>`).join('')}</select></label>`;
+  return `<div class="fbar ${n ? 'active' : ''}">
+    <span class="fico">絞り込み</span>
+    <input id="fq" class="fq ${f.q ? 'on' : ''}" data-flt="q" value="${esc(f.q)}" placeholder="作業名・備考で検索">
+    ${opts.noMember ? '' : sel('mem', '担当', [['', 'すべて'], ...S.members.map(m => [m.id, m.name]), ['__none', '担当未定']])}
+    <span class="fseg ${f.zone ? 'on' : ''}">${[['', '全ゾーン'], ...ZONES.map(z => [z.k, z.s])].map(([v, l]) => `<button data-act="fzone" data-v="${v}" class="${f.zone === v ? 'on' : ''}" ${v ? `style="--c:${ZMAP[v].c}" title="${ZMAP[v].n}"` : ''}>${l}</button>`).join('')}</span>
+    ${sel('urg', '急ぎ', [['', 'すべて'], ['due', '今期+遅れ の未了'], ['late', '遅れのみ']])}
+    ${sel('st', '状態', [['', 'すべて'], ['open', '未完了'], ['done', '完了']])}
+    ${E.M ? sel('band', '期間', [['', 'すべて'], ...E.ms.map((m, k) => [String(k), periodName(E, k) + ' → ◆' + m.name]), ['none', '未定']]) : ''}
+    ${sel('pre', '前提', [['', 'すべて'], ['any', '⚠/⏳ 前提が整っていない'], ['none', '⚠ 前提なし'], ['open', '⏳ 前提未了']])}
+    ${sel('chk', 'ゾーン確認', [['', 'すべて'], ['cl', 'CL確認が未'], ['in', '社内確認が未']])}
+    ${sel('kind', '種別', [['', 'すべて'], ['in', '社内'], ['ext', '外部'], ['mtg', '打合せ']])}
+    <button class="fstar ${f.star ? 'on' : ''}" data-act="fstar" title="★優先のみ">★</button>
+    ${n ? `<button class="fclear" data-act="fclear">クリア(${n})</button>` : ''}
+    ${opts.extra || ''}
+  </div>`;
+}
 const starCount = (p, d) => dTaskIds(d).filter(i => p.tasks[i]?.star && !p.tasks[i].done).length;
 const starBtn = t => `<button class="star ${t.star ? 'on' : ''}" data-act="star" title="${t.star ? '優先を外す' : '優先(★)にする'}">${t.star ? '★' : '☆'}</button>`;
 const dTaskIds = d => { const s = new Set(); d.contents.forEach(c => c.items.forEach(i => s.add(i))); return [...s]; };
@@ -1055,7 +1184,7 @@ function msCards(p){
   const E = eff(p);
   const cards = E.ms.map((m, k) => {
     const r = review(p, k), cd = r.cal;
-    return `<div class="mscard" data-act="review" data-k="${k}" style="--c:${m.color}">
+    return `<div class="mscard ${k === curPhase(p) ? 'cur' : ''}" data-act="review" data-k="${k}" style="--c:${m.color}">${k === curPhase(p) ? '<span class="curtag">現在の期間</span>' : ''}
       <div class="pd" title="期間:${esc(periodName(E, k))}">${esc(periodName(E, k))}</div>
       <div class="n" title="${esc(m.name)}">◆ ${esc(m.name)}</div>
       <div class="d">${esc(m.date || '日付未設定')}${cd != null ? ` ・ ${cd >= 0 ? 'あと' + cd + '日' : Math.abs(cd) + '日超過'}` : ''}</div>
@@ -1075,7 +1204,7 @@ function renderList(){
       <button class="caret ${d.contents.length ? '' : 'none'}" data-act="tog" title="作図内容を表示">${isOpenD(d.id) ? '▼' : '▶'}</button>
       ${p.numMode !== 'sort' ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
-      <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
+      <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れの未了作業">遅${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了作業">今${u.now}</span>` : ''); })()}${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
       <span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
       <div class="prog" data-act="open">${segBar(p, dTaskIds(d))}</div>
       <button class="ico" data-act="open" title="詳細を開く">›</button>
@@ -1098,6 +1227,7 @@ function renderList(){
       <label class="chk"><input type="checkbox" data-act="showlinks" ${ui.showLinks ? 'checked' : ''}> 関係線を表示</label>
     </div>
     ${msCards(p)}
+    ${phaseBanner(p)}
     <div style="display:flex;gap:6px;margin-bottom:8px"><button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button></div>
     <div class="dlist" id="dlist">
       <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率(締切ごと)</div><div></div><div></div><div title="関係線">⇄</div></div>
@@ -1153,8 +1283,8 @@ function renderDetail(){
   const prevSheets = $('#sheets'), sc = prevSheets ? prevSheets.scrollTop : null;
   const tbScroll = $('#treebox') ? [$('#treebox').scrollLeft, $('#treebox').scrollTop] : null;
   const side = p.drawings.map(d => { const pr = dProgress(p, d); return `
-    <div class="sitem ${d.id === cur.did ? 'on' : ''}" data-act="goto" data-did="${d.id}">
-      <span class="no">${esc(d.no)}</span><span class="nm" title="${esc(d.no + ' ' + d.name)}">${esc(d.name)}${starCount(p, d) ? `<span class="st">★${starCount(p, d)}</span>` : ''}</span><span class="pc">${pr == null ? '—' : pr + '%'}</span>
+    <div class="sitem ${d.id === cur.did ? 'on' : ''} ${fltActive() && !d.contents.some(c => c.items.some(i => taskMatch(p, i, c.id))) ? 'fout' : ''}" data-act="goto" data-did="${d.id}">
+      <span class="no">${esc(d.no)}</span><span class="nm" title="${esc(d.no + ' ' + d.name)}">${esc(d.name)}${starCount(p, d) ? `<span class="st">★${starCount(p, d)}</span>` : ''}${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れ">${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了">${u.now}</span>` : ''); })()}</span><span class="pc">${fltActive() ? (() => { const n = dTaskIds(d).filter(i => d.contents.some(c => c.items.includes(i) && taskMatch(p, i, c.id))).length; return n ? `<b class="fhit">${n}件</b>` : '<span class="muted">0</span>'; })() : pr == null ? '—' : pr + '%'}</span>
     </div>`; }).join('');
   app.innerHTML = `
   <div class="dv ${ui.treeWide ? 'wide' : ''} ${ui.dpane === 'tree' ? 'pane-tree' : ''}" style="${ui.sideW ? `--sideW:${ui.sideW}px;` : ''}${ui.treeW ? `--treeW:${ui.treeW}px;` : ''}">
@@ -1166,10 +1296,12 @@ function renderDetail(){
         <span class="seg narrow-only"><button data-act="dpane" data-v="list" class="on">作業リスト</button><button data-act="dpane" data-v="tree">ツリー</button></span>
         <select class="mid-only" id="dsel">${p.drawings.map(d => `<option value="${d.id}" ${d.id === cur.did ? 'selected' : ''}>${esc(d.no)} ${esc(d.name)}</option>`).join('')}</select>
         <span class="chk" title="インスタンス(複数の作図内容に置いた作業)の時間の見せ方">インスタンスの時間:<span class="seg"><button data-act="hmode" data-v="sum" class="${ui.hmode !== 'split' ? 'on' : ''}">合算</button><button data-act="hmode" data-v="split" class="${ui.hmode === 'split' ? 'on' : ''}">配分</button></span></span>
-        <label class="chk starf"><input type="checkbox" data-act="staronly" ${ui.starOnly ? 'checked' : ''}> ★優先のみ表示</label>
         <label class="chk"><input type="checkbox" data-act="fade" ${ui.fadeInst ? 'checked' : ''}> インスタンスは本体以外を薄く表示(集計からも除外)</label>
         <span>作業名の頭に <b>@関係者名</b> を付けて追加すると外部作業になります</span>
       </div>
+      ${phaseBanner(p)}
+      ${fltBar()}
+      ${fltActive() ? `<div class="fres">該当 <b>${placedIds(p).filter(i => taskMatch(p, i)).length}</b> 件(該当のない作図内容・図面は隠しています)</div>` : ''}
       ${p.drawings.map(d => sheetHTML(p, d)).join('') || '<p class="muted">図面がありません</p>'}
     </section>
     <section class="treepane">
@@ -1206,7 +1338,10 @@ function sheetHTML(p, d){
     ${out.map(l => `<div>→ <a data-act="goto" data-did="${l.to}">${dn(l.to)}</a> へ反映 <span class="memo">${esc(l.memo || '')}</span></div>`).join('')}
     ${inn.map(l => `<div>← <a data-act="goto" data-did="${l.from}">${dn(l.from)}</a> から <span class="memo">${esc(l.memo || '')}</span></div>`).join('')}
   </div>` : '';
+  const F = fltActive();
+  if (F && !d.contents.some(c => c.items.some(i => taskMatch(p, i, c.id)))) return '';
   const contents = d.contents.map(c => {
+    if (F && !c.items.some(i => taskMatch(p, i, c.id))) return '';
     const counted = c.items.filter(i => p.tasks[i] && (ui.hmode === 'split' || !ui.fadeInst || homePlace(p, i)?.c.id === c.id));
     const hrs = counted.filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (ui.hmode === 'split' ? shareOf(p, i, c.id) : (+p.tasks[i].hours || 0)), 0);
     const dn2 = counted.filter(i => p.tasks[i].done).length;
@@ -1265,12 +1400,12 @@ function taskLI(p, d, c, tid, i){
   }
   const kt = t.kind === 'in' ? '' : `<span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${t.kind === 'ext' ? '外部' : '打合せ'}</span>`;
   const memoEdit = memoOpen.has(tid + c.id);
-  if (ui.starOnly && !t.star) return '';
-  return `<li class="task ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''} ${t.star ? 'starred' : ''}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
+  if (fltActive() && !taskMatch(p, tid, c.id)) return '';
+  return `<li class="task ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, tid)}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
    <div class="trow">
     ${i > 0 ? `<button class="chain ${serial ? 'serial' : ''}" data-act="chain" title="${serial ? '直列:前の作業が終わってから着手(クリックで並列に)' : '並列:前の作業と同時進行できる(クリックで直列に)'}">${serial ? '↓' : '∥'}</button>` : `<span class="chain first">●</span>`}
     <input type="checkbox" data-act="done" ${t.done ? 'checked' : ''} title="完了">
-    <div class="tcell">${starBtn(t)}${zoneDot(t)}${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}">${(() => { const ps = prereqState(p, tid); return ps && ps.kind === 'none' ? '<span class="pq none" title="前提(条件整理・デザイン検討)の作業がつながっていません">⚠前提なし</span>' : ps && ps.kind === 'open' ? `<span class="pq open" title="前提の作業が${ps.n}件 未完了">⏳${ps.n}</span>` : ''; })()}</div>
+    <div class="tcell">${starBtn(t)}${zoneDot(t)}${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}">${(() => { const ps = prereqState(p, tid); return ps && ps.kind === 'none' ? '<span class="pq none" title="前提(条件整理・デザイン検討)の作業がつながっていません">⚠前提なし</span>' : ps && ps.kind === 'open' ? `<span class="pq open" title="前提の作業が${ps.n}件 未完了">⏳${ps.n}</span>` : ''; })()}${urgChip(p, tid)}</div>
     ${other ? `<button class="depchip" data-act="edit" title="この作業の前提作業">前提+${other}</button>` : '<span></span>'}
     ${n > 1 ? `<span class="ibadge ${isHome ? 'home' : ''}" data-act="place" title="${isHome ? '本体' : 'インスタンス'}:同一作業 ${n}箇所(クリックで配置先を編集)">◆${n}</span>` : '<span></span>'}
     <button class="ico memo-b ${t.memo ? 'has' : ''}" data-act="memo" title="備考">✎</button>
@@ -1388,7 +1523,8 @@ function treeSVG(p, T, print){
     const starG = t.star && !t.done ? `<rect x="-4" y="-4" width="${NW + 8}" height="${NH + 8}" rx="8" fill="#ffd84d" opacity=".45"/>` : '';
     const fill = t.done ? '#f1f0ec' : t.kind !== 'in' ? '#fbfaf8' : '#fff';
     const ownMs = t.ms && p.milestones.find(x => x.id === t.ms);
-    s += `<g class="tn ${t.star ? 'starred' : ''}" data-tid="${id}" transform="translate(${q.x},${q.y})">
+    s += `<g class="tn ${t.star ? 'starred' : ''} ${print ? '' : urgCls(p, id)} ${!print && fltActive() && !taskMatch(p, id) ? 'dim' : ''}" data-tid="${id}" transform="translate(${q.x},${q.y})">
+      ${!print && urg(p, id) ? `<rect x="-3" y="-3" width="${NW + 6}" height="${NH + 6}" rx="7" fill="none" stroke="${urg(p, id) === 'late' ? '#d2462b' : '#f08a24'}" stroke-width="2.5"/><rect x="${NW - 40}" y="-9" width="38" height="14" rx="7" fill="${urg(p, id) === 'late' ? '#d2462b' : '#f08a24'}"/><text x="${NW - 21}" y="1.5" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">${urg(p, id) === 'late' ? '遅れ' : '今期'}</text>` : ''}
       ${starG}${nodeShape(t, t.star && !t.done ? '#fffbe6' : fill, t.star && !t.done && !od && !crit ? '#e0a100' : stroke, g || t.kind === 'ext')}
       ${t.star ? `<text x="${NW - 18}" y="40" font-size="13" fill="#e0a100">★</text>` : ''}
       ${!print && ui.treeColor === 'zone' ? `<rect width="5" height="${NH}" rx="2" fill="${ZMAP[zoneOf(t)].c}"/><text x="${NW - 20}" y="14" font-size="9.5" fill="${ZMAP[zoneOf(t)].c}" font-weight="700">${ZMAP[zoneOf(t)].s}</text>` : m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
@@ -1629,10 +1765,17 @@ function renderMembers(){
         <div class="num ${cls}">${b.cap != null && r.m ? `${fmtH(b.cum)} / ${fmtH(b.cap)}h ${isFinite(b.ratio) ? Math.round(b.ratio * 100) + '%' : ''}` : `${fmtH(b.cum)}h`}</div>
         ${b.k < E.M && r.m ? `<div class="ovw" title="この期間(${esc(periodRange(p, E, b.k).from || '')} 〜 ${esc(E.ms[b.k].date)})のうち本日以降に使える時間。空欄=月別の作業可能時間から自動計算"><input class="ovin ${b.manual ? 'man' : ''}" type="number" min="0" step="1" data-ov="${r.id}|${E.ms[b.k].id}" value="${b.manual ? b.icap : ''}" placeholder="${fmtH(b.manual ? 0 : b.icap)}">h${b.manual ? ' <span class="mtag">手入力</span>' : ''}</div>` : '<div></div>'}`;
     }).join('');
-    const list = (ui.memDone ? r.mine : r.rem).slice().sort((a, b) => (T[a].done - T[b].done) || (!!T[b].star - !!T[a].star) || (E.band[a] - E.band[b]));
+    const list = (ui.memDone ? r.mine : r.rem).filter(i => taskMatch(p, i)).sort((a, b) => (E.band[a] - E.band[b]) || (T[a].done - T[b].done) || (!!T[b].star - !!T[a].star));
     const open = ui.memOpen[r.id || '_'] !== false;
+    let lastB = null;
     const rows = list.map(i => { const t = T[i], b = E.band[i], hp = homePlace(p, i), pl = placesHTML(p, i);
-      return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''}">
+      let head = '';
+      if (b !== lastB) { lastB = b; const g = list.filter(x => E.band[x] === b), gh = g.reduce((a, x) => a + (+T[x].hours || 0), 0), gr = g.filter(x => !T[x].done).reduce((a, x) => a + (+T[x].hours || 0), 0);
+        const av = r.m && b < E.M ? availInt(p, r.id, b, E).h : null, cls = av != null ? (av ? (gr / av > 1 ? 'over' : gr / av > .85 ? 'warn' : 'ok') : (gr ? 'over' : 'ok')) : '';
+        const kNow = curPhase(p);
+        head = `<tr class="grp ${b === kNow && b < E.M ? 'curg' : b < kNow ? 'lateg' : ''}"><td colspan="7" style="--c:${bandColor(E, b)}"><span class="gn">${b === kNow && b < E.M ? '<span class="uc now">現在の期間</span> ' : b < kNow ? '<span class="uc late">締切済み</span> ' : ''}● ${esc(periodName(E, b))}${b < E.M ? ` <small>→ ◆${esc(E.ms[b].name)} ${esc(E.ms[b].date || '')}</small>` : ''}</span>
+          <span class="gs">${g.length}件 ・ 計 <b>${fmtH(gh)}h</b> ・ 残 <b>${fmtH(gr)}h</b>${av != null ? ` ・ 期間内で使える ${fmtH(av)}h <em class="${cls}">${av ? Math.round(gr / av * 100) + '%' : ''}</em>` : ''}</span></td></tr>`; }
+      return head + `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, i)}">
         <td style="width:24px"><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}></td>
         <td style="width:150px;white-space:nowrap"><span style="color:${bandColor(E, b)}">●</span> <span style="font-size:11px">${esc(trunc(bandName(E, b), 10))}</span></td>
         <td><div class="tcell">${starBtn(t)}${t.kind === 'mtg' ? `<span class="kt mtg" style="--c:${party(p, t.party)?.color || '#6b6a66'}">打合せ</span>` : ''}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
@@ -1663,6 +1806,10 @@ function renderMembers(){
     <div class="note" style="max-width:1150px;margin-top:6px">月ごとに、このプロジェクトに使える時間(h)を入れてください。空欄の月は「標準」の値を使います(黄色=月ごとに入力済み)。月の時間はその月の平日に均等に割り振って計算します。休暇などで特定の期間だけ変えたい場合は、下の各メンバーの「期間内で使える時間」に直接入力して上書きできます。</div>
     <div class="note" style="max-width:1150px">各締切までに終える必要がある<b>残り工数(累積)</b>を、その人が本日から締切までに使える時間と比べています。85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
     ${E.M ? heat : '<div class="note">締切(マイルストーン)を登録すると、締切ごとの負荷が表示されます。</div>'}
+    ${phaseBanner(p)}
+    <div class="sec" style="max-width:1150px">期間ごとのボリューム(残り工数 / 計)${fltActive() ? ' ― 絞り込み中' : ''}</div>
+    ${fltBar({ noMember: false })}
+    ${volTable(p)}
     ${cards}
   </div>`;
   app.firstElementChild.scrollTop = sc;
@@ -1690,7 +1837,7 @@ function renderBoard(){
     const cards = ids.map(i => {
       const t = T[i], b = E.band[i], m = member(t.assignee), pa = party(p, t.party), n = placeCount(p, i), ps = prereqState(p, i);
       const outside = t.deps.filter(x => T[x] && !items.includes(x)).length;
-      return `<div class="bcard ${t.done ? 'done' : ''} ${t.star ? 'starred' : ''}" data-tid="${i}" style="--b:${bandColor(E, b)}">
+      return `<div class="bcard ${t.done ? 'done' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, i)}" data-tid="${i}" style="--b:${bandColor(E, b)}">
         <div class="bh"><span class="bgrip" title="ドラッグで移動(別のゾーンへも)">⋮⋮</span><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}>${starBtn(t)}
           ${t.kind !== 'in' ? `<span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${KIND[t.kind]}</span>` : ''}
           <input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}">
@@ -1698,7 +1845,7 @@ function renderBoard(){
         <div class="bm">${t.kind === 'in' ? `<span style="color:${m?.color || 'var(--mute)'}">${m ? esc(m.name) : '担当—'}</span>` : `<span>${esc(pa?.name || '関係者—')}</span>`}
           ${t.kind !== 'ext' ? `<span>${fmtH(n > 1 && ui.hmode === 'split' ? r1(shareOf(p, i, c.id)) : t.hours)}h</span>` : t.due ? `<span>〆${fmtD(t.due)}</span>` : ''}
           ${n > 1 ? `<span class="ibadge">◆${n}</span>` : ''}${outside ? `<span class="bout" title="他の作図内容の作業が前提">←他${outside}</span>` : ''}
-          ${ps && ps.kind === 'none' ? '<span class="pq none">⚠前提なし</span>' : ps && ps.kind === 'open' ? `<span class="pq open">⏳前提未了${ps.n}</span>` : ''}
+          ${urgChip(p, i)}${ps && ps.kind === 'none' ? '<span class="pq none">⚠前提なし</span>' : ps && ps.kind === 'open' ? `<span class="pq open">⏳前提未了${ps.n}</span>` : ''}
           ${mode === 3 ? `<select class="bms" data-bms="1" title="締切(期間)"><option value="">自動(${esc(trunc(bandName(E, b), 8))})</option>${E.ms.map((ms, k) => `<option value="${ms.id}" ${t.ms === ms.id ? 'selected' : ''}>${esc(trunc(periodName(E, k), 10))} → ◆${esc(trunc(ms.name, 8))}</option>`).join('')}</select>` : `<span class="bband" title="${esc(periodName(E, b))}" style="color:${bandColor(E, b)}">● ${esc(trunc(bandName(E, b), 9))}</span>`}
         </div></div>`;
     }).join('');
@@ -1907,6 +2054,26 @@ function renderCalendar(){
   if (!sc) { const td = $('.cd.today', app); if (td) td.closest('.calm').scrollIntoView({ block: 'start' }); app.firstElementChild.scrollTop = Math.max(0, app.firstElementChild.scrollTop - 10); }
 }
 
+function volTable(p){
+  const E = eff(p), T = p.tasks;
+  const ids = placedIds(p).filter(i => T[i].kind !== 'ext' && taskMatch(p, i));
+  const cols = [...S.members.map(m => ({ id: m.id, m })), { id: '', m: null }];
+  const cell = (b, mid) => { const g = ids.filter(i => E.band[i] === b && (mid === '*' || (T[i].assignee || '') === mid));
+    return { n: g.length, h: g.reduce((a, i) => a + (+T[i].hours || 0), 0), r: g.filter(i => !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0) }; };
+  const usedCols = cols.filter(c => c.m || ids.some(i => !T[i].assignee));
+  const bands = [...Array(E.M + 1).keys()].filter(b => b < E.M || ids.some(i => E.band[i] === E.M));
+  const td = (x, av) => { if (!x.n) return '<td class="vz">—</td>'; const cls = av != null ? (av ? (x.r / av > 1 ? 'h-over' : x.r / av > .85 ? 'h-warn' : 'h-ok') : (x.r ? 'h-over' : '')) : '';
+    return `<td class="${cls}" title="${x.n}件 / 計${fmtH(x.h)}h / 残${fmtH(x.r)}h${av != null ? ` / 期間内で使える${fmtH(av)}h` : ''}"><b>${fmtH(x.r)}h</b><small>/ ${fmtH(x.h)}h · ${x.n}件</small>${av != null && av ? `<em>${Math.round(x.r / av * 100)}%</em>` : ''}</td>`; };
+  const tot = { n: 0, h: 0, r: 0 };
+  const rows = bands.map(b => { const all = cell(b, '*'); tot.n += all.n; tot.h += all.h; tot.r += all.r;
+    return `<tr><th class="l" style="--c:${bandColor(E, b)}"><span>● ${esc(trunc(periodName(E, b), 16))}</span>${b < E.M ? `<small>→ ◆${esc(trunc(E.ms[b].name, 10))} ${esc((E.ms[b].date || '').slice(5).replace('-', '/'))}</small>` : ''}</th>
+      ${usedCols.map(c => td(cell(b, c.id), c.m && b < E.M ? availInt(p, c.id, b, E).h : null)).join('')}${td(all, b < E.M ? S.members.reduce((a, m) => a + availInt(p, m.id, b, E).h, 0) : null).replace('<td', '<td class="vt"').replace('class="vt" class="', 'class="vt ')}</tr>`; }).join('');
+  const colTot = c => { const g = ids.filter(i => (T[i].assignee || '') === c.id); return { n: g.length, h: g.reduce((a, i) => a + (+T[i].hours || 0), 0), r: g.filter(i => !T[i].done).reduce((a, i) => a + (+T[i].hours || 0), 0) }; };
+  return `<div class="mtabw"><table class="vol"><tr><th class="l">期間</th>${usedCols.map(c => `<th><span style="color:${c.m?.color || 'var(--accent)'}">●</span> ${c.m ? esc(c.m.name) : '担当未定'}</th>`).join('')}<th>合計</th></tr>
+    ${rows}<tr class="vsum"><th class="l">合計</th>${usedCols.map(c => td(colTot(c), null)).join('')}${td(tot, null)}</tr></table></div>
+    <div class="note" style="max-width:1150px;margin-top:4px">各マス:<b>残り工数</b> / 計(完了分を含む)・件数。%は「その期間の残り ÷ その人がその期間内(本日以降)に使える時間」で、85%超で黄、100%超で赤。上の絞り込み(ゾーン・状態など)を変えると、例えば「作図だけのボリューム」も見られます。</div>`;
+}
+
 /* ---------------- party view ---------------- */
 function renderParties(){
   const p = P(), app = $('#app'), T = p.tasks;
@@ -1925,7 +2092,7 @@ function renderParties(){
       <header><span class="dot"></span><h3>${esc(g.name)}</h3><span class="cnt">未完了 ${open.length}件${od.length ? ` ・ <span style="color:var(--accent)">期限超過 ${od.length}件</span>` : ''}</span></header>
       ${ids.length ? `<table class="ptab"><tr><th style="width:80px">状態</th><th>内容</th><th style="width:260px">図面 / 作図内容</th><th style="width:124px">回答予定日/日付</th><th style="width:130px">締切</th><th style="width:80px">止めている</th><th style="width:28%">備考</th></tr>
       ${ids.map(i => { const t = T[i], pl = places(p, i), b = E.band[i];
-        return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''}">
+        return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, i)}">
           <td>${stChip(t)}</td>
           <td><div class="tcell">${starBtn(t)}<span class="kt ${t.kind}" style="--c:${g.color}">${KIND[t.kind]}</span><input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
           <td>${placesHTML(p, i)}</td>
@@ -2762,7 +2929,11 @@ document.addEventListener('click', e => {
     case 'zone': { const t = p.tasks[tidOf()]; const i = ZONES.findIndex(z => z.k === zoneOf(t)); t.zone = ZONES[(i + 1) % 3].k; return commit(); }
     case 'tcolor': ui.treeColor = a.dataset.v; saveUi(); $$('[data-act=tcolor]').forEach(b => b.classList.toggle('on', b === a)); return renderTree();
     case 'star': { const t = p.tasks[tidOf()]; t.star = !t.star; return commit(); }
-    case 'staronly': ui.starOnly = a.checked; saveUi(); return render();
+    case 'fzone': ui.flt = Object.assign(flt(), { zone: a.dataset.v }); saveUi(); return render();
+    case 'fstar': ui.flt = Object.assign(flt(), { star: !flt().star }); saveUi(); return render();
+    case 'fclear': ui.flt = {}; saveUi(); return render();
+    case 'fdue': ui.flt = Object.assign(flt(), { urg: 'due' }); saveUi(); if (cur.view === 'list') { cur.view = 'detail'; } return render();
+    case 'hlnow': ui.hlNow = a.checked; saveUi(); return render();
     case 'evenalloc': { const t = p.tasks[tidOf()]; delete t.alloc; commit(); return toast('合計を均等に配分し直しました'); }
     case 'openonly': ui.openOnly = a.checked; saveUi(); return render();
     case 'addd': return addDrawing();
@@ -2800,6 +2971,7 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   const el = e.target, p = P();
   if (el.id === 'dsel') return setActiveDrawing(el.value, true);
+  if (el.dataset.flt && el.dataset.flt !== 'q') { ui.flt = Object.assign(flt(), { [el.dataset.flt]: el.value }); saveUi(); return render(); }
   if (el.id === 'numMode') {
     const v = el.value;
     if (v === 'renumber') { el.value = p.numMode; return openNumRule(true); }
@@ -2832,6 +3004,11 @@ document.addEventListener('change', e => {
     return commit();
   }
   if (el.dataset.act === 'done') { const t = p.tasks[el.closest('[data-tid]').dataset.tid]; t.done = el.checked; return commit(); }
+});
+let fqTimer = null;
+document.addEventListener('input', e => { // 検索は入力に合わせて絞り込む(フォーカスを保つ)
+  const el = e.target; if (el.id !== 'fq') return;
+  clearTimeout(fqTimer); fqTimer = setTimeout(() => { const pos = el.selectionStart; ui.flt = Object.assign(flt(), { q: el.value }); saveUi(); render(); const n = $('#fq'); if (n) { n.focus(); n.setSelectionRange(pos, pos); } }, 250);
 });
 document.addEventListener('focusout', e => { // 備考エディタ:変更なしで離れたら閉じる
   const el = e.target; if (!el.matches || !el.matches('.tmemo textarea')) return;
