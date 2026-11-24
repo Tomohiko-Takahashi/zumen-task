@@ -406,6 +406,70 @@ svg .bandbg.on{fill:var(--accent-s);opacity:.7}
 #toast.on{opacity:1}
 
 
+/* zones & board */
+.zd{border:0;border-radius:3px;font-size:9.5px;font-weight:700;color:#fff;background:var(--c);width:16px;height:16px;padding:0;line-height:16px;flex:none;cursor:pointer;opacity:.85}
+.zd:hover{opacity:1}
+.pq{font-size:10px;border-radius:8px;padding:1px 6px;white-space:nowrap;flex:none}
+.pq.none{background:#fde7e1;color:var(--accent)} .pq.open{background:#fdf3dc;color:#8a5d00}
+.zmini{display:inline-flex;gap:4px;align-items:center;flex:none}
+.zmini>span{display:inline-flex;align-items:center;gap:1px}
+.zmini b{font-size:9px;color:var(--c);margin-right:1px}
+.zmini i{width:6px;height:9px;border:1px solid var(--c);border-radius:1px;display:inline-block;background:#fff}
+.zmini i.on{background:var(--c)}
+.bbtn{border:1px solid var(--line);background:#fff;border-radius:5px;font-size:11px;padding:2px 7px;white-space:nowrap;color:var(--sub);flex:none}
+.bbtn:hover{border-color:var(--ink);color:var(--ink)}
+.bbtn.sm{padding:0 5px;font-size:10px;margin-left:6px}
+#board{position:fixed;inset:0;z-index:50;background:rgba(28,28,26,.35);display:flex;padding:20px;padding-top:max(20px,env(safe-area-inset-top))}
+.bwrap{background:var(--bg);border-radius:12px;flex:1;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.btop{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--paper);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.bttl{font-size:14px}.bttl .sep{color:var(--line)} .bttl b{font-size:16px}
+.bsteps{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.bsteps button{border:0;background:#fff;padding:7px 14px;font-size:12.5px;color:var(--sub)}
+.bsteps button.on{background:var(--ink);color:#fff;font-weight:600}
+.bsum{display:inline-flex;gap:6px}
+.bhint{font-size:12px;color:var(--sub);padding:8px 18px;background:#faf9f6;border-bottom:1px solid var(--line2)}
+.bbody{flex:1;overflow:auto;position:relative}
+.bgrid{display:grid;grid-template-columns:1fr 26px 1fr 26px 1fr;gap:0;padding:14px 16px 60px;min-width:780px;position:relative;z-index:1;pointer-events:none}
+.bgrid>*{pointer-events:auto}
+.barrow{align-self:start;margin-top:14px;text-align:center;color:var(--mute);font-size:16px;pointer-events:none}
+.blinks{position:absolute;top:0;left:0;z-index:2;pointer-events:none}
+.blinks .bhit{pointer-events:stroke;cursor:pointer}
+.bcol{background:var(--paper);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:8px;display:flex;flex-direction:column;min-width:0}
+.bcol.dropcol{box-shadow:0 0 0 2px var(--c)}
+.bcol>header{padding:8px 10px;border-bottom:1px solid var(--line2);display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.bcol h4{margin:0;font-size:14px;color:var(--c)}
+.bcnt{font-family:var(--mono);font-size:11px;color:var(--sub)}
+.bchk{display:flex;gap:10px;margin-left:auto}
+.bchk label{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;cursor:pointer;white-space:nowrap}
+.bchk input{accent-color:var(--c);width:15px;height:15px}
+.bchk small{font-family:var(--mono);font-size:10px;color:var(--c)}
+.bbulk{width:100%;border:1px dashed var(--c);border-radius:5px;padding:3px 6px;font-size:11.5px;background:#fff;color:var(--c)}
+.bcards{padding:8px;display:flex;flex-direction:column;gap:7px;min-height:60px}
+.bempty{color:var(--mute);font-size:12px;text-align:center;padding:16px 0}
+.bcard{background:#fff;border:1px solid var(--line);border-left:4px solid var(--b);border-radius:6px;padding:4px 6px 5px;position:relative}
+.bcard.done{opacity:.55} .bcard.done .ttl{text-decoration:line-through}
+.bcard.starred:not(.done){background:#fffbe6;box-shadow:0 0 0 2px #ffd84d}
+.bcard.droptgt{box-shadow:0 -3px 0 var(--accent)}
+.bcard.dragsrc{opacity:.3}
+.bcard.hl{box-shadow:0 0 0 2px var(--inst);background:var(--inst-s)}
+.bghost{position:fixed;z-index:200;pointer-events:none;opacity:.92;box-shadow:0 10px 24px rgba(0,0,0,.2);transform:rotate(-1deg)}
+.bh{display:flex;align-items:center;gap:4px}
+.bh .ttl{flex:1;font-size:13px;padding:3px 4px}
+.bh input[type=checkbox]{accent-color:var(--ink)}
+.bgrip{color:var(--mute);cursor:grab;font-size:12px;letter-spacing:-2px;padding:4px 2px;touch-action:none;user-select:none}
+.bdel{opacity:.35} .bcard:hover .bdel{opacity:1}
+.bport{position:absolute;right:-8px;top:12px;width:14px;height:14px;border-radius:50%;background:#fff;border:2px solid var(--accent);cursor:crosshair;touch-action:none;z-index:3}
+.bport:hover{background:var(--accent)}
+.bm{display:flex;flex-wrap:wrap;gap:4px 8px;font-size:10.5px;color:var(--sub);padding-left:22px;align-items:center}
+.bm .bout{color:var(--inst)}
+.bms{font-size:11px;border:1px solid var(--line);border-radius:4px;padding:1px 3px;max-width:100%;background:#fff}
+.badd{padding:6px 8px 10px}
+.badd input{width:100%;border:1px dashed var(--line);border-radius:6px;padding:7px 9px;background:#fffef8;font-size:13px}
+.badd input:focus{outline:0;border-color:var(--c);border-style:solid}
+.btmp{position:fixed;inset:0;width:100vw;height:100vh;z-index:199;pointer-events:none}
+@media (max-width:1000px){ #board{padding:8px} .bgrid{padding:10px 8px 60px} }
+@media (pointer:coarse){ .bport{width:20px;height:20px;right:-10px} .bgrip{padding:8px 4px;font-size:15px} .bdel{opacity:.6} .zd{width:20px;height:20px;line-height:20px} }
+
 /* calendar */
 .cv{height:100%;overflow:auto;padding:24px 36px 80px}
 .pcards{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
@@ -575,7 +639,7 @@ const SRC0 = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;   // 配�
 // ▼ チーム配布用:App keyとリフレッシュトークンを埋め込むと、メンバーはURLを開くだけで同じデータを共有できます
 const EMBED = { appKey: '', refresh: '', token: '', path: '' };   // 平文(非推奨:URLを知る誰でも接続可能)
 // ▼ 「設定・共有 → 配布用HTMLを作成」で自動的に書き込まれる、チームパスコードで暗号化した接続情報
-const EMBED_ENC = 'DW0UkJv+06sqo2xO8h88HQ==.871Nclp+qEZNipsg.4w9j8KRC0MDpPX9AlzoYDiAq9mVUHm66rEYs2AqQoJi6Z0VKt03fkBmJt3EFeuRUhyZCP/0fSdxVWoSxw82CeitCFJhrbu2O5v954WidQ9LB0jHKHA8sh6v/ZuJ2WgqizZyvt1hKAOVA2+zIfFxjjBDh0tzmckCKw6SQACWuQ/45AsMo8KZ2opU8xHV9YfPNWNQkg9smVQ==';
+const EMBED_ENC = '';
 
 const LS_KEY = 'zumentask.v1', CFG_KEY = 'zumentask.cfg', UI_KEY = 'zumentask.ui';
 const PAPER = { A4:[210,297], A3:[297,420], B4:[257,364], A2:[420,594] };
@@ -652,6 +716,8 @@ function seedProject(){
   const dA401 = D('A-401', '矩計図', '', [C('矩計図(南側)', [cl, win, kn], '1/30')]);
   const dA501 = D('A-501', '部分詳細図', '', [C('軒先詳細', [xs, ev], '1/5'), C('開口部詳細', [], '1/10')]);
   p.drawings = [dA101, dA201, dA301, dA401, dA501];
+  dA201.contents[0].zchk = { cond: { cl: addDays(-6), in: addDays(-8) }, design: { in: addDays(-2) } };
+  dA101.contents[0].zchk = { cond: { in: addDays(-4) } };
   p.links = [
     {id: uid(), from: dA501.id, to: dA401.id, memo: '軒先納まりの検討が終わったら矩計図に反映'},
     {id: uid(), from: dA101.id, to: dA301.id, memo: 'PS位置確定後、断面に反映'},
@@ -676,6 +742,7 @@ function normalize(s){
     if (!p.numMode) p.numMode = p.autoSort === false ? 'manual' : 'sort';   // sort=番号順に整列 / renumber=並び順で通し番号 / manual=手動
     Object.values(p.tasks).forEach(t => {
       t.deps = (t.deps || []).filter(d => p.tasks[d] && d !== t.id);
+      if (!t.zone) t.zone = guessZone(t);
       t.kind = t.kind || 'in'; t.memo = t.memo || ''; t.ms = t.ms || ''; t.home = t.home || ''; t.party = t.party || '';
       t.st = t.st || 'req'; t.due = t.due || ''; t.days = +t.days || 0; t.hours = +t.hours || 0;
       if (t.ms && !p.milestones.some(m => m.id === t.ms)) t.ms = '';
@@ -690,7 +757,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -723,6 +790,33 @@ function undo(){
 /* ---------------- model helpers ---------------- */
 // スケールは作図内容ごと。図面のスケール表記は作図内容のスケールを重複なくカンマ区切りで
 const dScales = d => [...new Set(d.contents.map(c => (c.scale || '').trim()).filter(Boolean))].join(', ');
+// ゾーン:作業の性質(条件整理 → デザイン検討 → 作図)。作業ごとに1つ。CL確認・社内確認は作図内容×ゾーン単位
+const ZONES = [{ k:'cond', n:'条件整理', s:'条', c:'#1a8a9a' }, { k:'design', n:'デザイン検討', s:'検', c:'#7b4bc4' }, { k:'draw', n:'作図', s:'作', c:'#5b6770' }];
+const ZMAP = Object.fromEntries(ZONES.map(z => [z.k, z]));
+function guessZone(t){
+  if (t.kind && t.kind !== 'in') return 'cond';
+  const x = t.title || '';
+  if (/作図|作成|反映|図化|製図|描く|書き込/.test(x)) return 'draw';
+  if (/検討|納まり|納め|配置|スタディ|比較|割付|レイアウト|計画|デザイン/.test(x)) return 'design';
+  if (/図$/.test(x)) return 'draw';
+  if (/整理|確認|決定|確定|回答|条件|調査|法規|ヒアリング|依頼|承認|協議|相談/.test(x)) return 'cond';
+  return 'design';
+}
+const zoneOf = t => ZMAP[t.zone] ? t.zone : guessZone(t);
+function upstream(p, tid, seen = new Set()){ (p.tasks[tid]?.deps || []).forEach(d => { if (!seen.has(d) && p.tasks[d]) { seen.add(d); upstream(p, d, seen); } }); return seen; }
+function prereqState(p, tid){ // 作図の作業について、前提(条件整理・検討)の登録/完了状況
+  const t = p.tasks[tid]; if (!t || zoneOf(t) !== 'draw' || t.done) return null;
+  const up = [...upstream(p, tid)];
+  const pre = up.filter(i => zoneOf(p.tasks[i]) !== 'draw');
+  if (!pre.length) return { kind: 'none' };
+  const open = up.filter(i => !p.tasks[i].done);
+  return open.length ? { kind: 'open', n: open.length } : { kind: 'ok' };
+}
+const zchk = (c, z) => (c.zchk && c.zchk[z]) || {};
+function zchkMini(c){
+  return `<span class="zmini" title="${ZONES.map(z => `${z.n}:CL確認${zchk(c, z.k).cl ? '済 ' + zchk(c, z.k).cl : '未'}/社内確認${zchk(c, z.k).in ? '済 ' + zchk(c, z.k).in : '未'}`).join('\n')}">${ZONES.map(z => `<span style="--c:${z.c}"><b>${z.s}</b><i class="${zchk(c, z.k).cl ? 'on' : ''}"></i><i class="${zchk(c, z.k).in ? 'on' : ''}"></i></span>`).join('')}</span>`;
+}
+const zoneDot = t => { const z = ZMAP[zoneOf(t)]; return `<button class="zd" data-act="zone" style="--c:${z.c}" title="ゾーン:${z.n}(クリックで切替)">${z.s}</button>`; };
 const starCount = (p, d) => dTaskIds(d).filter(i => p.tasks[i]?.star && !p.tasks[i].done).length;
 const starBtn = t => `<button class="star ${t.star ? 'on' : ''}" data-act="star" title="${t.star ? '優先を外す' : '優先(★)にする'}">${t.star ? '★' : '☆'}</button>`;
 const dTaskIds = d => { const s = new Set(); d.contents.forEach(c => c.items.forEach(i => s.add(i))); return [...s]; };
@@ -931,6 +1025,7 @@ function render(){
   renderHeader();
   document.body.dataset.view = cur.view;
   if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else if (cur.view === 'member') renderMembers(); else if (cur.view === 'cal') renderCalendar(); else renderDetail();
+  if (board) renderBoard();
 }
 document.addEventListener('focusout', () => { if (pendingRender) { pendingRender = false; setTimeout(render, 0); } });
 
@@ -987,7 +1082,7 @@ function renderList(){
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
     </div>${isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
-      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span><em>${ids.filter(x => p.tasks[x].done).length}/${ids.length}件·${fmtH(h)}h</em></span><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${segBar(p, ids)}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
+      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span><button class="bbtn sm" data-act="board" title="洗い出しボードを開く">▦</button>${zchkMini(c)}<em>${ids.filter(x => p.tasks[x].done).length}/${ids.length}件·${fmtH(h)}h</em></span><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${segBar(p, ids)}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
@@ -1081,6 +1176,7 @@ function renderDetail(){
       <div class="tbar">
         <span class="seg narrow-only"><button data-act="dpane" data-v="list">作業リスト</button><button data-act="dpane" data-v="tree" class="on">ツリー</button></span>
         <h4>作業ツリー</h4>
+        <span class="seg" title="ノード左端の色"><button data-act="tcolor" data-v="member" class="${ui.treeColor !== 'zone' ? 'on' : ''}">担当色</button><button data-act="tcolor" data-v="zone" class="${ui.treeColor === 'zone' ? 'on' : ''}">ゾーン色</button></span>
         <span class="seg"><button data-act="tscope" data-v="sel" class="${treeScope === 'sel' ? 'on' : ''}">選択中の図面</button><button data-act="tscope" data-v="all" class="${treeScope === 'all' ? 'on' : ''}">全図面</button></span>
         <span class="zoom"><button data-act="zoom" data-v="-">−</button><span id="zl">${Math.round(ui.zoom * 100)}%</span><button data-act="zoom" data-v="+">＋</button><button data-act="zoom" data-v="fit" title="全体を表示">全体</button><button data-act="wide" title="ツリーを広く表示">${ui.treeWide ? '⇥ 戻す' : '⇤ 広く'}</button></span>
         <div class="tstats" id="tstats"></div>
@@ -1118,6 +1214,7 @@ function sheetHTML(p, d){
       <div class="chead">
         <input class="cell" data-cf="name" value="${esc(c.name)}" placeholder="作図内容">
         <input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール">
+        <button class="bbtn" data-act="board" title="3ゾーンで作業を洗い出し・つなぐ・期間に入れる">▦ 洗い出し</button>${zchkMini(c)}
         <span class="meta">${dn2}/${counted.length}件 · ${fmtH(hrs)}h</span>
         <button class="ico" data-act="cmore" title="作図内容メニュー">⋯</button>
       </div>
@@ -1173,7 +1270,7 @@ function taskLI(p, d, c, tid, i){
    <div class="trow">
     ${i > 0 ? `<button class="chain ${serial ? 'serial' : ''}" data-act="chain" title="${serial ? '直列:前の作業が終わってから着手(クリックで並列に)' : '並列:前の作業と同時進行できる(クリックで直列に)'}">${serial ? '↓' : '∥'}</button>` : `<span class="chain first">●</span>`}
     <input type="checkbox" data-act="done" ${t.done ? 'checked' : ''} title="完了">
-    <div class="tcell">${starBtn(t)}${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}"></div>
+    <div class="tcell">${starBtn(t)}${zoneDot(t)}${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}">${(() => { const ps = prereqState(p, tid); return ps && ps.kind === 'none' ? '<span class="pq none" title="前提(条件整理・デザイン検討)の作業がつながっていません">⚠前提なし</span>' : ps && ps.kind === 'open' ? `<span class="pq open" title="前提の作業が${ps.n}件 未完了">⏳${ps.n}</span>` : ''; })()}</div>
     ${other ? `<button class="depchip" data-act="edit" title="この作業の前提作業">前提+${other}</button>` : '<span></span>'}
     ${n > 1 ? `<span class="ibadge ${isHome ? 'home' : ''}" data-act="place" title="${isHome ? '本体' : 'インスタンス'}:同一作業 ${n}箇所(クリックで配置先を編集)">◆${n}</span>` : '<span></span>'}
     <button class="ico memo-b ${t.memo ? 'has' : ''}" data-act="memo" title="備考">✎</button>
@@ -1294,7 +1391,7 @@ function treeSVG(p, T, print){
     s += `<g class="tn ${t.star ? 'starred' : ''}" data-tid="${id}" transform="translate(${q.x},${q.y})">
       ${starG}${nodeShape(t, t.star && !t.done ? '#fffbe6' : fill, t.star && !t.done && !od && !crit ? '#e0a100' : stroke, g || t.kind === 'ext')}
       ${t.star ? `<text x="${NW - 18}" y="40" font-size="13" fill="#e0a100">★</text>` : ''}
-      ${m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
+      ${!print && ui.treeColor === 'zone' ? `<rect width="5" height="${NH}" rx="2" fill="${ZMAP[zoneOf(t)].c}"/><text x="${NW - 20}" y="14" font-size="9.5" fill="${ZMAP[zoneOf(t)].c}" font-weight="700">${ZMAP[zoneOf(t)].s}</text>` : m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
       ${ownMs ? `<circle cx="${NW - 7}" cy="7" r="4" fill="${ownMs.color}"><title>締切指定:${esc(ownMs.name)}</title></circle>` : ''}
       <text x="${t.kind === 'in' ? 11 : 16}" y="19" font-size="11.5" fill="${t.done ? '#a8a6a0' : n > 1 ? '#2457c5' : '#1c1c1a'}">${t.done ? '✓ ' : ''}${esc(trunc(t.title, t.kind === 'in' ? 14 : 13))}</text>
       <text x="${t.kind === 'in' ? 11 : 16}" y="35" font-size="10" fill="${od ? '#d2462b' : '#6b6a66'}" font-family="ui-monospace,monospace">${esc(trunc(sub + (od ? ' 超過' : ''), 25))}</text>
@@ -1572,6 +1669,169 @@ function renderMembers(){
   $$('details[data-mopen]', app).forEach(d => d.addEventListener('toggle', () => { ui.memOpen[d.dataset.mopen] = d.open; saveUi(); }));
 }
 
+/* ---------------- 洗い出しボード(作図内容 × 3ゾーン) ---------------- */
+let board = null;   // { did, cid }
+let boardFocus = null;
+function openBoard(did, cid){ board = { did, cid }; hideTip(); renderBoard(); }
+function closeBoard(){ board = null; const el = $('#board'); if (el) el.remove(); render(); }
+function renderBoard(){
+  if (!board) return;
+  const p = P(), { d, c } = findDC(p, board.did, board.cid);
+  if (!c) { board = null; const el = $('#board'); if (el) el.remove(); return; }
+  let el = $('#board'); const first = !el;
+  if (!el) { el = document.createElement('div'); el.id = 'board'; document.body.appendChild(el); }
+  const prevScroll = $('.bbody', el)?.scrollTop || 0;
+  const E = eff(p), mode = ui.bmode || 1, T = p.tasks;
+  const items = c.items.filter(i => T[i]);
+  const colHTML = z => {
+    const ids = items.filter(i => zoneOf(T[i]) === z.k);
+    const hrs = ids.filter(i => T[i].kind !== 'ext').reduce((a, i) => a + (placeCount(p, i) > 1 && ui.hmode === 'split' ? shareOf(p, i, c.id) : (+T[i].hours || 0)), 0);
+    const ck = zchk(c, z.k);
+    const cards = ids.map(i => {
+      const t = T[i], b = E.band[i], m = member(t.assignee), pa = party(p, t.party), n = placeCount(p, i), ps = prereqState(p, i);
+      const outside = t.deps.filter(x => T[x] && !items.includes(x)).length;
+      return `<div class="bcard ${t.done ? 'done' : ''} ${t.star ? 'starred' : ''}" data-tid="${i}" style="--b:${bandColor(E, b)}">
+        <div class="bh"><span class="bgrip" title="ドラッグで移動(別のゾーンへも)">⋮⋮</span><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}>${starBtn(t)}
+          ${t.kind !== 'in' ? `<span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${KIND[t.kind]}</span>` : ''}
+          <input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}">
+          <button class="ico bdel" data-act="bdel" title="この作図内容から外す/削除">×</button>${mode === 2 ? '<span class="bport" title="ここからドラッグして、後に続く作業へ線を引く"></span>' : ''}</div>
+        <div class="bm">${t.kind === 'in' ? `<span style="color:${m?.color || 'var(--mute)'}">${m ? esc(m.name) : '担当—'}</span>` : `<span>${esc(pa?.name || '関係者—')}</span>`}
+          ${t.kind !== 'ext' ? `<span>${fmtH(n > 1 && ui.hmode === 'split' ? r1(shareOf(p, i, c.id)) : t.hours)}h</span>` : t.due ? `<span>〆${fmtD(t.due)}</span>` : ''}
+          ${n > 1 ? `<span class="ibadge">◆${n}</span>` : ''}${outside ? `<span class="bout" title="他の作図内容の作業が前提">←他${outside}</span>` : ''}
+          ${ps && ps.kind === 'none' ? '<span class="pq none">⚠前提なし</span>' : ps && ps.kind === 'open' ? `<span class="pq open">⏳前提未了${ps.n}</span>` : ''}
+          ${mode === 3 ? `<select class="bms" data-bms="1" title="締切(期間)"><option value="">自動(${esc(trunc(bandName(E, b), 8))})</option>${E.ms.map((ms, k) => `<option value="${ms.id}" ${t.ms === ms.id ? 'selected' : ''}>${esc(trunc(periodName(E, k), 10))} → ◆${esc(trunc(ms.name, 8))}</option>`).join('')}</select>` : `<span class="bband" title="${esc(periodName(E, b))}" style="color:${bandColor(E, b)}">● ${esc(trunc(bandName(E, b), 9))}</span>`}
+        </div></div>`;
+    }).join('');
+    return `<section class="bcol" data-zone="${z.k}" style="--c:${z.c}">
+      <header><h4>${z.n}</h4><span class="bcnt">${ids.length}件 · ${fmtH(hrs)}h</span>
+        <div class="bchk"><label title="${ck.cl ? 'クライアント確認済 ' + ck.cl : 'クライアント確認'}"><input type="checkbox" data-zchk="${z.k}|cl" ${ck.cl ? 'checked' : ''}>CL確認${ck.cl ? `<small>${fmtD(ck.cl)}</small>` : ''}</label>
+          <label title="${ck.in ? '社内確認済 ' + ck.in : '社内確認'}"><input type="checkbox" data-zchk="${z.k}|in" ${ck.in ? 'checked' : ''}>社内確認${ck.in ? `<small>${fmtD(ck.in)}</small>` : ''}</label></div>
+        ${mode === 3 && E.M ? `<select class="bbulk" data-bbulk="${z.k}"><option value="">この欄をまとめて締切へ…</option>${E.ms.map((ms, k) => `<option value="${k}">${esc(trunc(periodName(E, k), 12))} → ◆${esc(trunc(ms.name, 10))}</option>`).join('')}</select>` : ''}
+      </header>
+      <div class="bcards">${cards || `<div class="bempty">${mode === 1 ? '下の欄に書いて Enter' : '項目なし'}</div>`}</div>
+      <div class="badd"><input data-badd="${z.k}" placeholder="＋ ${z.n}の項目を書いて Enter"></div>
+    </section>`;
+  };
+  const noneCnt = items.filter(i => prereqState(p, i)?.kind === 'none').length, openCnt = items.filter(i => prereqState(p, i)?.kind === 'open').length;
+  el.innerHTML = `<div class="bwrap">
+    <header class="btop">
+      <div class="bttl"><span class="mono">${esc(d.no)}</span> ${esc(d.name)} <span class="sep">/</span> <b>${esc(c.name)}</b> <span class="mono muted">${esc(c.scale || '')}</span></div>
+      <div class="bsteps">${[['1', '① 洗い出す'], ['2', '② つなぐ'], ['3', '③ 期間に入れる']].map(([v, l]) => `<button data-act="bmode" data-v="${v}" class="${+v === mode ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <span class="bsum">${noneCnt ? `<span class="pq none">⚠前提なし ${noneCnt}</span>` : ''}${openCnt ? `<span class="pq open">⏳前提未了 ${openCnt}</span>` : ''}</span>
+      <span style="flex:1"></span>
+      <button class="tbtn" data-act="binsert" title="他の作図内容の作業を同一インスタンスとして取り込む">◆ 他から取り込む</button>
+      <button class="tbtn pri" data-act="bclose">閉じる</button>
+    </header>
+    <div class="bhint">${mode === 1 ? '各ゾーンに思いつくまま箇条書きで書き出します(Enterで次の行)。⋮⋮ をドラッグすると順番やゾーンを変えられます。担当・時間は後で入れればOKです。'
+      : mode === 2 ? '項目の右端の ● から、後に続く項目へドラッグして線を引くと「前後関係(直列)」になります。線をクリックすると外せます。作図の項目に条件整理・検討がつながっていないと「⚠前提なし」が付きます。'
+      : '項目ごとに締切(期間)を選ぶか、各欄の上の「この欄をまとめて締切へ」で一括で入れます。前提の作業は自動で同じ締切に含まれます。細かい調整は「詳細・ツリー」の締切線で。'}</div>
+    <div class="bbody"><div class="bgrid">${ZONES.map(colHTML).join('<div class="barrow">→</div>')}</div><svg class="blinks"></svg></div>
+  </div>`;
+  $('.bbody', el).scrollTop = prevScroll;
+  drawBoardLinks();
+  if (boardFocus) { const i = $(`[data-badd="${boardFocus}"]`, el); if (i) i.focus(); boardFocus = null; }
+  else if (first && mode === 1 && !items.length) { const i = $('[data-badd="cond"]', el); if (i) i.focus(); }
+}
+function drawBoardLinks(){
+  const el = $('#board'); if (!el || !board) return;
+  const p = P(), body = $('.bbody', el), svg = $('.blinks', el), br = body.getBoundingClientRect();
+  const W = body.scrollWidth, H = body.scrollHeight; svg.setAttribute('width', W); svg.setAttribute('height', H); svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  const pos = {}; $$('.bcard', el).forEach(cd => { const r = cd.getBoundingClientRect(); pos[cd.dataset.tid] = { l: r.left - br.left + body.scrollLeft, r: r.right - br.left + body.scrollLeft, y: r.top - br.top + body.scrollTop + 16 }; });
+  let s = `<defs><marker id="bah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8d8a83"/></marker></defs>`;
+  Object.keys(pos).forEach(tid => (p.tasks[tid].deps || []).forEach(dp => {
+    const a = pos[dp], b = pos[tid]; if (!a || !b) return;
+    let path;
+    if (b.l > a.r - 4) { const mx = (a.r + b.l) / 2; path = `M${a.r},${a.y} C${mx},${a.y} ${mx},${b.y} ${b.l - 2},${b.y}`; }
+    else { const x = Math.max(a.r, b.r) + 18; path = `M${a.r},${a.y} C${x},${a.y} ${x},${b.y} ${b.r + 2},${b.y}`; }
+    s += `<path d="${path}" fill="none" stroke="#8d8a83" stroke-width="1.4" marker-end="url(#bah)"/><path class="bhit" d="${path}" data-from="${dp}" data-to="${tid}" fill="none" stroke="transparent" stroke-width="12"><title>クリックで前後関係を外す</title></path>`;
+  }));
+  svg.innerHTML = s;
+}
+window.addEventListener('resize', () => { if (board) drawBoardLinks(); });
+// ボード内の操作
+document.addEventListener('keydown', e => {
+  const el = e.target; if (!el.matches || !el.matches('[data-badd]')) return;
+  if (e.key === 'Enter' && !e.isComposing) {
+    e.preventDefault(); const v = el.value.trim(); if (!v) return;
+    const p = P(), { c } = findDC(p, board.did, board.cid), z = el.dataset.badd;
+    const t = newTask({ title: v, zone: z }); p.tasks[t.id] = t;
+    // 同じゾーンの最後の項目の後ろへ(なければ末尾)
+    const lastIdx = c.items.map((x, i) => [x, i]).filter(([x]) => p.tasks[x] && zoneOf(p.tasks[x]) === z).pop();
+    c.items.splice(lastIdx ? lastIdx[1] + 1 : c.items.length, 0, t.id);
+    boardFocus = z; commit();
+  }
+}, true);
+let bdrag = null;
+document.addEventListener('pointerdown', e => {
+  if (!board || !e.target.closest) return;
+  const grip = e.target.closest('.bgrip'), port = e.target.closest('.bport');
+  if (!grip && !port) return;
+  e.preventDefault();
+  const card = e.target.closest('.bcard');
+  if (grip) {
+    const r = card.getBoundingClientRect(), ghost = card.cloneNode(true);
+    ghost.classList.add('bghost'); ghost.style.width = r.width + 'px'; ghost.style.left = r.left + 'px'; ghost.style.top = r.top + 'px'; document.body.appendChild(ghost);
+    card.classList.add('dragsrc');
+    bdrag = { type: 'move', tid: card.dataset.tid, ghost, dx: e.clientX - r.left, dy: e.clientY - r.top };
+  } else {
+    const r = port.getBoundingClientRect();
+    const ln = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); ln.setAttribute('class', 'btmp');
+    ln.innerHTML = `<line x1="${r.left + r.width / 2}" y1="${r.top + r.height / 2}" x2="${r.left}" y2="${r.top}" stroke="#d2462b" stroke-width="2" stroke-dasharray="5 3"/>`;
+    document.body.appendChild(ln);
+    bdrag = { type: 'link', tid: card.dataset.tid, ln };
+  }
+}, true);
+document.addEventListener('pointermove', e => {
+  if (!bdrag) return;
+  $$('.bcard.droptgt,.bcol.dropcol').forEach(x => x.classList.remove('droptgt', 'dropcol', 'dropafter'));
+  if (bdrag.type === 'move') {
+    bdrag.ghost.style.left = (e.clientX - bdrag.dx) + 'px'; bdrag.ghost.style.top = (e.clientY - bdrag.dy) + 'px';
+    const under = document.elementFromPoint(e.clientX, e.clientY); const col = under && under.closest('.bcol');
+    if (col) { col.classList.add('dropcol'); const tgt = $$('.bcard:not(.dragsrc)', col).find(cd => { const r = cd.getBoundingClientRect(); return e.clientY < r.top + r.height / 2; }); if (tgt) tgt.classList.add('droptgt'); bdrag.col = col.dataset.zone; bdrag.before = tgt ? tgt.dataset.tid : null; }
+    else bdrag.col = null;
+  } else {
+    const l = $('line', bdrag.ln); l.setAttribute('x2', e.clientX); l.setAttribute('y2', e.clientY);
+    const under = document.elementFromPoint(e.clientX, e.clientY); const cd = under && under.closest('.bcard');
+    if (cd && cd.dataset.tid !== bdrag.tid) cd.classList.add('droptgt');
+    bdrag.to = cd && cd.dataset.tid !== bdrag.tid ? cd.dataset.tid : null;
+  }
+});
+document.addEventListener('pointerup', () => {
+  if (!bdrag) return; const d = bdrag; bdrag = null;
+  $$('.bcard.droptgt,.bcol.dropcol,.bcard.dragsrc').forEach(x => x.classList.remove('droptgt', 'dropcol', 'dragsrc'));
+  if (d.ghost) d.ghost.remove(); if (d.ln) d.ln.remove();
+  const p = P();
+  if (d.type === 'move') {
+    if (!d.col) return renderBoard();
+    const { c } = findDC(p, board.did, board.cid), t = p.tasks[d.tid];
+    const zoneChanged = zoneOf(t) !== d.col; t.zone = d.col;
+    c.items = c.items.filter(x => x !== d.tid);
+    let at = d.before ? c.items.indexOf(d.before) : -1;
+    if (at < 0) { const last = c.items.map((x, i) => [x, i]).filter(([x]) => p.tasks[x] && zoneOf(p.tasks[x]) === d.col).pop(); at = last ? last[1] + 1 : c.items.length; }
+    c.items.splice(at, 0, d.tid); commit();
+    if (zoneChanged) toast(`「${trunc(t.title, 14)}」を ${ZMAP[d.col].n} に移しました`);
+  } else {
+    if (!d.to) return;
+    const t = p.tasks[d.to];
+    if (t.deps.includes(d.tid)) return toast('すでにつながっています');
+    if (wouldCycle(p, d.to, d.tid)) return toast('循環になるためつなげません');
+    t.deps.push(d.tid); commit(); toast('前後関係をつなぎました');
+  }
+});
+document.addEventListener('click', e => {
+  if (!board || !e.target.closest) return;
+  const hit = e.target.closest('.bhit'); if (!hit) return;
+  const p = P(), a = p.tasks[hit.dataset.from], b = p.tasks[hit.dataset.to];
+  openMenu(hit, [{ label: `「${trunc(a.title, 12)}」→「${trunc(b.title, 12)}」の前後関係を外す`, danger: true, run: () => { b.deps = b.deps.filter(x => x !== a.id); commit(); } }]);
+});
+document.addEventListener('change', e => {
+  const el = e.target; if (!board || !el.closest || !el.closest('#board')) return;
+  const p = P(), { c } = findDC(p, board.did, board.cid);
+  if (el.dataset.zchk) { const [z, k] = el.dataset.zchk.split('|'); c.zchk = c.zchk || {}; c.zchk[z] = c.zchk[z] || {}; c.zchk[z][k] = el.checked ? ymd(today0()) : ''; return commit(); }
+  if (el.dataset.bms) { const tid = el.closest('[data-tid]').dataset.tid, v = el.value; const j = v ? msSorted(p).findIndex(m => m.id === v) : msSorted(p).length; const f = applyMoves(p, [[tid, j]]); p.tasks[tid].ms = v; commit(); if (f.length) toast(`関連作業 ${f.length}件の締切も移動しました`); return; }
+  if (el.dataset.bbulk && el.value !== '') { const k = +el.value, ids = c.items.filter(i => p.tasks[i] && zoneOf(p.tasks[i]) === el.dataset.bbulk); const f = applyMoves(p, ids.map(i => [i, k])); commit(); toast(`${ids.length}件を「${eff(p).ms[k]?.name || ''}」に設定${f.length ? `(関連 ${f.length}件も移動)` : ''}`); }
+});
+
 /* ---------------- calendar view ---------------- */
 function periodOfDay(p, E, d){ // d が属する期間 k(前の締切の翌日〜締切当日。最初の期間は設計開始日から)
   for (let k = 0; k < E.M; k++) {
@@ -1775,7 +2035,7 @@ function addTask(did, cid, title){
     if (!pa) { pa = { id: uid(), name: m[1], color: COLORS[(p.parties.length + 3) % COLORS.length] }; p.parties.push(pa); toast(`関係者「${m[1]}」を登録しました`); }
     Object.assign(o, { title: m[2], kind: 'ext', party: pa.id });
   }
-  const t = newTask(o); p.tasks[t.id] = t;
+  const t = newTask(o); t.zone = o.zone || guessZone(t); p.tasks[t.id] = t;
   c.items.push(t.id); focusAfter = cid; commit();
 }
 function toggleChain(did, cid, i){
@@ -2199,7 +2459,7 @@ function doPrint(only){
       h += `<div class="psheet"><h2><span class="mono">${esc(d.no)}</span>${esc(d.name)}<span class="mono">${esc(dScales(d))}</span><span class="r">達成率 ${pr == null ? '—' : pr + '%'}</span></h2>`;
       if (out.length || inn.length) h += `<div class="prel">${out.map(l => `→ ${esc(dn(l.to))}:${esc(l.memo)}`).concat(inn.map(l => `← ${esc(dn(l.from))}:${esc(l.memo)}`)).join('<br>')}</div>`;
       if (inc.detail) d.contents.forEach(c => {
-        h += `<div class="pc"><h3>${esc(c.name)}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
+        h += `<div class="pc"><div style="float:right;font-size:.78em;color:#444">${ZONES.map(z => `<span style="color:${z.c};font-weight:600">${z.n}</span> CL${zchk(c, z.k).cl ? '☑' : '☐'} 社内${zchk(c, z.k).in ? '☑' : '☐'}`).join('　')}</div><h3>${esc(c.name)}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
           <tr><th></th><th>作業</th><th>担当/関係者</th><th style="text-align:right">時間/期日</th><th>締切</th><th>前提作業</th><th>共有</th></tr>
         ${c.items.map((tid, i) => { const t = T[tid]; const m = member(t.assignee), pa = party(p, t.party); const n = placeCount(p, tid), b = E.band[tid];
           const who = t.kind === 'in' ? (m ? esc(m.name) : '') : `${KIND[t.kind]}:${esc(pa?.name || '')}`;
@@ -2492,6 +2752,15 @@ document.addEventListener('click', e => {
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
     case 'hmode': ui.hmode = a.dataset.v; saveUi(); return render();
+    case 'board': { const r = a.closest('[data-cid]'); return openBoard(r.dataset.did, r.dataset.cid); }
+    case 'bclose': return closeBoard();
+    case 'bmode': ui.bmode = +a.dataset.v; saveUi(); return renderBoard();
+    case 'binsert': return insertExisting(board.did, board.cid);
+    case 'bdel': { const tid = tidOf(), { c } = findDC(p, board.did, board.cid), n = placeCount(p, tid), t = p.tasks[tid];
+      if (n > 1) { unplace(p, tid, c.id); c.items = c.items.filter(x => x !== tid); if (t.home === c.id) t.home = ''; commit(); return toast('この作図内容から外しました(他の配置は残ります)'); }
+      deleteTask(p, tid); commit(); return toast('削除しました(⌘/Ctrl+Z で戻せます)'); }
+    case 'zone': { const t = p.tasks[tidOf()]; const i = ZONES.findIndex(z => z.k === zoneOf(t)); t.zone = ZONES[(i + 1) % 3].k; return commit(); }
+    case 'tcolor': ui.treeColor = a.dataset.v; saveUi(); $$('[data-act=tcolor]').forEach(b => b.classList.toggle('on', b === a)); return renderTree();
     case 'star': { const t = p.tasks[tidOf()]; t.star = !t.star; return commit(); }
     case 'staronly': ui.starOnly = a.checked; saveUi(); return render();
     case 'evenalloc': { const t = p.tasks[tidOf()]; delete t.alloc; commit(); return toast('合計を均等に配分し直しました'); }
@@ -2540,7 +2809,7 @@ document.addEventListener('change', e => {
     if (el.value === '__new') { el.value = cur.pid; return prompt2('新規プロジェクト', 'プロジェクト名', '', nm => { const np = newProject(nm || '新規プロジェクト'); S.projects.push(np); cur.pid = np.id; cur.did = null; commit(); }); }
     cur.pid = el.value; cur.did = null; lsSet('zumentask.lastpid', cur.pid); history.replaceState(null, '', '?p=' + cur.pid); return render();
   }
-  if (!$('#app').contains(el)) return;
+  if (!$('#app').contains(el) && !(el.closest && el.closest('#board'))) return;
   if (el.dataset.f) {
     const d = p.drawings.find(x => x.id === el.closest('[data-did]').dataset.did); d[el.dataset.f] = el.value.trim();
     if (el.dataset.f === 'no' && sortDrawings(p)) { flashDid = d.id; toast(`${d.no} を番号順の位置へ移動しました`); }
@@ -2574,7 +2843,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && !e.isComposing && el.matches('.addtask input')) { e.preventDefault(); return addTask(el.dataset.did, el.dataset.cid, el.value.trim()); }
   if (e.key === 'Enter' && !e.isComposing && el.matches('.cell, .ttl, .hrs, .pmemo')) { el.blur(); return; }
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && el.matches('.tmemo textarea')) { el.blur(); return; }
-  if (e.key === 'Escape') { if ($('.mbg')) return closeModal(); closeMenu(); if (linking) { linking = null; hideBanner(); render(); } return; }
+  if (e.key === 'Escape') { if ($('.mbg')) return closeModal(); if ($('.menu')) return closeMenu(); if (board) return closeBoard(); closeMenu(); if (linking) { linking = null; hideBanner(); render(); } return; }
   if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z' && !e.shiftKey && !/INPUT|TEXTAREA|SELECT/.test(el.tagName)) { e.preventDefault(); undo(); }
 });
 $$('.tabs button').forEach(b => b.onclick = () => { cur.view = b.dataset.view; linking = null; hideBanner(); render(); });
