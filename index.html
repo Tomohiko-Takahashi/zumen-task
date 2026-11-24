@@ -197,19 +197,33 @@ input,select,textarea{font:inherit;color:inherit}
 .legendms i{width:10px;height:10px;border-radius:2px;background:var(--c);display:inline-block}
 
 /* detail view */
-.dv{display:grid;grid-template-columns:210px minmax(460px,1fr) minmax(380px,42%);height:100%}
-.dv.wide{grid-template-columns:180px minmax(360px,30%) 1fr}
+.dv{display:grid;grid-template-columns:var(--sideW,210px) minmax(380px,1fr) var(--treeW,42%);height:100%;position:relative}
+.treeres{position:absolute;top:0;bottom:0;right:calc(var(--treeW,42%) - 4px);width:8px;cursor:col-resize;z-index:4;touch-action:none}
+.treeres::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:2px;background:transparent;transition:background .15s}
+.treeres:hover::after,.treeres.on::after{background:var(--inst)}
+.treeres i{position:absolute;top:50%;left:0;width:8px;height:36px;margin-top:-18px;border-radius:4px;background:var(--inst);opacity:0;transition:opacity .15s}
+.treeres:hover i,.treeres.on i{opacity:1}
+.dv.wide .treeres{display:none}
+.dv.wide{grid-template-columns:var(--sideW,180px) minmax(360px,30%) 1fr}
+.sideres{position:absolute;top:0;bottom:0;left:calc(var(--sideW,210px) - 4px);width:8px;cursor:col-resize;z-index:4;touch-action:none}
+.sideres::after{content:"";position:absolute;left:3px;top:0;bottom:0;width:2px;background:transparent;transition:background .15s}
+.sideres:hover::after,.sideres.on::after{background:var(--inst)}
+.sideres i{position:absolute;top:50%;left:0;width:8px;height:36px;margin-top:-18px;border-radius:4px;background:var(--line);opacity:.0;transition:opacity .15s}
+.sideres:hover i,.sideres.on i{opacity:1;background:var(--inst)}
+body.resizing{cursor:col-resize!important;user-select:none}
 .zoom{display:inline-flex;align-items:center;gap:2px;margin-left:auto}
 .zoom button{border:1px solid var(--line);background:#fff;border-radius:4px;padding:2px 7px;font-size:12px}
 .zoom span{font-family:var(--mono);font-size:11px;width:40px;text-align:center;color:var(--sub)}
 .side{border-right:1px solid var(--line);overflow:auto;background:#faf9f6;padding:10px 0}
 .side h4{margin:4px 14px 8px;font-size:11px;color:var(--sub);letter-spacing:.08em;font-weight:500}
-.sitem{display:grid;grid-template-columns:58px 1fr 34px;gap:4px;align-items:center;padding:7px 14px;cursor:pointer;border-left:3px solid transparent}
+.sitem{display:grid;grid-template-columns:auto 1fr auto;gap:4px;align-items:center;padding:7px 14px;cursor:pointer;border-left:3px solid transparent}
 .sitem:hover{background:#f1efe9}
 .sitem.on{background:var(--paper);border-left-color:var(--ink)}
 .sitem.hl{background:var(--inst-s);border-left-color:var(--inst)}
 .sitem .no{font-family:var(--mono);font-size:11px;color:var(--sub)}
-.sitem .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sitem .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.sitem .no{min-width:52px}
+.sitem .st{color:#e0a100;font-size:10.5px;margin-left:3px}
 .sitem .pc{font-family:var(--mono);font-size:11px;text-align:right;color:var(--sub)}
 .side .addd{margin:10px 14px;border:1px dashed var(--line);background:none;border-radius:6px;padding:6px;width:calc(100% - 28px);color:var(--sub)}
 .sheets{overflow:auto;padding:0 22px 120px}
@@ -230,12 +244,24 @@ input,select,textarea{font:inherit;color:inherit}
 .chead .ico{opacity:.6}
 .tasks{list-style:none;margin:0;padding:0 8px 0 14px}
 .task{border-radius:5px;position:relative}
-.trow{display:grid;grid-template-columns:22px 20px minmax(0,1fr) auto auto 22px 96px minmax(64px,auto) 24px;align-items:center;gap:4px;height:32px;padding-right:4px}
+.trow{display:grid;grid-template-columns:22px 20px minmax(130px,1fr) auto auto 22px 96px minmax(64px,auto) 24px;align-items:center;gap:4px;height:32px;padding-right:4px}
 .task:hover{background:#f7f6f2}
 .task.hl{background:var(--inst-s)!important;box-shadow:inset 3px 0 0 var(--inst)}
+.star{border:0;background:none;padding:0 2px;font-size:15px;line-height:1;color:#cfcbc2;flex:none;cursor:pointer;width:20px}
+.star:hover{color:#e0a100}
+.star.on{color:#e0a100;text-shadow:0 0 1px rgba(160,110,0,.4)}
+.task.starred:not(.done){background:linear-gradient(90deg,#fff4c2,#fffbe9 60%,transparent);box-shadow:inset 3px 0 0 #e0a100}
+.task.starred:not(.done) .ttl{font-weight:700;color:var(--ink)}
+.task.starred.inst:not(.done) .ttl{color:var(--inst)}
+tr.starred:not(.isdone) td{background:#fff8d6}
+tr.starred:not(.isdone) .ttl{font-weight:700}
+.nmw{display:flex;align-items:center;min-width:0}
+.nmw .stc{font-size:11px;color:#c78a00;background:#fff4c2;border-radius:9px;padding:0 7px;margin-left:4px;white-space:nowrap;font-family:var(--mono)}
+.starf{color:#a37200}
 .task.flash,.content.flash{animation:flash 1.2s}
 @keyframes flash{0%,40%{background:#ffe8a3}}
 .tcell{display:flex;align-items:center;gap:4px;min-width:0}
+.tcell .ttl{min-width:70px}
 .ttl{border:1px solid transparent;background:none;padding:4px 6px;border-radius:4px;min-width:0;width:100%}
 .ttl:focus{border-color:var(--ink);background:#fff;outline:0}
 .task.done .ttl{color:var(--mute);text-decoration:line-through}
@@ -458,7 +484,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
   .task input[type=checkbox],.mtasks input[type=checkbox]{width:20px;height:20px}
   .chain{width:26px;height:30px;font-size:15px}
   .ico{width:30px;height:30px;font-size:15px}
-  .trow{grid-template-columns:28px 24px minmax(0,1fr) auto auto 30px 100px auto 30px}
+  .trow{grid-template-columns:28px 24px minmax(130px,1fr) auto auto 30px 100px auto 30px}
   .asg,.hrs,.due,.cell,.ttl{min-height:32px}
   .drow .del{opacity:.5}
   .tbtn{padding:7px 12px}
@@ -603,7 +629,7 @@ function seedProject(){
   const t = (title, o) => { const id = uid(); T[id] = Object.assign({id, title, kind:'in', assignee:'', hours:0, deps:[], done:false, memo:'', ms:'', home:'', party:'', st:'req', due:'', days:0}, o); return id; };
   const xe  = t('配管ルート案の提出依頼', {kind:'ext', party:PE.id, st:'wait', due:addDays(5), memo:'PS寸法の前提になるので早めに催促'});
   const r1  = t('設備配管の管理ルート確認', {assignee:'m2', hours:3, deps:[xe]});
-  const ps  = t('PS・EPS位置の確定', {assignee:'m2', hours:2, deps:[r1]});
+  const ps  = t('PS・EPS位置の確定', {assignee:'m2', hours:2, deps:[r1], star:true});
   const st  = t('階段寸法(蹴上げ・踏面)確定', {assignee:'m1', hours:2, done:true});
   const f1  = t('1F 間仕切り・建具位置の作図', {assignee:'m3', hours:6, deps:[ps], ms:M1.id});
   const f2  = t('2F 間仕切り・建具位置の作図', {assignee:'m3', hours:5, deps:[ps], ms:M1.id});
@@ -615,7 +641,7 @@ function seedProject(){
   const cl  = t('天井高さ・天井懐寸法の決定', {assignee:'m1', hours:2, deps:[r1, mt]});
   const sec = t('A-A断面の作図', {assignee:'m3', hours:4, deps:[cl, st], ms:M2.id});
   const xs  = t('軒先部材寸法の回答', {kind:'ext', party:PS.id, st:'wait', due:addDays(-2), memo:'11/13に依頼済。電話で確認する'});
-  const ev  = t('軒先・パラペット納まり検討', {assignee:'m1', hours:4, deps:[xs]});
+  const ev  = t('軒先・パラペット納まり検討', {assignee:'m1', hours:4, deps:[xs], star:true});
   const kn  = t('矩計図の作図', {assignee:'m3', hours:6, deps:[ev, cl, win], ms:M2.id});
   const xg  = t('事前相談(斜線・採光)', {kind:'mtg', party:PG.id, due:addDays(30), hours:2, assignee:'m1', ms:M2.id});
   const C = (name, items, scale) => ({id: uid(), name, items, scale});
@@ -664,7 +690,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -697,6 +723,8 @@ function undo(){
 /* ---------------- model helpers ---------------- */
 // スケールは作図内容ごと。図面のスケール表記は作図内容のスケールを重複なくカンマ区切りで
 const dScales = d => [...new Set(d.contents.map(c => (c.scale || '').trim()).filter(Boolean))].join(', ');
+const starCount = (p, d) => dTaskIds(d).filter(i => p.tasks[i]?.star && !p.tasks[i].done).length;
+const starBtn = t => `<button class="star ${t.star ? 'on' : ''}" data-act="star" title="${t.star ? '優先を外す' : '優先(★)にする'}">${t.star ? '★' : '☆'}</button>`;
 const dTaskIds = d => { const s = new Set(); d.contents.forEach(c => c.items.forEach(i => s.add(i))); return [...s]; };
 function places(p, tid){ const r = []; p.drawings.forEach(d => d.contents.forEach(c => { if (c.items.includes(tid)) r.push({d, c}); })); return r; }
 const placeCount = (p, tid) => places(p, tid).length;
@@ -952,7 +980,7 @@ function renderList(){
       <button class="caret ${d.contents.length ? '' : 'none'}" data-act="tog" title="作図内容を表示">${isOpenD(d.id) ? '▼' : '▶'}</button>
       ${p.numMode !== 'sort' ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
-      <input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">
+      <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
       <span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
       <div class="prog" data-act="open">${segBar(p, dTaskIds(d))}</div>
       <button class="ico" data-act="open" title="詳細を開く">›</button>
@@ -1031,16 +1059,19 @@ function renderDetail(){
   const tbScroll = $('#treebox') ? [$('#treebox').scrollLeft, $('#treebox').scrollTop] : null;
   const side = p.drawings.map(d => { const pr = dProgress(p, d); return `
     <div class="sitem ${d.id === cur.did ? 'on' : ''}" data-act="goto" data-did="${d.id}">
-      <span class="no">${esc(d.no)}</span><span class="nm">${esc(d.name)}</span><span class="pc">${pr == null ? '—' : pr + '%'}</span>
+      <span class="no">${esc(d.no)}</span><span class="nm" title="${esc(d.no + ' ' + d.name)}">${esc(d.name)}${starCount(p, d) ? `<span class="st">★${starCount(p, d)}</span>` : ''}</span><span class="pc">${pr == null ? '—' : pr + '%'}</span>
     </div>`; }).join('');
   app.innerHTML = `
-  <div class="dv ${ui.treeWide ? 'wide' : ''} ${ui.dpane === 'tree' ? 'pane-tree' : ''}">
+  <div class="dv ${ui.treeWide ? 'wide' : ''} ${ui.dpane === 'tree' ? 'pane-tree' : ''}" style="${ui.sideW ? `--sideW:${ui.sideW}px;` : ''}${ui.treeW ? `--treeW:${ui.treeW}px;` : ''}">
+    <div class="sideres" title="ドラッグで幅を変更(ダブルクリックで名前が全部見える幅に)"><i></i></div>
+    <div class="treeres" title="ドラッグで作業リストとツリーの幅を調整(ダブルクリックで元に戻す)"><i></i></div>
     <aside class="side"><h4>図面</h4>${side}<button class="addd" data-act="addd">＋ 図面を追加</button></aside>
     <section class="sheets" id="sheets">
       <div class="shtool">
         <span class="seg narrow-only"><button data-act="dpane" data-v="list" class="on">作業リスト</button><button data-act="dpane" data-v="tree">ツリー</button></span>
         <select class="mid-only" id="dsel">${p.drawings.map(d => `<option value="${d.id}" ${d.id === cur.did ? 'selected' : ''}>${esc(d.no)} ${esc(d.name)}</option>`).join('')}</select>
         <span class="chk" title="インスタンス(複数の作図内容に置いた作業)の時間の見せ方">インスタンスの時間:<span class="seg"><button data-act="hmode" data-v="sum" class="${ui.hmode !== 'split' ? 'on' : ''}">合算</button><button data-act="hmode" data-v="split" class="${ui.hmode === 'split' ? 'on' : ''}">配分</button></span></span>
+        <label class="chk starf"><input type="checkbox" data-act="staronly" ${ui.starOnly ? 'checked' : ''}> ★優先のみ表示</label>
         <label class="chk"><input type="checkbox" data-act="fade" ${ui.fadeInst ? 'checked' : ''}> インスタンスは本体以外を薄く表示(集計からも除外)</label>
         <span>作業名の頭に <b>@関係者名</b> を付けて追加すると外部作業になります</span>
       </div>
@@ -1137,11 +1168,12 @@ function taskLI(p, d, c, tid, i){
   }
   const kt = t.kind === 'in' ? '' : `<span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${t.kind === 'ext' ? '外部' : '打合せ'}</span>`;
   const memoEdit = memoOpen.has(tid + c.id);
-  return `<li class="task ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
+  if (ui.starOnly && !t.star) return '';
+  return `<li class="task ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''} ${t.star ? 'starred' : ''}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
    <div class="trow">
     ${i > 0 ? `<button class="chain ${serial ? 'serial' : ''}" data-act="chain" title="${serial ? '直列:前の作業が終わってから着手(クリックで並列に)' : '並列:前の作業と同時進行できる(クリックで直列に)'}">${serial ? '↓' : '∥'}</button>` : `<span class="chain first">●</span>`}
     <input type="checkbox" data-act="done" ${t.done ? 'checked' : ''} title="完了">
-    <div class="tcell">${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div>
+    <div class="tcell">${starBtn(t)}${kt}<input class="ttl" data-tf="title" value="${esc(t.title)}" title="${esc(t.title)}"></div>
     ${other ? `<button class="depchip" data-act="edit" title="この作業の前提作業">前提+${other}</button>` : '<span></span>'}
     ${n > 1 ? `<span class="ibadge ${isHome ? 'home' : ''}" data-act="place" title="${isHome ? '本体' : 'インスタンス'}:同一作業 ${n}箇所(クリックで配置先を編集)">◆${n}</span>` : '<span></span>'}
     <button class="ico memo-b ${t.memo ? 'has' : ''}" data-act="memo" title="備考">✎</button>
@@ -1256,10 +1288,12 @@ function treeSVG(p, T, print){
     else if (t.kind === 'mtg') sub = `${pa ? pa.name : '打合せ'} · ${t.due ? fmtD(t.due) : '日程未定'}`;
     else sub = `${m ? m.name : '—'} · ${fmtH(t.hours)}h${n > 1 ? ' · ◆' + nos(id) : ''}`;
     const stroke = od ? '#d2462b' : crit ? '#d2462b' : (t.kind !== 'in' && pa) ? pa.color : '#9a978f';
+    const starG = t.star && !t.done ? `<rect x="-4" y="-4" width="${NW + 8}" height="${NH + 8}" rx="8" fill="#ffd84d" opacity=".45"/>` : '';
     const fill = t.done ? '#f1f0ec' : t.kind !== 'in' ? '#fbfaf8' : '#fff';
     const ownMs = t.ms && p.milestones.find(x => x.id === t.ms);
-    s += `<g class="tn" data-tid="${id}" transform="translate(${q.x},${q.y})">
-      ${nodeShape(t, fill, stroke, g || t.kind === 'ext')}
+    s += `<g class="tn ${t.star ? 'starred' : ''}" data-tid="${id}" transform="translate(${q.x},${q.y})">
+      ${starG}${nodeShape(t, t.star && !t.done ? '#fffbe6' : fill, t.star && !t.done && !od && !crit ? '#e0a100' : stroke, g || t.kind === 'ext')}
+      ${t.star ? `<text x="${NW - 18}" y="40" font-size="13" fill="#e0a100">★</text>` : ''}
       ${m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
       ${ownMs ? `<circle cx="${NW - 7}" cy="7" r="4" fill="${ownMs.color}"><title>締切指定:${esc(ownMs.name)}</title></circle>` : ''}
       <text x="${t.kind === 'in' ? 11 : 16}" y="19" font-size="11.5" fill="${t.done ? '#a8a6a0' : n > 1 ? '#2457c5' : '#1c1c1a'}">${t.done ? '✓ ' : ''}${esc(trunc(t.title, t.kind === 'in' ? 14 : 13))}</text>
@@ -1282,6 +1316,35 @@ function renderTree(){
     <span>社内合計 <b>${fmtH(T.total)}h</b></span><span>残り <b>${fmtH(T.remain)}h</b></span>
     <span class="cp" title="直列でつながる作業の最長経路(社内作業の時間)">クリティカルパス <b>${fmtH(T.cp)}h</b></span>`;
 }
+
+/* ---------- sidebar resize ---------- */
+let sideDrag = null;
+document.addEventListener('pointerdown', e => {
+  const h = e.target.closest && e.target.closest('.sideres,.treeres'); if (!h) return;
+  e.preventDefault(); const dv = h.closest('.dv'), tree = h.classList.contains('treeres');
+  sideDrag = { dv, h, tree, x0: e.clientX, w0: (tree ? $('.treepane', dv) : $('.side', dv)).getBoundingClientRect().width, W: dv.getBoundingClientRect().width };
+  h.classList.add('on'); document.body.classList.add('resizing');
+});
+document.addEventListener('pointermove', e => {
+  if (!sideDrag) return;
+  const d = sideDrag;
+  if (d.tree) { const sw = $('.side', d.dv).getBoundingClientRect().width; const w = Math.round(Math.max(280, Math.min(d.W - sw - 380, d.w0 - (e.clientX - d.x0)))); d.w = w; d.dv.style.setProperty('--treeW', w + 'px'); return; }
+  const w = Math.round(Math.max(150, Math.min(560, d.w0 + e.clientX - d.x0)));
+  d.w = w; d.dv.style.setProperty('--sideW', w + 'px');
+});
+document.addEventListener('pointerup', () => {
+  if (!sideDrag) return; const d = sideDrag; sideDrag = null;
+  d.h.classList.remove('on'); document.body.classList.remove('resizing');
+  if (d.w) { if (d.tree) { ui.treeW = d.w; saveUi(); renderTree(); } else { ui.sideW = d.w; saveUi(); } }
+});
+document.addEventListener('dblclick', e => {
+  const tr = e.target.closest && e.target.closest('.treeres');
+  if (tr) { ui.treeW = 0; saveUi(); tr.closest('.dv').style.removeProperty('--treeW'); return; }
+  const h = e.target.closest && e.target.closest('.sideres'); if (!h) return;
+  const dv = h.closest('.dv'); let need = 0;
+  $$('.sitem', dv).forEach(it => { const nm = $('.nm', it); const extra = it.getBoundingClientRect().width - nm.getBoundingClientRect().width; need = Math.max(need, nm.scrollWidth + extra + 4); });
+  ui.sideW = Math.round(Math.max(150, Math.min(560, need || 210))); saveUi(); dv.style.setProperty('--sideW', ui.sideW + 'px');
+});
 
 /* ---------- tree drag: nodes & milestone lines ---------- */
 let drag = null, treeLock = 0;
@@ -1469,13 +1532,13 @@ function renderMembers(){
         <div class="num ${cls}">${b.cap != null && r.m ? `${fmtH(b.cum)} / ${fmtH(b.cap)}h ${isFinite(b.ratio) ? Math.round(b.ratio * 100) + '%' : ''}` : `${fmtH(b.cum)}h`}</div>
         ${b.k < E.M && r.m ? `<div class="ovw" title="この期間(${esc(periodRange(p, E, b.k).from || '')} 〜 ${esc(E.ms[b.k].date)})のうち本日以降に使える時間。空欄=月別の作業可能時間から自動計算"><input class="ovin ${b.manual ? 'man' : ''}" type="number" min="0" step="1" data-ov="${r.id}|${E.ms[b.k].id}" value="${b.manual ? b.icap : ''}" placeholder="${fmtH(b.manual ? 0 : b.icap)}">h${b.manual ? ' <span class="mtag">手入力</span>' : ''}</div>` : '<div></div>'}`;
     }).join('');
-    const list = (ui.memDone ? r.mine : r.rem).slice().sort((a, b) => (E.band[a] - E.band[b]) || (T[a].done - T[b].done));
+    const list = (ui.memDone ? r.mine : r.rem).slice().sort((a, b) => (T[a].done - T[b].done) || (!!T[b].star - !!T[a].star) || (E.band[a] - E.band[b]));
     const open = ui.memOpen[r.id || '_'] !== false;
     const rows = list.map(i => { const t = T[i], b = E.band[i], hp = homePlace(p, i), pl = placesHTML(p, i);
-      return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''}">
+      return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''}">
         <td style="width:24px"><input type="checkbox" data-act="done" ${t.done ? 'checked' : ''}></td>
         <td style="width:150px;white-space:nowrap"><span style="color:${bandColor(E, b)}">●</span> <span style="font-size:11px">${esc(trunc(bandName(E, b), 10))}</span></td>
-        <td><div class="tcell">${t.kind === 'mtg' ? `<span class="kt mtg" style="--c:${party(p, t.party)?.color || '#6b6a66'}">打合せ</span>` : ''}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
+        <td><div class="tcell">${starBtn(t)}${t.kind === 'mtg' ? `<span class="kt mtg" style="--c:${party(p, t.party)?.color || '#6b6a66'}">打合せ</span>` : ''}<input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
         <td class="pl" style="width:260px">${pl}</td>
         <td style="width:70px"><span class="rw"><input class="hrs" type="number" min="0" step="0.5" data-tf="hours" value="${t.hours || ''}" placeholder="0">h</span></td>
         <td style="width:110px"><select class="asg" data-tf="assignee" style="--c:${member(t.assignee)?.color || '#d5d2ca'}"><option value="">担当—</option>${S.members.map(mm => `<option value="${mm.id}" ${mm.id === t.assignee ? 'selected' : ''}>${esc(mm.name)}</option>`).join('')}</select></td>
@@ -1602,9 +1665,9 @@ function renderParties(){
       <header><span class="dot"></span><h3>${esc(g.name)}</h3><span class="cnt">未完了 ${open.length}件${od.length ? ` ・ <span style="color:var(--accent)">期限超過 ${od.length}件</span>` : ''}</span></header>
       ${ids.length ? `<table class="ptab"><tr><th style="width:80px">状態</th><th>内容</th><th style="width:260px">図面 / 作図内容</th><th style="width:124px">回答予定日/日付</th><th style="width:130px">締切</th><th style="width:80px">止めている</th><th style="width:28%">備考</th></tr>
       ${ids.map(i => { const t = T[i], pl = places(p, i), b = E.band[i];
-        return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''}">
+        return `<tr data-tid="${i}" class="${t.done ? 'isdone' : ''} ${t.star ? 'starred' : ''}">
           <td>${stChip(t)}</td>
-          <td><div class="tcell"><span class="kt ${t.kind}" style="--c:${g.color}">${KIND[t.kind]}</span><input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
+          <td><div class="tcell">${starBtn(t)}<span class="kt ${t.kind}" style="--c:${g.color}">${KIND[t.kind]}</span><input class="ttl" data-tf="title" value="${esc(t.title)}"></div></td>
           <td>${placesHTML(p, i)}</td>
           <td><input type="date" class="due ${isOverdue(t) ? 'over' : ''}" data-tf="due" value="${esc(t.due)}"></td>
           <td style="white-space:nowrap"><span style="font-size:11px;color:${bandColor(E, b)}" title="${esc(bandName(E, b))}">● ${esc(trunc(bandName(E, b), 10))}</span></td>
@@ -2141,7 +2204,7 @@ function doPrint(only){
         ${c.items.map((tid, i) => { const t = T[tid]; const m = member(t.assignee), pa = party(p, t.party); const n = placeCount(p, tid), b = E.band[tid];
           const who = t.kind === 'in' ? (m ? esc(m.name) : '') : `${KIND[t.kind]}:${esc(pa?.name || '')}`;
           const tm = t.kind === 'ext' ? `<span class="${isOverdue(t) ? 'over' : ''}">${t.due ? fmtD(t.due) : t.days ? t.days + '日' : ''}</span>` : t.kind === 'mtg' ? `${t.due ? fmtD(t.due) : ''} ${fmtH(t.hours)}h` : fmtH(t.hours) + 'h';
-          return `<tr><td class="c">${t.done ? '☑' : '☐'}</td><td>${i && t.deps.includes(c.items[i - 1]) ? '↓ ' : ''}${esc(t.title)}${t.memo ? `<div style="color:#666;font-size:.85em">※${esc(t.memo)}</div>` : ''}</td><td>${who}</td><td class="n">${tm}</td>
+          return `<tr><td class="c">${t.done ? '☑' : '☐'}</td><td>${i && t.deps.includes(c.items[i - 1]) ? '↓ ' : ''}${t.star ? '<b style="color:#c78a00">★</b> ' : ''}${t.star ? `<b>${esc(t.title)}</b>` : esc(t.title)}${t.memo ? `<div style="color:#666;font-size:.85em">※${esc(t.memo)}</div>` : ''}</td><td>${who}</td><td class="n">${tm}</td>
           <td style="font-size:.85em"><span style="color:${bandColor(E, b)}">●</span>${esc(trunc(bandName(E, b), 10))}</td><td style="font-size:.85em;color:#444">${t.deps.map(x => esc(trunc(T[x]?.title, 16))).join('、')}</td><td style="font-size:.85em">${n > 1 ? '◆' + n : ''}</td></tr>`; }).join('')}</table></div>`;
       });
       if (inc.tree) { const TT = layoutTree(p, dTaskIds(d)); if (TT.ids.length) h += `<div class="ptree"><h3>作業ツリー(社内合計 ${fmtH(TT.total)}h / クリティカルパス ${fmtH(TT.cp)}h)</h3>${treeSVG(p, TT, true).replace('<svg ', `<svg style="width:${Math.min(cw, TT.W * 0.27).toFixed(1)}mm" `)}</div>`; }
@@ -2429,6 +2492,8 @@ document.addEventListener('click', e => {
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
     case 'hmode': ui.hmode = a.dataset.v; saveUi(); return render();
+    case 'star': { const t = p.tasks[tidOf()]; t.star = !t.star; return commit(); }
+    case 'staronly': ui.starOnly = a.checked; saveUi(); return render();
     case 'evenalloc': { const t = p.tasks[tidOf()]; delete t.alloc; commit(); return toast('合計を均等に配分し直しました'); }
     case 'openonly': ui.openOnly = a.checked; saveUi(); return render();
     case 'addd': return addDrawing();
