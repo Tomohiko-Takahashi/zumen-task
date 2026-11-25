@@ -1505,8 +1505,14 @@ function flowGraph(p){
   edges.forEach(e => { succ[e.a].push(e.b); pred[e.b].push(e.a); });
   const reach = a => { const seen = new Set(), st = [a]; while (st.length) { const x = st.pop(); succ[x].forEach(y => { if (y !== a && !seen.has(y)) { seen.add(y); st.push(y); } }); } return seen; };
   const inf = {}, down = {}; ids.forEach(i => { down[i] = reach(i); inf[i] = down[i].size; });
-  const dep = {}, on = new Set();
-  const depth = b => { if (dep[b] != null) return dep[b]; if (on.has(b)) return 0; on.add(b); let v = 0; pred[b].forEach(a => v = Math.max(v, depth(a) + 1)); on.delete(b); return dep[b] = v; };
+  // 輪になった関係は、影響の多い図面から辿って「戻り線」を決め、それ以外で段を決める
+  const stt = {}, back = new Set();
+  const order = [...ids].sort((x, y) => (pred[x].length ? 1 : 0) - (pred[y].length ? 1 : 0) || inf[y] - inf[x]);
+  const dfs = x => { stt[x] = 1; [...succ[x]].sort((m, n) => inf[n] - inf[m]).forEach(y => { if (stt[y] === 1) back.add(x + '>' + y); else if (!stt[y]) dfs(y); }); stt[x] = 2; };
+  order.forEach(x => { if (!stt[x]) dfs(x); });
+  edges.forEach(e => e.back = back.has(e.a + '>' + e.b));
+  const dep = {};
+  const depth = b => { if (dep[b] != null) return dep[b]; dep[b] = 0; let v = 0; edges.forEach(e => { if (e.b === b && !e.back) v = Math.max(v, depth(e.a) + 1); }); return dep[b] = v; };
   ids.forEach(depth);
   return { edges, succ, pred, inf, down, dep };
 }
@@ -1514,7 +1520,7 @@ function flowHTML(p){
   const G = flowGraph(p), D = {}; p.drawings.forEach(d => D[d.id] = d);
   const linked = p.drawings.filter(d => G.succ[d.id].length || G.pred[d.id].length), alone = p.drawings.filter(d => !linked.includes(d));
   const NW = 214, NH = 74, CG = 150, RG = 18, PX = 20, PY = 34;
-  const cols = []; linked.forEach(d => (cols[G.dep[d.id]] = cols[G.dep[d.id]] || []).push(d.id));
+  let cols = []; linked.forEach(d => (cols[G.dep[d.id]] = cols[G.dep[d.id]] || []).push(d.id)); cols = cols.filter(Boolean);
   const row = {}, pos = {};
   cols.forEach((c, k) => {
     if (!c) return;
@@ -1523,7 +1529,7 @@ function flowHTML(p){
     c.forEach((id, r) => { row[id] = r; pos[id] = { x: PX + k * (NW + CG), y: PY + r * (NH + RG) }; });
   });
   const nr = Math.max(0, ...cols.map(c => c ? c.length : 0));
-  const W = Math.max(600, PX * 2 + cols.length * (NW + CG) - CG), H = PY + nr * (NH + RG) + 10;
+  const W = Math.max(600, PX * 2 + cols.length * (NW + CG) - CG);
   const rank = [...linked].sort((a, b) => G.inf[b.id] - G.inf[a.id]), rk = {}; rank.forEach(d => rk[d.id] = G.inf[d.id] ? 1 + rank.filter(x => G.inf[x.id] > G.inf[d.id]).length : 0);
   const maxInf = Math.max(1, ...Object.values(G.inf));
   const node = (d, st) => { const u = urgCount(p, dTaskIds(d)), pr = progressOf(p, dTaskIds(d)), n = G.inf[d.id];
@@ -1532,24 +1538,36 @@ function flowHTML(p){
       <div class="fn2">${esc(d.name)}</div>
       <div class="fn3"><span class="finf" title="この図面の後に影響が及ぶ図面の数(矢印をたどった先すべて)">${n ? `影響 <b>${n}</b>図面` : '影響なし'}</span><span class="fpr">${pr == null ? '—' : pr + '%'}</span></div>
       <i class="fnbar"><i style="width:${pr || 0}%"></i></i></div>`; };
+  // 端点を分散:右辺=出ていく矢印(始点●)、左辺=入ってくる矢印(終点▶)、逆向きは下辺の右寄り(出)/左寄り(入)
+  const fwdE = G.edges.filter(e => pos[e.a] && pos[e.b] && pos[e.b].x > pos[e.a].x), backE = G.edges.filter(e => pos[e.a] && pos[e.b] && !(pos[e.b].x > pos[e.a].x));
+  const H = PY + nr * (NH + RG) + 10 + (backE.length ? 30 + backE.length * 14 : 0);
+  const port = {};
+  const spread = (list, key, by, lo, hi) => { const g = {}; list.forEach(e => (g[e[key]] = g[e[key]] || []).push(e));
+    Object.values(g).forEach(arr => { arr.sort((x, y) => by(x) - by(y)); arr.forEach((e, i) => { (port[e.a + '>' + e.b] = port[e.a + '>' + e.b] || {})[key] = lo + (hi - lo) * (i + 1) / (arr.length + 1); }); }); };
+  spread(fwdE, 'a', e => pos[e.b].y, 14, NH - 10);          // 出:右辺の縦位置
+  spread(fwdE, 'b', e => pos[e.a].y, 14, NH - 10);          // 入:左辺の縦位置
+  spread(backE, 'a', e => pos[e.b].x, NW * .55, NW - 12);   // 逆向き 出:下辺右寄り
+  spread(backE, 'b', e => pos[e.a].x, 12, NW * .45);        // 逆向き 入:下辺左寄り
   const paths = G.edges.map(e => { const A = pos[e.a], B = pos[e.b]; if (!A || !B) return '';
-    const fwd = B.x > A.x, x1 = A.x + NW, y1 = A.y + NH / 2, x2 = B.x, y2 = B.y + NH / 2;
-    const dd = fwd ? `M${x1},${y1} C${x1 + CG / 2},${y1} ${x2 - CG / 2},${y2} ${x2 - 2},${y2}` : `M${A.x + NW / 2},${A.y + NH} C${A.x + NW / 2},${A.y + NH + 60} ${B.x + NW / 2},${B.y + NH + 60} ${B.x + NW / 2},${B.y + NH + 2}`;
-    const ex = fwd ? (x1 + x2) / 2 : (A.x + B.x + NW) / 2, ey = fwd ? (y1 + y2) / 2 : Math.max(A.y, B.y) + NH + 46;
+    const fwd = B.x > A.x, pt = port[e.a + '>' + e.b] || {};
+    const x1 = fwd ? A.x + NW : A.x + pt.a, y1 = fwd ? A.y + pt.a : A.y + NH, x2 = fwd ? B.x : B.x + pt.b, y2 = fwd ? B.y + pt.b : B.y + NH;
+    const dip = PY + nr * (NH + RG) - RG + 26 + backE.indexOf(e) * 14;
+    const sg = x1 >= x2 ? 1 : -1, dd = fwd ? `M${x1 + 5},${y1} C${x1 + CG / 2},${y1} ${x2 - CG / 2},${y2} ${x2 - 3},${y2}` : `M${x1},${y1 + 5} V${dip - 8} Q${x1},${dip} ${x1 - 8 * sg},${dip} H${x2 + 8 * sg} Q${x2},${dip} ${x2},${dip - 8} V${y2 + 3}`;
+    const ex = (x1 + x2) / 2, ey = fwd ? (y1 + y2) / 2 : dip - 3;
     const lbl = e.links.length ? trunc(e.links[0].memo || '', 10) : '', solid = e.links.length > 0;
     const tip = [...e.links.map(l => '関係線:' + (l.memo || '(メモなし)')), e.tasks ? `作業の前後関係 ${e.tasks}件` : ''].filter(Boolean).join('\n');
-    return `<g class="fe" data-a="${e.a}" data-b="${e.b}"><path d="${dd}" fill="none" class="${solid ? 'sol' : 'tsk'}" marker-end="url(#fah)"/>
+    return `<g class="fe" data-a="${e.a}" data-b="${e.b}"><path d="${dd}" fill="none" class="${solid ? 'sol' : 'tsk'}" marker-start="url(#fdot)" marker-end="url(#fah)"/>
       <path d="${dd}" fill="none" stroke="transparent" stroke-width="12" ${e.links[0] ? `data-act="link" data-lid="${e.links[0].id}"` : ''}/><title>${esc(tip)}</title>
       ${lbl ? `<text x="${ex}" y="${ey - 5}" text-anchor="middle" class="fl">${esc(lbl)}</text>` : !solid ? `<text x="${ex}" y="${ey - 4}" text-anchor="middle" class="fltx">作業${e.tasks}</text>` : ''}</g>`; }).join('');
   const heads = cols.map((c, k) => `<div class="fcol" style="left:${PX + k * (NW + CG)}px;width:${NW}px">${k === 0 ? '起点(ボトムになる図面)' : k + '段目'}</div>`).join('');
   return `<div class="flowwrap">
     ${linked.length ? `<div class="flow" style="width:${W}px;height:${H}px">${heads}
-      <svg width="${W}" height="${H}"><defs><marker id="fah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker></defs>${paths}</svg>
+      <svg width="${W}" height="${H}"><defs><marker id="fah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker><marker id="fdot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8"><circle cx="5" cy="5" r="3.8" fill="#5c5a55" stroke="#fff" stroke-width="1.4"/></marker></defs>${paths}</svg>
       ${linked.map(d => node(d, `left:${pos[d.id].x}px;top:${pos[d.id].y}px;`)).join('')}</div>`
       : '<div class="note">図面同士の関係線がまだありません。リストで図面右端の ● → つなぎ先の ● で関係線を引くか、図面をまたいで作業の前提を設定すると、ここに流れが表示されます。</div>'}
     ${alone.length ? `<div class="sec">他の図面と関係のない図面(${alone.length})</div><div class="falone">${alone.map(d => node(d, '')).join('')}</div>` : ''}
     <div class="hint">・左ほど多くの図面に影響する「ボトム」の図面です(左端の列は、影響する図面の数が多い順に上から)。<b>#1〜3</b>は影響する図面の数の順位。<br>
-      ・実線=図面リストで引いた関係線(メモ付き)、点線=図面をまたぐ作業の前後関係。図面にマウスを乗せると、その図面の前後の流れが強調されます。クリックで詳細へ。</div>
+      ・<b>●</b>が影響を与える側(始点)、<b>▶</b>が影響を受ける側(終点)。図面の右辺から出て左辺に入ります(逆向きの線は下辺から出入り)。実線=図面リストで引いた関係線(メモ付き)、点線=図面をまたぐ作業の前後関係。図面にマウスを乗せると、その図面の前後の流れが強調されます。クリックで詳細へ。</div>
   </div>`;
 }
 function bindFlow(){
