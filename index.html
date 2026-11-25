@@ -110,6 +110,33 @@ input,select,textarea{font:inherit;color:inherit}
 .crow .sbar{height:5px}
 .crow .ico{grid-column:8}
 .tbtn.sm{padding:3px 8px;font-size:11.5px}
+/* 図面フローチャート */
+.dvbar{display:flex;gap:10px;align-items:center;margin-bottom:8px}
+.dvseg button{font-size:12px;padding:4px 12px}
+.flowwrap{max-width:100%}
+.flow{position:relative;margin:4px 0 10px;overflow:visible}
+.flow>svg{position:absolute;left:0;top:0;pointer-events:none}
+.flow>svg .fe path{pointer-events:stroke}
+.flow>svg path.sol{stroke:#5c5a55;stroke-width:1.6}
+.flow>svg path.tsk{stroke:#9a978f;stroke-width:1.2;stroke-dasharray:4 3}
+.flow .fl{font-size:10.5px;fill:#d2462b;paint-order:stroke;stroke:#faf9f6;stroke-width:4px}
+.flow .fltx{font-size:9.5px;fill:#9a978f;paint-order:stroke;stroke:#faf9f6;stroke-width:4px}
+.fcol{position:absolute;top:6px;font-size:10.5px;color:var(--mute);letter-spacing:.05em;border-bottom:1px solid var(--line2);padding-bottom:3px}
+.fnode{position:absolute;width:214px;height:74px;box-sizing:border-box;background:var(--paper);border:1px solid var(--line);border-left:5px solid color-mix(in srgb,var(--ink) calc(var(--w) * .9),#d9d6ce);border-radius:7px;padding:6px 9px 0;cursor:pointer;transition:opacity .12s,box-shadow .12s;overflow:hidden}
+.fnode:hover{box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.fnode.top{box-shadow:0 0 0 2px var(--ink)}
+.fn1{display:flex;gap:5px;align-items:center;font-size:11px;height:16px}
+.fn1 .no{font-family:var(--mono);color:var(--sub)} .fn1 .appb{margin-left:0}
+.frk{margin-left:auto;font-family:var(--mono);font-weight:700;font-size:11px;background:var(--ink);color:#fff;border-radius:3px;padding:0 4px}
+.fn2{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:2px 0}
+.fn3{display:flex;justify-content:space-between;font-size:11px;color:var(--sub)} .fn3 b{color:var(--ink);font-size:12.5px}
+.fnbar{position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--line2)} .fnbar i{display:block;height:100%;background:#2e9e6a}
+.flow.hov .fnode:not(.on):not(.dn):not(.upn){opacity:.3}
+.flow.hov .fe{opacity:.15} .flow.hov .fe.dn,.flow.hov .fe.upn{opacity:1}
+.flow.hov .fe.dn path.sol,.flow.hov .fe.dn path.tsk{stroke:#d2462b;stroke-width:2}
+.flow.hov .fe.upn path.sol,.flow.hov .fe.upn path.tsk{stroke:#2c6fd1;stroke-width:2}
+.fnode.dn{border-color:#d2462b} .fnode.upn{border-color:#2c6fd1}
+.falone{display:flex;flex-wrap:wrap;gap:12px;margin:6px 0 10px} .falone .fnode{position:relative}
 /* 確認申請 */
 .appck{justify-self:center;border:1px dashed #cfccc4;background:none;color:transparent;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:1px 4px;border-radius:3px;cursor:pointer;line-height:1.4;min-width:34px}
 .appck::before{content:"申請"}
@@ -1418,14 +1445,16 @@ function renderList(){
     </div>
     ${msCards(p)}
     ${phaseBanner(p)}
-    <div style="display:flex;gap:6px;margin-bottom:8px"><button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button></div>
-    <div class="dlist" id="dlist">
+    <div class="dvbar"><span class="fseg dvseg"><button data-act="dmode" data-v="list" class="${ui.dmode !== 'flow' ? 'on' : ''}">☰ リスト</button><button data-act="dmode" data-v="flow" class="${ui.dmode === 'flow' ? 'on' : ''}">⇢ フローチャート</button></span>
+      ${ui.dmode === 'flow' ? `<label class="chk"><input type="checkbox" data-act="flowtask" ${ui.flowTask !== false ? 'checked' : ''}> 図面をまたぐ作業の前後関係も矢印にする</label>`
+        : `<button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button>`}</div>
+    ${ui.dmode === 'flow' ? flowHTML(p) : `<div class="dlist" id="dlist">
       <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div class="apph" title="確認申請に必要な図面">確認申請</div><div>スケール</div><div title="完了した作業時間 ÷ 作業時間の合計">達成率(時間)</div><div></div><div></div><div title="関係線">⇄</div></div>
       ${rows}
       <button class="addrowbtn" data-act="addd">＋ 図面を追加</button>
       ${ui.showLinks ? linkSVG(p) : ''}
-    </div>
-    <div class="hint">
+    </div>`}
+    <div class="hint" style="${ui.dmode === 'flow' ? 'display:none' : ''}">
       ・達成率または <b>›</b> をクリックで詳細へ。並び「ドラッグ順に通し番号」では <b>⋮⋮</b> をドラッグして並べ替えると番号が自動で振り直されます(「番号順に自動整列」では番号を書き換えると並び替わります)。締切カードをクリックで計画レビュー。<br>
       ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
     </div>
@@ -1433,6 +1462,7 @@ function renderList(){
   app.firstElementChild.scrollTop = sc;
   if (flashDid) { const r = $(`.drow[data-did="${flashDid}"]`); if (r) { r.classList.add('flash'); r.scrollIntoView({ block: 'nearest' }); } flashDid = null; }
   if (linking) showBanner('つなぎ先の図面の ● をクリック(Escで取消)'); else hideBanner();
+  bindFlow();
 }
 function laneLinks(p){
   const idx = {}; p.drawings.forEach((d, i) => idx[d.id] = i);
@@ -1462,6 +1492,77 @@ function linkSVG(p){
   }).join('');
   return `<svg class="linksvg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
     <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker></defs>${paths}</svg>`;
+}
+
+/* ---------------- 図面フローチャート ---------------- */
+function flowGraph(p){
+  const ids = p.drawings.map(d => d.id), E = {}, add = (a, b, k, v) => { if (a === b) return; const key = a + '>' + b; const e = E[key] = E[key] || { a, b, links: [], tasks: 0 }; if (k === 'l') e.links.push(v); else e.tasks++; };
+  p.links.forEach(l => { if (ids.includes(l.from) && ids.includes(l.to)) add(l.from, l.to, 'l', l); });
+  if (ui.flowTask !== false) placedIds(p).forEach(i => { const t = p.tasks[i], ht = homePlace(p, i); if (!ht) return;
+    (t.deps || []).forEach(dp => { if (!p.tasks[dp]) return; const hd = homePlace(p, dp); if (hd) add(hd.d.id, ht.d.id, 't'); }); });
+  const edges = Object.values(E), succ = {}, pred = {};
+  ids.forEach(i => { succ[i] = []; pred[i] = []; });
+  edges.forEach(e => { succ[e.a].push(e.b); pred[e.b].push(e.a); });
+  const reach = a => { const seen = new Set(), st = [a]; while (st.length) { const x = st.pop(); succ[x].forEach(y => { if (y !== a && !seen.has(y)) { seen.add(y); st.push(y); } }); } return seen; };
+  const inf = {}, down = {}; ids.forEach(i => { down[i] = reach(i); inf[i] = down[i].size; });
+  const dep = {}, on = new Set();
+  const depth = b => { if (dep[b] != null) return dep[b]; if (on.has(b)) return 0; on.add(b); let v = 0; pred[b].forEach(a => v = Math.max(v, depth(a) + 1)); on.delete(b); return dep[b] = v; };
+  ids.forEach(depth);
+  return { edges, succ, pred, inf, down, dep };
+}
+function flowHTML(p){
+  const G = flowGraph(p), D = {}; p.drawings.forEach(d => D[d.id] = d);
+  const linked = p.drawings.filter(d => G.succ[d.id].length || G.pred[d.id].length), alone = p.drawings.filter(d => !linked.includes(d));
+  const NW = 214, NH = 74, CG = 150, RG = 18, PX = 20, PY = 34;
+  const cols = []; linked.forEach(d => (cols[G.dep[d.id]] = cols[G.dep[d.id]] || []).push(d.id));
+  const row = {}, pos = {};
+  cols.forEach((c, k) => {
+    if (!c) return;
+    const bary = id => { const ps = G.pred[id].filter(a => row[a] != null); return ps.length ? ps.reduce((s, a) => s + row[a], 0) / ps.length : -1; };
+    c.sort((a, b) => k === 0 ? (G.inf[b] - G.inf[a]) || D[a].no.localeCompare(D[b].no, 'ja', { numeric: true }) : (bary(a) - bary(b)) || (G.inf[b] - G.inf[a]));
+    c.forEach((id, r) => { row[id] = r; pos[id] = { x: PX + k * (NW + CG), y: PY + r * (NH + RG) }; });
+  });
+  const nr = Math.max(0, ...cols.map(c => c ? c.length : 0));
+  const W = Math.max(600, PX * 2 + cols.length * (NW + CG) - CG), H = PY + nr * (NH + RG) + 10;
+  const rank = [...linked].sort((a, b) => G.inf[b.id] - G.inf[a.id]), rk = {}; rank.forEach(d => rk[d.id] = G.inf[d.id] ? 1 + rank.filter(x => G.inf[x.id] > G.inf[d.id]).length : 0);
+  const maxInf = Math.max(1, ...Object.values(G.inf));
+  const node = (d, st) => { const u = urgCount(p, dTaskIds(d)), pr = progressOf(p, dTaskIds(d)), n = G.inf[d.id];
+    return `<div class="fnode ${n ? '' : 'leaf'} ${rk[d.id] === 1 ? 'top' : ''}" data-did="${d.id}" data-act="open" style="${st}--w:${(n / maxInf * 100).toFixed(0)}%" title="${esc(d.no + ' ' + d.name)}\n影響する図面:${[...G.down[d.id]].map(x => D[x].no).join('・') || 'なし'}\n前提になる図面:${G.pred[d.id].map(x => D[x].no).join('・') || 'なし'}\nクリックで詳細へ">
+      <div class="fn1"><span class="no">${esc(d.no)}</span>${appBadge(d)}${u.late ? `<span class="su late">遅${u.late}</span>` : ''}${u.now ? `<span class="su now">今${u.now}</span>` : ''}${rk[d.id] && rk[d.id] <= 3 ? `<span class="frk">#${rk[d.id]}</span>` : ''}</div>
+      <div class="fn2">${esc(d.name)}</div>
+      <div class="fn3"><span class="finf" title="この図面の後に影響が及ぶ図面の数(矢印をたどった先すべて)">${n ? `影響 <b>${n}</b>図面` : '影響なし'}</span><span class="fpr">${pr == null ? '—' : pr + '%'}</span></div>
+      <i class="fnbar"><i style="width:${pr || 0}%"></i></i></div>`; };
+  const paths = G.edges.map(e => { const A = pos[e.a], B = pos[e.b]; if (!A || !B) return '';
+    const fwd = B.x > A.x, x1 = A.x + NW, y1 = A.y + NH / 2, x2 = B.x, y2 = B.y + NH / 2;
+    const dd = fwd ? `M${x1},${y1} C${x1 + CG / 2},${y1} ${x2 - CG / 2},${y2} ${x2 - 2},${y2}` : `M${A.x + NW / 2},${A.y + NH} C${A.x + NW / 2},${A.y + NH + 60} ${B.x + NW / 2},${B.y + NH + 60} ${B.x + NW / 2},${B.y + NH + 2}`;
+    const ex = fwd ? (x1 + x2) / 2 : (A.x + B.x + NW) / 2, ey = fwd ? (y1 + y2) / 2 : Math.max(A.y, B.y) + NH + 46;
+    const lbl = e.links.length ? trunc(e.links[0].memo || '', 10) : '', solid = e.links.length > 0;
+    const tip = [...e.links.map(l => '関係線:' + (l.memo || '(メモなし)')), e.tasks ? `作業の前後関係 ${e.tasks}件` : ''].filter(Boolean).join('\n');
+    return `<g class="fe" data-a="${e.a}" data-b="${e.b}"><path d="${dd}" fill="none" class="${solid ? 'sol' : 'tsk'}" marker-end="url(#fah)"/>
+      <path d="${dd}" fill="none" stroke="transparent" stroke-width="12" ${e.links[0] ? `data-act="link" data-lid="${e.links[0].id}"` : ''}/><title>${esc(tip)}</title>
+      ${lbl ? `<text x="${ex}" y="${ey - 5}" text-anchor="middle" class="fl">${esc(lbl)}</text>` : !solid ? `<text x="${ex}" y="${ey - 4}" text-anchor="middle" class="fltx">作業${e.tasks}</text>` : ''}</g>`; }).join('');
+  const heads = cols.map((c, k) => `<div class="fcol" style="left:${PX + k * (NW + CG)}px;width:${NW}px">${k === 0 ? '起点(ボトムになる図面)' : k + '段目'}</div>`).join('');
+  return `<div class="flowwrap">
+    ${linked.length ? `<div class="flow" style="width:${W}px;height:${H}px">${heads}
+      <svg width="${W}" height="${H}"><defs><marker id="fah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker></defs>${paths}</svg>
+      ${linked.map(d => node(d, `left:${pos[d.id].x}px;top:${pos[d.id].y}px;`)).join('')}</div>`
+      : '<div class="note">図面同士の関係線がまだありません。リストで図面右端の ● → つなぎ先の ● で関係線を引くか、図面をまたいで作業の前提を設定すると、ここに流れが表示されます。</div>'}
+    ${alone.length ? `<div class="sec">他の図面と関係のない図面(${alone.length})</div><div class="falone">${alone.map(d => node(d, '')).join('')}</div>` : ''}
+    <div class="hint">・左ほど多くの図面に影響する「ボトム」の図面です(左端の列は、影響する図面の数が多い順に上から)。<b>#1〜3</b>は影響する図面の数の順位。<br>
+      ・実線=図面リストで引いた関係線(メモ付き)、点線=図面をまたぐ作業の前後関係。図面にマウスを乗せると、その図面の前後の流れが強調されます。クリックで詳細へ。</div>
+  </div>`;
+}
+function bindFlow(){
+  const fl = $('.flow'); if (!fl) return;
+  const p = P(), G = flowGraph(p);
+  const up = id => { const seen = new Set(), st = [id]; while (st.length) { const x = st.pop(); G.pred[x].forEach(y => { if (!seen.has(y) && y !== id) { seen.add(y); st.push(y); } }); } return seen; };
+  const clear = () => { fl.classList.remove('hov'); $$('.on,.dn,.upn', fl).forEach(n => n.classList.remove('on', 'dn', 'upn')); };
+  fl.addEventListener('mouseover', e => { const n = e.target.closest('.fnode'); if (!n) return; clear(); const id = n.dataset.did, dn = G.down[id], u = up(id);
+    fl.classList.add('hov'); n.classList.add('on');
+    $$('.fnode', fl).forEach(x => { if (dn.has(x.dataset.did)) x.classList.add('dn'); if (u.has(x.dataset.did)) x.classList.add('upn'); });
+    $$('.fe', fl).forEach(g => { const a = g.dataset.a, b = g.dataset.b; if ((a === id || dn.has(a)) && dn.has(b)) g.classList.add('dn'); if ((b === id || u.has(b)) && u.has(a)) g.classList.add('upn'); }); });
+  fl.addEventListener('mouseleave', clear);
+  fl.addEventListener('mouseout', e => { if (e.target.closest('.fnode') && !e.relatedTarget?.closest?.('.fnode')) clear(); });
 }
 
 /* ---------------- detail view ---------------- */
@@ -3237,6 +3338,8 @@ document.addEventListener('click', e => {
     case 'jump': { const tid = tidOf(), hp = homePlace(p, tid); if (!hp) return; cur.view = 'detail'; cur.did = hp.d.id; scrollToDid = hp.d.id; render(); return setTimeout(() => jumpToTask(tid), 60); }
     case 'numrule': return openNumRule();
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
+    case 'dmode': ui.dmode = a.dataset.v; saveUi(); return render();
+    case 'flowtask': ui.flowTask = a.checked; saveUi(); return render();
     case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
     case 'hmode': ui.hmode = a.dataset.v; saveUi(); return render();
     case 'board': { const r = a.closest('[data-cid]'); return openBoard(r.dataset.did, r.dataset.cid); }
