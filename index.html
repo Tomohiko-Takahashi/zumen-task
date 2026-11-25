@@ -110,6 +110,22 @@ input,select,textarea{font:inherit;color:inherit}
 .crow .sbar{height:5px}
 .crow .ico{grid-column:8}
 .tbtn.sm{padding:3px 8px;font-size:11.5px}
+/* 枚数管理 */
+.dvbar.sub{margin:-2px 0 8px 6px;font-size:12px}
+.dvbar.sub .subl{color:var(--mute);font-size:11.5px}
+.dvbar.sub .dvseg button{font-size:11.5px;padding:3px 10px}
+.dvbar.sub .subh{color:var(--sub);font-size:11.5px}
+.srow .cn{display:flex;align-items:center;gap:4px;overflow:hidden;white-space:nowrap}
+.srow .spg{font-family:var(--mono);font-size:10.5px;color:#fff;background:var(--sub);border-radius:3px;padding:0 5px;margin-right:4px;flex:none;min-width:14px;text-align:center}
+.srow .scn{cursor:pointer;overflow:hidden;text-overflow:ellipsis} .srow .scn:hover{text-decoration:underline}
+.srow .splus{color:var(--mute)} .srow .ssame{font-size:10px;color:var(--sub);border:1px solid var(--line);border-radius:3px;padding:0 4px;flex:none}
+.srow .sapp{grid-column:5;justify-self:center}
+.srow .snw{grid-column:6;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--sub)}
+.srow .sn{width:48px;text-align:right;font-family:var(--mono);border:1px solid var(--line);border-radius:4px;background:#fff;padding:1px 4px}
+.srow .prog{grid-column:7}
+.srow .sact{grid-column:8 / span 2;display:flex;gap:2px}
+.srow.app .scn{font-weight:700;color:var(--ink)}
+.snum b{font-family:var(--mono)}
 /* 図面フローチャート */
 .dvbar{display:flex;gap:10px;align-items:center;margin-bottom:8px}
 .dvseg button{font-size:12px;padding:4px 12px}
@@ -767,7 +783,7 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
 .pr .ptitle h1{font-size:1.6em;margin:0;font-weight:600}
 .pr .ptitle .meta{font-family:var(--mono);font-size:.85em;text-align:right;line-height:1.5}
 .pr .plist{position:relative}
-.pr .prow{display:grid;grid-template-columns:24mm 1fr 30mm 52mm;align-items:center;border-bottom:.2mm solid #bbb;box-sizing:border-box}
+.pr .prow{display:grid;grid-template-columns:24mm 1fr 30mm 16mm 52mm;align-items:center;border-bottom:.2mm solid #bbb;box-sizing:border-box}
 .pr .prow.h{border-bottom:.35mm solid #000;font-size:.8em;color:#555}
 .pr .prow>div{padding:0 2mm;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pr .mono{font-family:var(--mono)}
@@ -1392,7 +1408,7 @@ function segBar(p, ids){
 /* ---------------- list view ---------------- */
 const ROW = 40, HEAD = 34, CROW = 30;
 const isOpenD = id => ui.openD.includes(id);
-function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? d.contents.length * CROW : 0); }); return { c, H: y }; }
+function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? (sheetMode() ? sheetUnits(d).length : d.contents.length) * CROW : 0); }); return { c, H: y }; }
 const pctBar = pr => `<div class="pb1"><i class="${pr === 100 ? 'full' : ''}" style="width:${pr || 0}%"></i></div><span class="pct ${pr == null ? 'muted' : ''}">${pr == null ? '—' : pr + '%'}</span>`;
 function msCards(p){
   const E = eff(p);
@@ -1410,7 +1426,36 @@ function msCards(p){
   return `<div class="mscards">${cards}<button class="msadd" data-act="milestones">${E.M ? '締切を編集' : '＋ 締切(マイルストーン)を登録'}</button></div>`;
 }
 const appN = d => d.contents.filter(c => c.app).length;
+/* 枚数管理:作図内容を「1枚(または複数枚)のシート単位」にまとめる。d.sheets=[{cids:[...], n:枚数}] */
+const sheetMode = () => ui.dmode !== 'flow' && ui.lunit === 'sheet';
+function sheetUnits(d){
+  const cids = d.contents.map(c => c.id), seen = new Set();
+  let U = (d.sheets || []).map(u => ({ cids: (u.cids || []).filter(x => cids.includes(x) && !seen.has(x) && (seen.add(x), true)), n: u.n == null ? 1 : u.n })).filter(u => u.cids.length);
+  cids.forEach(x => { if (!seen.has(x)) U.push({ cids: [x], n: 1 }); });
+  U.forEach(u => u.cids.sort((a, b) => cids.indexOf(a) - cids.indexOf(b)));
+  U.sort((a, b) => cids.indexOf(a.cids[0]) - cids.indexOf(b.cids[0]));
+  return U;
+}
+function unitTasks(p, d, u){ const set = new Set(); d.contents.filter(c => u.cids.includes(c.id)).forEach(c => c.items.forEach(x => { if (p.tasks[x]) set.add(x); })); return [...set]; }
+function sheetStat(p, d){
+  const U = sheetUnits(d); let n = 0, w = 0, wp = 0, done = 0;
+  U.forEach(u => { const pr = progressOf(p, unitTasks(p, d, u)); n += u.n; if (pr != null) { w += u.n; wp += u.n * pr; if (pr === 100) done += u.n; } });
+  return { U, n, done, pct: w ? Math.round(wp / w) : null };
+}
+function projSheets(p){ let n = 0, done = 0, w = 0, wp = 0; p.drawings.forEach(d => { const st = sheetStat(p, d); n += st.n; done += st.done; if (st.pct != null) { const ww = st.U.reduce((a, u) => a + (progressOf(p, unitTasks(p, d, u)) != null ? u.n : 0), 0); w += ww; wp += ww * st.pct; } }); return { n, done, pct: w ? Math.round(wp / w) : null }; }
 function appBadge(d, cls = 'appb'){ const n = appN(d), a = d.contents.length; if (!n) return ''; return `<span class="${cls}" title="確認申請に使う作図内容 ${n}/${a}">申請${n < a ? `<small>${n}/${a}</small>` : ''}</span>`; }
+function sheetRows(p, d){
+  let pg = 0;
+  return sheetUnits(d).map((u, i) => { const cs = u.cids.map(x => d.contents.find(c => c.id === x)), pr = progressOf(p, unitTasks(p, d, u));
+    const from = pg + 1; pg += u.n; const rng = u.n <= 0 ? '—' : u.n === 1 ? `${from}` : `${from}–${pg}`;
+    return `<div class="crow srow ${cs.some(c => c.app) ? 'app' : ''}" data-did="${d.id}" data-ucid="${u.cids[0]}">
+      <span class="cn"><span class="spg" title="この図面の中での何枚目か">${rng}</span>${cs.map(c => `<span class="scn" data-act="opencontent" data-cid="${c.id}" title="${esc(c.name)}">${esc(c.name)}</span>`).join('<span class="splus">＋</span>')}${cs.length > 1 ? '<span class="ssame">同一ページ</span>' : ''}</span>
+      <span class="sapp">${cs.some(c => c.app) ? '<span class="appb">申請</span>' : ''}</span>
+      <span class="snw"><input class="cell sn" type="number" min="0" step="1" data-sn="1" value="${u.n}" title="このまとまりの枚数">枚</span>
+      <div class="prog" title="この${u.n === 1 ? '1枚' : u.n + '枚'}に含まれる作業の達成率(時間)">${pctBar(pr)}</div>
+      <span class="sact">${i ? '<button class="ico" data-act="smerge" title="上の行と同じページ(1つのまとまり)にする">⤒</button>' : '<span></span>'}${cs.length > 1 ? '<button class="ico" data-act="ssplit" title="作図内容ごとに別々のページに分ける">⇕</button>' : ''}</span>
+    </div>`; }).join('');
+}
 function renderList(){
   const p = P(), app = $('#app');
   const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
@@ -1423,18 +1468,20 @@ function renderList(){
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
       <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れの未了作業">遅${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了作業">今${u.now}</span>` : ''); })()}${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
       <button class="appck ${appN(d) && appN(d) === d.contents.length ? 'on' : appN(d) ? 'part' : ''}" data-act="appall" title="確認申請に使う作図内容 ${appN(d)}/${d.contents.length}(クリックで全部オン/オフ。個別は▶で開いて)">${appN(d) && appN(d) < d.contents.length ? `<small>${appN(d)}/${d.contents.length}</small>` : ''}</button>
-      <span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
-      <div class="prog" data-act="open">${pctBar(progressOf(p, dTaskIds(d)))}</div>
+      ${sheetMode() ? (() => { const st = sheetStat(p, d); return `<span class="cell sc ro snum" data-act="tog" title="この図面の枚数(▶で開いて編集)">計 <b>${fmtH(st.n)}</b> 枚</span>
+      <div class="prog" data-act="tog" title="枚数で重み付けした達成率 ・ 完了 ${fmtH(st.done)}/${fmtH(st.n)}枚">${pctBar(st.pct)}</div>`; })()
+      : `<span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
+      <div class="prog" data-act="open">${pctBar(progressOf(p, dTaskIds(d)))}</div>`}
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
-    </div>${isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
+    </div>${isOpenD(d.id) && sheetMode() ? sheetRows(p, d) : isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
       return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
       <h2>${esc(p.name)}</h2>
-      <span class="stat">図面 ${p.drawings.length}枚 ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}${(() => { const nd = p.drawings.filter(d => appN(d)).length, nc = p.drawings.reduce((a, d) => a + appN(d), 0); return nd ? ` ・ 確認申請 ${nd}枚(作図内容 ${nc})` : ''; })()}</span>
+      <span class="stat">図面 ${p.drawings.length}件(計 ${(() => { const ps = projSheets(p); return `${fmtH(ps.n)}枚${sheetMode() ? ` ・ 完了 ${fmtH(ps.done)}枚 ・ 枚数達成 ${ps.pct == null ? '—' : ps.pct + '%'}` : ''}`; })()}) ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}${(() => { const nd = p.drawings.filter(d => appN(d)).length, nc = p.drawings.reduce((a, d) => a + appN(d), 0); return nd ? ` ・ 確認申請 ${nd}枚(作図内容 ${nc})` : ''; })()}</span>
       <span style="flex:1"></span>
       <span class="chk">並び:<select id="numMode" title="図面の並べ方と番号の付け方">
         <option value="sort" ${p.numMode === 'sort' ? 'selected' : ''}>番号順に自動整列</option>
@@ -1448,15 +1495,17 @@ function renderList(){
     <div class="dvbar"><span class="fseg dvseg"><button data-act="dmode" data-v="list" class="${ui.dmode !== 'flow' ? 'on' : ''}">☰ リスト</button><button data-act="dmode" data-v="flow" class="${ui.dmode === 'flow' ? 'on' : ''}">⇢ フローチャート</button></span>
       ${ui.dmode === 'flow' ? `<label class="chk"><input type="checkbox" data-act="flowtask" ${ui.flowTask !== false ? 'checked' : ''}> 図面をまたぐ作業の前後関係も矢印にする</label>`
         : `<button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button>`}</div>
+    ${ui.dmode !== 'flow' ? `<div class="dvbar sub"><span class="subl">└ 開いたときの中身</span><span class="fseg dvseg"><button data-act="lunit" data-v="content" class="${ui.lunit !== 'sheet' ? 'on' : ''}">作図内容ごと</button><button data-act="lunit" data-v="sheet" class="${ui.lunit === 'sheet' ? 'on' : ''}">▤ 枚数ごと</button></span>
+      ${ui.lunit === 'sheet' ? '<span class="subh">枚数を記入/<b>⤒</b>で上の行と同じページにまとめる/<b>⇕</b>で分ける。達成率は枚数で重み付け。</span>' : ''}</div>` : ''}
     ${ui.dmode === 'flow' ? flowHTML(p) : `<div class="dlist" id="dlist">
-      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div class="apph" title="確認申請に必要な図面">確認申請</div><div>スケール</div><div title="完了した作業時間 ÷ 作業時間の合計">達成率(時間)</div><div></div><div></div><div title="関係線">⇄</div></div>
+      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div class="apph" title="確認申請に必要な図面">確認申請</div>${sheetMode() ? '<div>枚数</div><div title="枚数で重み付けした達成率">達成率(枚数)</div>' : '<div>スケール</div><div title="完了した作業時間 ÷ 作業時間の合計">達成率(時間)</div>'}<div></div><div></div><div title="関係線">⇄</div></div>
       ${rows}
       <button class="addrowbtn" data-act="addd">＋ 図面を追加</button>
       ${ui.showLinks ? linkSVG(p) : ''}
     </div>`}
     <div class="hint" style="${ui.dmode === 'flow' ? 'display:none' : ''}">
       ・達成率または <b>›</b> をクリックで詳細へ。並び「ドラッグ順に通し番号」では <b>⋮⋮</b> をドラッグして並べ替えると番号が自動で振り直されます(「番号順に自動整列」では番号を書き換えると並び替わります)。締切カードをクリックで計画レビュー。<br>
-      ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。線は小さな●が影響を与える側、▶が受ける側です。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
+      ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。線は小さな●が影響を与える側、▶が受ける側(両方ある図面は●を上、▶を下にずらして表示)。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
     </div>
   </div>`;
   app.firstElementChild.scrollTop = sc;
@@ -1473,21 +1522,19 @@ function laneLinks(p){
   L.forEach(o => { let k = 0; while (lanes[k] && lanes[k].some(([lo, hi]) => !(o.hi <= lo || o.lo >= hi))) k++; (lanes[k] = lanes[k] || []).push([o.lo, o.hi]); o.lane = k; });
   return { L, nl: lanes.length };
 }
-function spreadEnds(L, yc, step, span){
-  // 同じ図面に出る線(●始点)と入る線(▶終点)が重ならないよう、行の中で縦にずらす
-  const ends = {};
-  L.forEach(o => { (ends[o.a] = ends[o.a] || []).push({ o, k: 'a', oth: o.b }); (ends[o.b] = ends[o.b] || []).push({ o, k: 'b', oth: o.a }); });
-  Object.entries(ends).forEach(([row, arr]) => {
-    row = +row;
-    arr.sort((x, y) => { const ux = x.oth < row, uy = y.oth < row; if (ux !== uy) return ux ? -1 : 1; return ux ? y.o.lane - x.o.lane : x.o.lane - y.o.lane; });
-    const gap = arr.length > 1 ? Math.min(step, span / (arr.length - 1)) : 0;
-    arr.forEach((e, i) => e.o['y' + e.k] = yc(row) + (i - (arr.length - 1) / 2) * gap);
+function spreadEnds(L, yc, step){
+  // 始点だけ/終点だけの図面は1点にまとめる。始点と終点が両方ある図面だけ、始点(●)を上・終点(▶)を下にずらす
+  const has = {};
+  L.forEach(o => { (has[o.a] = has[o.a] || {}).a = 1; (has[o.b] = has[o.b] || {}).b = 1; });
+  L.forEach(o => {
+    o.ya = yc(o.a) - (has[o.a].b ? step / 2 : 0);
+    o.yb = yc(o.b) + (has[o.b].a ? step / 2 : 0);
   });
 }
 function linkSVG(p){
   const { L, nl } = laneLinks(p);
   const RL = rowLayout(p), yc = i => RL.c[i], LX = 34 + nl * 30 + 4;
-  spreadEnds(L, yc, 8, 20);
+  spreadEnds(L, yc, 10);
   L.forEach(o => o.my = (o.ya + o.yb) / 2);
   [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 23); return o.ly; }, -1e9);
   const H = Math.max(RL.H, ...L.map(o => o.ly + 12)), W = LX + 230;
@@ -3044,9 +3091,10 @@ function doPrint(only){
   if (inc.list) {
     const withLinks = inc.links && p.links.length, gw = withLinks ? Math.min(90, cw * 0.36) : 0;
     h += `<div class="plist" style="width:${cw - gw}mm">
-      <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称${p.drawings.some(d => appN(d)) ? ' <span style="font-weight:400;font-size:.85em">(<b style="border:.3mm solid #000;padding:0 .6mm">申請</b>=確認申請図)</span>' : ''}</div><div>スケール</div><div>達成率</div></div>
-      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div style="${appN(d) ? 'font-weight:700' : ''}">${esc(d.name)}${appN(d) ? ` <b style="border:.3mm solid #000;padding:0 .6mm;font-size:.8em">申請${appN(d) < d.contents.length ? ' ' + appN(d) + '/' + d.contents.length : ''}</b>` : ''}</div><div class="mono">${esc(dScales(d))}</div>
+      <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称${p.drawings.some(d => appN(d)) ? ' <span style="font-weight:400;font-size:.85em">(<b style="border:.3mm solid #000;padding:0 .6mm">申請</b>=確認申請図)</span>' : ''}</div><div>スケール</div><div style="text-align:right">枚数</div><div>達成率</div></div>
+      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div style="${appN(d) ? 'font-weight:700' : ''}">${esc(d.name)}${appN(d) ? ` <b style="border:.3mm solid #000;padding:0 .6mm;font-size:.8em">申請${appN(d) < d.contents.length ? ' ' + appN(d) + '/' + d.contents.length : ''}</b>` : ''}</div><div class="mono">${esc(dScales(d))}</div><div class="mono" style="text-align:right">${fmtH(sheetStat(p, d).n)}</div>
         <div class="pbar prog" style="padding:0 2mm">${pctBar(progressOf(p, dTaskIds(d)))}</div></div>`).join('')}
+      <div class="prow" style="height:${rowH}mm;border-bottom:none"><div></div><div style="text-align:right">計</div><div></div><div class="mono" style="text-align:right;font-weight:700">${fmtH(projSheets(p).n)}</div><div></div></div>
       ${withLinks ? printLinks(p, gw, rowH, headH) : ''}</div>`;
   }
   if (inc.detail || inc.tree) {
@@ -3079,7 +3127,7 @@ function printLinks(p, gw, rowH, headH){
   let s = `<svg style="position:absolute;left:100%;top:0;overflow:visible" width="${gw}mm" height="${H}mm" viewBox="0 0 ${gw} ${H}">
     <defs><marker id="pah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="pdot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4"><circle cx="5" cy="5" r="3.8" fill="#333"/></marker></defs>`;
   const LX = 5 + nl * 5 + 2;
-  spreadEnds(L, yc, rowH * .22, rowH * .55);
+  spreadEnds(L, yc, rowH * .32);
   L.forEach(o => o.my = (o.ya + o.yb) / 2);
   [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 3.6); return o.ly; }, -1e9);
   const maxCh = Math.max(6, Math.floor((gw - LX) / 2.7));
@@ -3363,13 +3411,18 @@ document.addEventListener('click', e => {
     case 'tog': { const id = did; ui.openD = isOpenD(id) ? ui.openD.filter(x => x !== id) : [...ui.openD, id]; saveUi(); return render(); }
     case 'openall': ui.openD = p.drawings.map(d => d.id); saveUi(); return render();
     case 'closeall': ui.openD = []; saveUi(); return render();
-    case 'opencontent': { const r = a.closest('.crow'); cur.view = 'detail'; cur.did = r.dataset.did; scrollToCid = r.dataset.cid; linking = null; return render(); }
+    case 'opencontent': { const r = a.closest('.crow'); cur.view = 'detail'; cur.did = r.dataset.did; scrollToCid = a.dataset.cid || r.dataset.cid; linking = null; return render(); }
     case 'memdone': ui.memDone = a.checked; saveUi(); return render();
     case 'mjump': { const el = $('#mcard-' + (a.dataset.mid || '_')); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     case 'jump': { const tid = tidOf(), hp = homePlace(p, tid); if (!hp) return; cur.view = 'detail'; cur.did = hp.d.id; scrollToDid = hp.d.id; render(); return setTimeout(() => jumpToTask(tid), 60); }
     case 'numrule': return openNumRule();
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'dmode': ui.dmode = a.dataset.v; saveUi(); return render();
+    case 'lunit': ui.lunit = a.dataset.v; saveUi(); return render();
+    case 'smerge': case 'ssplit': { const dd = p.drawings.find(x => x.id === did); if (!dd) return; const U = sheetUnits(dd), k = U.findIndex(u => u.cids[0] === a.closest('[data-ucid]').dataset.ucid); if (k < 0) return;
+      if (act === 'smerge' && k > 0) { U[k - 1].cids.push(...U[k].cids); U.splice(k, 1); }
+      if (act === 'ssplit') { const u = U[k]; U.splice(k, 1, ...u.cids.map((x, j) => ({ cids: [x], n: j ? 1 : u.n }))); }
+      dd.sheets = U; return commit(); }
     case 'flowtask': ui.flowTask = a.checked; saveUi(); return render();
     case 'fade': ui.fadeInst = a.checked; saveUi(); return render();
     case 'hmode': ui.hmode = a.dataset.v; saveUi(); return render();
@@ -3458,6 +3511,7 @@ document.addEventListener('change', e => {
   if (el.dataset.ov) { const [mid, msid] = el.dataset.ov.split('|'); p.capOv[mid] = p.capOv[mid] || {};
     if (el.value === '') delete p.capOv[mid][msid]; else p.capOv[mid][msid] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
   if (el.dataset.share) { const li = el.closest('.task'); setShare(p, li.dataset.tid, li.dataset.cid, parseFloat(el.value) || 0); return commit(); }
+  if (el.dataset.sn) { const box = el.closest('[data-ucid]'), dd = p.drawings.find(x => x.id === box.dataset.did), U = sheetUnits(dd), u = U.find(x => x.cids[0] === box.dataset.ucid); if (!u) return; u.n = Math.max(0, Math.round(+el.value || 0)); dd.sheets = U; return commit(); }
   if (el.dataset.csc) { const box = el.closest('[data-cid]'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.scale = el.value.trim(); return commit(); }
   if (el.dataset.cf) { const box = el.closest('.content'); const { c } = findDC(p, box.dataset.did, box.dataset.cid); c.name = el.value.trim() || c.name; return commit(); }
   if (el.dataset.tf) {
