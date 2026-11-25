@@ -118,6 +118,13 @@ input,select,textarea{font:inherit;color:inherit}
 .addcrow{display:block;padding:0 0 0 160px;background:#fbfaf7}
 .addcin{width:340px;border:none;background:none;font-size:12px;height:28px;color:var(--ink);outline:none}
 .addcin::placeholder{color:var(--mute)} .addcin:focus{background:#fff;box-shadow:inset 0 -1px 0 var(--ink)}
+.cins{position:absolute;left:186px;bottom:-9px;z-index:5;width:18px;height:18px;border-radius:50%;border:1px solid var(--ink);background:#fff;color:var(--ink);font-size:13px;line-height:15px;padding:0;cursor:pointer;opacity:0;transform:scale(.6);transition:opacity .12s,transform .12s;pointer-events:none}
+.cins::after{content:"";position:absolute;left:18px;top:8px;width:520px;border-top:1.5px solid var(--ink);opacity:0;transition:opacity .12s;pointer-events:none}
+.drow:hover .cins,.crow:hover .cins{opacity:.35;transform:scale(.8);pointer-events:auto}
+.cins:hover{opacity:1!important;transform:scale(1)!important;background:var(--ink);color:#fff}
+.cins:hover::after{opacity:.6}
+.crow .cdel{grid-column:9;opacity:0} .crow:hover .cdel{opacity:.6} .crow .cdel:hover{opacity:1}
+.chead .cdel{opacity:.35} .chead .cdel:hover{opacity:1}
 .srow .cn{display:flex;align-items:center;gap:4px;overflow:hidden;white-space:nowrap}
 .srow .spg{font-family:var(--mono);font-size:10.5px;color:#fff;background:var(--sub);border-radius:3px;padding:0 5px;margin-right:4px;flex:none;min-width:14px;text-align:center}
 .srow .scn{cursor:pointer;overflow:hidden;text-overflow:ellipsis} .srow .scn:hover{text-decoration:underline}
@@ -1411,7 +1418,7 @@ function segBar(p, ids){
 /* ---------------- list view ---------------- */
 const ROW = 40, HEAD = 34, CROW = 30;
 const isOpenD = id => ui.openD.includes(id);
-function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? ((sheetMode() ? sheetUnits(d).length : d.contents.length) + 1) * CROW : 0); }); return { c, H: y }; }
+function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? (sheetMode() ? sheetUnits(d).length : d.contents.length) * CROW : 0); }); return { c, H: y }; }
 const pctBar = pr => `<div class="pb1"><i class="${pr === 100 ? 'full' : ''}" style="width:${pr || 0}%"></i></div><span class="pct ${pr == null ? 'muted' : ''}">${pr == null ? '—' : pr + '%'}</span>`;
 function msCards(p){
   const E = eff(p);
@@ -1457,11 +1464,12 @@ function sheetRows(p, d){
       <span class="snw"><input class="cell sn" type="number" min="0" step="1" data-sn="1" value="${u.n}" title="このまとまりの枚数">枚</span>
       <div class="prog" title="この${u.n === 1 ? '1枚' : u.n + '枚'}に含まれる作業の達成率(時間)">${pctBar(pr)}</div>
       <span class="sact">${i ? '<button class="ico" data-act="smerge" title="上の行と同じページ(1つのまとまり)にする">⤒</button>' : '<span></span>'}${cs.length > 1 ? '<button class="ico" data-act="ssplit" title="作図内容ごとに別々のページに分ける">⇕</button>' : ''}</span>
+      <button class="cins" data-act="cins" data-after="${u.cids[u.cids.length - 1]}" title="この下に作図内容を追加">＋</button>
     </div>`; }).join('');
 }
-let refocusAddc = null;
+let refocusAddc = null, flashCid = null;
 function contentRows(p, d){ return d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
-      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join(''); }
+      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button><button class="ico del cdel" data-act="delc" title="この作図内容を削除(⌘/Ctrl+Z で元に戻せます)">×</button><button class="cins" data-act="cins" data-after="${c.id}" title="この下に作図内容を追加">＋</button></div>`; }).join(''); }
 function renderList(){
   const p = P(), app = $('#app');
   const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
@@ -1480,8 +1488,9 @@ function renderList(){
       <div class="prog" data-act="open">${pctBar(progressOf(p, dTaskIds(d)))}</div>`}
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
+      ${isOpenD(d.id) || !d.contents.length ? `<button class="cins" data-act="cins" data-after="" title="${d.contents.length ? 'ここ(先頭)に作図内容を追加' : '作図内容を追加'}">＋</button>` : ''}
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
-    </div>${isOpenD(d.id) ? `${sheetMode() ? sheetRows(p, d) : contentRows(p, d)}<div class="crow addcrow" data-did="${d.id}"><input class="addcin" data-addc="1" placeholder="＋ 作図内容を追加(名前を入力して Enter)"></div>` : ''}`).join('');
+    </div>${isOpenD(d.id) ? `${sheetMode() ? sheetRows(p, d) : contentRows(p, d)}` : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
@@ -1517,6 +1526,7 @@ function renderList(){
   if (flashDid) { const r = $(`.drow[data-did="${flashDid}"]`); if (r) { r.classList.add('flash'); r.scrollIntoView({ block: 'nearest' }); } flashDid = null; }
   if (linking) showBanner('つなぎ先の図面の ● をクリック(Escで取消)'); else hideBanner();
   bindFlow();
+  if (flashCid) { const r = $(`.crow[data-cid="${flashCid}"]`); if (r) { r.classList.add('flash'); r.scrollIntoView({ block: 'nearest' }); } flashCid = null; }
   if (refocusAddc) { const el = $(`.addcrow[data-did="${refocusAddc}"] .addcin`); if (el) el.focus(); refocusAddc = null; }
 }
 function laneLinks(p){
@@ -1726,6 +1736,7 @@ function sheetHTML(p, d){
         <button class="bbtn" data-act="board" title="3ゾーンで作業を洗い出し・つなぐ・期間に入れる">▦ 洗い出し</button>${zchkMini(c)}
         <span class="meta">${dn2}/${counted.length}件 · ${fmtH(hrs)}h</span>
         <button class="ico" data-act="cmore" title="作図内容メニュー">⋯</button>
+        <button class="ico del cdel" data-act="delc" title="この作図内容を削除(⌘/Ctrl+Z で元に戻せます)">×</button>
       </div>
       <ul class="tasks">${c.items.map((tid, i) => taskLI(p, d, c, tid, i)).join('')}</ul>
       <div class="addtask"><input data-cid="${c.id}" data-did="${d.id}" placeholder="＋ 作業を追加(Enter)  例:照明器具の仕様確認">
@@ -3426,6 +3437,13 @@ document.addEventListener('click', e => {
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'dmode': ui.dmode = a.dataset.v; saveUi(); return render();
     case 'lunit': ui.lunit = a.dataset.v; saveUi(); return render();
+    case 'cins': { const dd = p.drawings.find(x => x.id === did); if (!dd) return; const after = a.dataset.after;
+      return prompt2('作図内容を追加', `${dd.no} ${dd.name} に追加する作図内容の名前`, '', name => { if (!name) return; const i = after ? dd.contents.findIndex(c => c.id === after) + 1 : 0;
+        const ref = dd.contents[Math.max(0, i - 1)]; const c = { id: uid(), name, items: [], scale: ref?.scale || '1/100' }; dd.contents.splice(i, 0, c);
+        if (!isOpenD(dd.id)) { ui.openD = [...ui.openD, dd.id]; saveUi(); } flashCid = c.id; commit(); }); }
+    case 'delc': { const box = a.closest('[data-cid]'), dd = p.drawings.find(x => x.id === box.dataset.did), ci = dd ? dd.contents.findIndex(c => c.id === box.dataset.cid) : -1; if (ci < 0) return;
+      const c = dd.contents[ci], n = c.items.filter(x => p.tasks[x]).length; dd.contents.splice(ci, 1); gcTasks(p); commit();
+      return toast(`「${c.name}」を削除しました${n ? `(作業 ${n}件を含む)` : ''}。⌘/Ctrl+Z で元に戻せます`); }
     case 'smerge': case 'ssplit': { const dd = p.drawings.find(x => x.id === did); if (!dd) return; const U = sheetUnits(dd), k = U.findIndex(u => u.cids[0] === a.closest('[data-ucid]').dataset.ucid); if (k < 0) return;
       if (act === 'smerge' && k > 0) { U[k - 1].cids.push(...U[k].cids); U.splice(k, 1); }
       if (act === 'ssplit') { const u = U[k]; U.splice(k, 1, ...u.cids.map((x, j) => ({ cids: [x], n: j ? 1 : u.n }))); }
