@@ -84,8 +84,8 @@ input,select,textarea{font:inherit;color:inherit}
 .j-over{color:var(--accent)} .j-warn{color:#8a5d00}
 .msadd{border:1px dashed var(--line);background:none;border-radius:8px;width:120px;color:var(--sub);font-size:12px}
 .msadd:hover{color:var(--ink);border-color:var(--ink)}
-.dlist{position:relative;width:866px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-.drow,.crow{display:grid;grid-template-columns:22px 20px 96px 1fr 120px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
+.dlist{position:relative;width:922px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+.drow,.crow{display:grid;grid-template-columns:22px 20px 96px 1fr 56px 120px 220px 26px 22px 28px;align-items:center;height:40px;border-bottom:1px solid var(--line2);position:relative}
 .drow:last-of-type{border-bottom:0}
 .drow.head{height:34px;font-size:11px;color:var(--sub);letter-spacing:.06em;background:#faf9f6;border-radius:8px 8px 0 0;border-bottom:1px solid var(--line)}
 .drow.head div{padding:0 8px}
@@ -100,16 +100,33 @@ input,select,textarea{font:inherit;color:inherit}
 .crow .cn{grid-column:4;padding-left:20px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:8px;align-items:baseline}
 .crow .cn>span{cursor:pointer;overflow:hidden;text-overflow:ellipsis}
 .crow .cn em{font-style:normal;font-family:var(--mono);font-size:10.5px;color:var(--mute);margin-left:auto;padding-right:6px}
-.crow .csc{grid-column:5;font-family:var(--mono);font-size:11.5px;padding:2px 6px;height:24px}
+.crow .csc{grid-column:6;font-family:var(--mono);font-size:11.5px;padding:2px 6px;height:24px}
 .cell.ro{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
 .chead .csc{flex:none;width:76px;font-family:var(--mono);font-size:12px;font-weight:400}
 .crow .cn::before{content:"└ ";color:var(--line)}
 .crow .cn>span:hover{color:var(--ink);text-decoration:underline}
-.crow .cm{grid-column:5;font-family:var(--mono);font-size:10.5px;color:var(--mute);padding:0 8px;white-space:nowrap}
-.crow .prog{grid-column:6;cursor:pointer}
+.crow .cm{grid-column:6;font-family:var(--mono);font-size:10.5px;color:var(--mute);padding:0 8px;white-space:nowrap}
+.crow .prog{grid-column:7;cursor:pointer}
 .crow .sbar{height:5px}
-.crow .ico{grid-column:7}
+.crow .ico{grid-column:8}
 .tbtn.sm{padding:3px 8px;font-size:11.5px}
+/* 確認申請 */
+.appck{justify-self:center;border:1px dashed #cfccc4;background:none;color:transparent;font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:1px 4px;border-radius:3px;cursor:pointer;line-height:1.4;min-width:34px}
+.appck::before{content:"申請"}
+.drow:hover .appck{color:#c9c6be}
+.appck.on{border:1.5px solid var(--ink);color:var(--ink);background:#fff}
+.appck.part{border:1.5px solid var(--ink);color:var(--ink);background:#fff;border-style:solid}
+.appck small,.appb small{font-weight:400;font-size:.82em;margin-left:2px;font-family:var(--mono)}
+.crow .appck{grid-column:5;padding:0 3px;font-size:10px;min-width:30px}
+.crow:hover .appck{color:#c9c6be} .crow .appck.on{color:var(--ink)}
+.crow.app .cn>span{color:var(--ink);font-weight:700}
+.chead .appck{flex:none;color:#cfccc4} .chead .appck.on{color:var(--ink)}
+.drow.app .nm{font-weight:700}
+.drow.head .apph{padding:0;text-align:center}
+.appb{display:inline-block;border:1.2px solid var(--ink);color:var(--ink);font-size:9.5px;font-weight:700;line-height:1.3;padding:0 3px;border-radius:2px;margin-left:5px;vertical-align:1px;flex:none;background:#fff}
+.sitem.app .nm{font-weight:700}
+.shead .appb{font-size:10.5px;padding:1px 4px}
+
 /* member view */
 .mv{height:100%;overflow:auto;padding:24px 36px 80px}
 .heat{border-collapse:separate;border-spacing:3px;font-size:12px;margin-bottom:18px;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:6px}
@@ -232,7 +249,7 @@ body.resizing{cursor:col-resize!important;user-select:none}
 .sheet.on{border-color:#b9b5ab;box-shadow:0 1px 6px rgba(0,0,0,.05)}
 .shead{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .shead .cell.no{width:84px} .shead .cell.nm{flex:1;font-size:15px;font-weight:600;min-width:120px} .shead .cell.sc{width:auto;max-width:200px;font-family:var(--mono);font-size:12px;color:var(--sub);cursor:default}
-.shead .prog{width:200px;cursor:default}
+.shead .prog{width:170px;cursor:default}
 .rel{padding:6px 14px;border-bottom:1px solid var(--line2);font-size:12px;color:var(--sub);display:flex;flex-direction:column;gap:2px;background:#fcfbf9}
 .rel a{color:var(--ink);cursor:pointer;text-decoration:none;border-bottom:1px dotted var(--mute)}
 .rel .memo{color:var(--accent)}
@@ -537,6 +554,13 @@ svg .tn.dim{opacity:.18}
 .bsum{display:inline-flex;gap:6px}
 .bhint{font-size:12px;color:var(--sub);padding:8px 18px;background:#faf9f6;border-bottom:1px solid var(--line2)}
 .bbody{flex:1;overflow:auto;position:relative}
+.bbody.b3{display:flex;flex-direction:column;overflow:hidden}
+.b3bar{display:flex;gap:14px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap;font-size:12px}
+.b3bar label{display:flex;gap:6px;align-items:center;white-space:nowrap;border-left:3px solid var(--c);padding-left:7px}
+.b3bar label b{color:var(--c)} .b3bar select{font-size:11.5px;padding:2px 4px;width:220px}
+.b3zoom{margin-left:auto;display:flex;gap:4px}
+#btree{flex:1;overflow:auto;background-image:radial-gradient(var(--line2) 1px,transparent 1px);background-size:14px 14px}
+.tn.oth{opacity:.5} .tn.oth:hover{opacity:.9}
 .bgrid{display:grid;grid-template-columns:1fr 26px 1fr 26px 1fr;gap:0;padding:14px 16px 60px;min-width:780px;position:relative;z-index:1;pointer-events:none}
 .bgrid>*{pointer-events:auto}
 .barrow{align-self:start;margin-top:14px;text-align:center;color:var(--mute);font-size:16px;pointer-events:none}
@@ -577,6 +601,37 @@ svg .tn.dim{opacity:.18}
 .btmp{position:fixed;inset:0;width:100vw;height:100vh;z-index:199;pointer-events:none}
 @media (max-width:1000px){ #board{padding:8px} .bgrid{padding:10px 8px 60px} }
 @media (pointer:coarse){ .bport{width:20px;height:20px;right:-10px} .bgrip{padding:8px 4px;font-size:15px} .bdel{opacity:.6} .zd{width:20px;height:20px;line-height:20px} }
+
+/* calendar: person work bars */
+.calmem{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.calmem .fseg button[style]{color:var(--c);font-weight:700}
+.calmem .fseg button.on[style]{background:var(--c);color:#fff}
+.zleg{display:inline-flex;gap:10px;font-size:11px;color:var(--sub)}
+.zleg span{display:inline-flex;align-items:center;gap:4px}
+.zleg i{width:14px;height:8px;border-radius:2px;background:var(--c);display:inline-block}
+.zleg .lt i{background:#fff;border:2px solid var(--accent);width:10px;height:6px}
+.wbars{display:flex;flex-direction:column;gap:2px;margin-top:2px}
+.wb{background:var(--c);color:#fff;font-size:10px;line-height:15px;height:15px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;margin:0 -1px;border-radius:0}
+.wb.st{margin-left:3px;border-top-left-radius:4px;border-bottom-left-radius:4px}
+.wb.en{margin-right:3px;border-top-right-radius:4px;border-bottom-right-radius:4px}
+.wb.late{box-shadow:inset 0 0 0 2px var(--accent);background:repeating-linear-gradient(45deg,var(--c) 0 6px,color-mix(in srgb,var(--c) 70%,#d2462b) 6px 12px)}
+.wb.dim{opacity:.2}
+.wb:hover{filter:brightness(1.15)}
+.cd.we .wbars{opacity:.6}
+.rtab{border-collapse:collapse;background:var(--paper);border:1px solid var(--line);border-radius:8px;font-size:12px}
+.rtab th{font-size:10.5px;color:var(--sub);font-weight:500;padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+.rtab td{padding:5px 8px;border-bottom:1px solid var(--line2);vertical-align:middle}
+.rtab .nw{white-space:nowrap}
+.rtab input,.rtab select{border:1px solid var(--line);border-radius:4px;padding:3px 5px;font-size:12px;background:#fff}
+.rtab .rcn{width:160px}
+.rtab .rch{width:46px;text-align:right;font-family:var(--mono)}
+.rtab input[type=date]{width:128px;font-family:var(--mono);font-size:11px}
+.rcm{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.rcm label{display:inline-flex;align-items:center;gap:3px;border:1px solid var(--line);border-radius:12px;padding:1px 8px 1px 4px;font-size:11.5px;cursor:pointer;color:var(--sub)}
+.rcm label.on{border-color:var(--c);color:var(--c);background:color-mix(in srgb,var(--c) 8%,#fff);font-weight:600}
+.rcm input{accent-color:var(--c);margin:0}
+.rcw{font-family:var(--mono);color:var(--accent);font-size:11.5px}
+.mtab small.net{display:block;font-size:9.5px;color:var(--ok);font-family:var(--mono);margin-top:1px}
 
 /* calendar */
 .cv{height:100%;overflow:auto;padding:24px 36px 80px}
@@ -721,7 +776,6 @@ em.ok{color:var(--ok)} em.warn{color:#b07a00} em.over{color:var(--accent)}
     <button data-view="detail">詳細・ツリー</button>
     <button data-view="cal">カレンダー</button>
     <button data-view="member">メンバー工数</button>
-    <button data-view="party">関係者</button>
   </div>
   <div class="sp"></div>
   <div id="sync" title="同期状態(クリックで設定)"><i></i><span>ローカル保存</span></div>
@@ -799,28 +853,25 @@ function seedProject(){
   const M2 = {id:uid(), name:'確認申請', date:addDays(58), color:'#d2462b', period:'法規整理・申請図作図'};
   const M3 = {id:uid(), name:'積算図渡し②(詳細図)', date:addDays(93), color:'#2f8f5b', period:'詳細検討・詳細図作図'};
   p.milestones = [M1, M2, M3];
-  const PC = {id:uid(), name:'クライアント', color:'#b8336a'}, PS = {id:uid(), name:'構造設計', color:'#7b4bc4'},
-        PE = {id:uid(), name:'設備設計', color:'#1a8a9a'}, PG = {id:uid(), name:'確認検査機関', color:'#5b6770'};
-  p.parties = [PC, PS, PE, PG];
   const T = p.tasks;
   const t = (title, o) => { const id = uid(); T[id] = Object.assign({id, title, kind:'in', assignee:'', hours:0, deps:[], done:false, memo:'', ms:'', home:'', party:'', st:'req', due:'', days:0}, o); return id; };
-  const xe  = t('配管ルート案の提出依頼', {kind:'ext', party:PE.id, st:'wait', due:addDays(5), memo:'PS寸法の前提になるので早めに催促'});
+  const xe  = t('設備設計の配管ルート案を受領・確認', {assignee:'m2', hours:1, memo:'PS寸法の前提になるので早めに催促'});
   const r1  = t('設備配管の管理ルート確認', {assignee:'m2', hours:3, deps:[xe]});
   const ps  = t('PS・EPS位置の確定', {assignee:'m2', hours:2, deps:[r1], star:true});
   const st  = t('階段寸法(蹴上げ・踏面)確定', {assignee:'m1', hours:2, done:true});
   const f1  = t('1F 間仕切り・建具位置の作図', {assignee:'m3', hours:6, deps:[ps], ms:M1.id});
   const f2  = t('2F 間仕切り・建具位置の作図', {assignee:'m3', hours:5, deps:[ps], ms:M1.id});
-  const xk  = t('キッチン仕様の決定', {kind:'ext', party:PC.id, st:'req', due:addDays(24)});
+  const xk  = t('キッチン仕様の整理(CL確認)', {assignee:'m1', hours:2});
   const fur = t('家具・什器レイアウト反映', {assignee:'m3', hours:3, deps:[f1, xk], ms:M3.id});
   const el  = t('外壁仕上げ割付', {assignee:'m1', hours:4, done:true, ms:M1.id});
   const win = t('サッシ割付・開口寸法確定', {assignee:'m1', hours:3, deps:[el]});
-  const mt  = t('定例:天井高さの承認', {kind:'mtg', party:PC.id, due:addDays(9), hours:1.5, assignee:'m1'});
+  const mt  = t('天井高さ案の整理', {hours:1.5, assignee:'m1'});
   const cl  = t('天井高さ・天井懐寸法の決定', {assignee:'m1', hours:2, deps:[r1, mt]});
   const sec = t('A-A断面の作図', {assignee:'m3', hours:4, deps:[cl, st], ms:M2.id});
-  const xs  = t('軒先部材寸法の回答', {kind:'ext', party:PS.id, st:'wait', due:addDays(-2), memo:'11/13に依頼済。電話で確認する'});
+  const xs  = t('構造に軒先部材寸法を確認', {assignee:'m1', hours:1, memo:'依頼済。電話で確認する'});
   const ev  = t('軒先・パラペット納まり検討', {assignee:'m1', hours:4, deps:[xs], star:true});
   const kn  = t('矩計図の作図', {assignee:'m3', hours:6, deps:[ev, cl, win], ms:M2.id});
-  const xg  = t('事前相談(斜線・採光)', {kind:'mtg', party:PG.id, due:addDays(30), hours:2, assignee:'m1', ms:M2.id});
+  const xg  = t('事前相談資料(斜線・採光)の作成', {hours:2, assignee:'m1', ms:M2.id});
   const C = (name, items, scale) => ({id: uid(), name, items, scale});
   const D = (no, name, scale, contents) => ({id: uid(), no, name, scale, contents});
   const dA101 = D('A-101', '平面図', '', [C('1F平面図', [xe, r1, ps, st, f1, xk, fur], '1/100'), C('2F平面図', [r1, ps, f2], '1/100'), C('キッチン拡大平面図', [], '1/30')]);
@@ -837,6 +888,8 @@ function seedProject(){
   ];
   p.start = addDays(-21);
   p.mstd = { m1: 50, m2: 40, m3: 30 };   // 他案件と兼務している想定(h/月)
+  p.recur = [{ id: uid(), name: '社内打ち合わせ', hours: 1, times: 2, unit: 'w', members: ['m1', 'm2', 'm3'], from: '', to: '' },
+             { id: uid(), name: 'クライアント定例', hours: 2, times: 2, unit: 'm', members: ['m1'], from: '', to: '' }];
   { const t = today0(), k1 = ymKey(t), k2 = ymKey(new Date(t.getFullYear(), t.getMonth() + 1, 1)); p.mcap = { m3: { [k1]: 20, [k2]: 12 }, m1: { [k2]: 30 } }; }   // 月によって変わる例
   return p;
 }
@@ -848,7 +901,7 @@ function normalize(s){
   s.members = s.members || []; s.projects = s.projects || []; s.deleted = s.deleted || [];
   s.projects.forEach(p => {
     p.drawings = p.drawings || []; p.tasks = p.tasks || {}; p.links = p.links || [];
-    p.milestones = p.milestones || []; p.parties = p.parties || []; p.cap = p.cap || {}; p.hpd = +p.hpd || 8; p.sched = p.sched || {}; p.capOv = p.capOv || {}; p.mstd = p.mstd || {}; p.mcap = p.mcap || {}; if (!p.start) p.start = ymd(new Date(p.updatedAt || Date.now()));
+    p.milestones = p.milestones || []; p.parties = p.parties || []; p.cap = p.cap || {}; p.hpd = +p.hpd || 8; p.sched = p.sched || {}; p.capOv = p.capOv || {}; p.mstd = p.mstd || {}; p.mcap = p.mcap || {}; p.recur = (p.recur || []).map(r => Object.assign({ name: '', hours: 1, times: 1, unit: 'w', members: [], from: '', to: '' }, r)); if (!p.start) p.start = ymd(new Date(p.updatedAt || Date.now()));
     p.milestones.forEach(m => { m.period = m.period || ''; });
     p.pdf = Object.assign(defaultPdf(), p.pdf || {}); p.pdf.m = Object.assign({t:15,r:15,b:15,l:20}, p.pdf.m); p.pdf.inc = Object.assign(defaultPdf().inc, p.pdf.inc);
     p.progressMode = 'hours';   // 達成率は時間ベースで統一
@@ -856,11 +909,12 @@ function normalize(s){
     Object.values(p.tasks).forEach(t => {
       t.deps = (t.deps || []).filter(d => p.tasks[d] && d !== t.id);
       if (!t.zone) t.zone = guessZone(t);
-      t.kind = t.kind || 'in'; t.memo = t.memo || ''; t.ms = t.ms || ''; t.home = t.home || ''; t.party = t.party || '';
+      if (t.kind === 'ext' && !t.hours) t.hours = 0;
+      t.kind = 'in'; t.party = ''; t.st = 'req'; t.days = 0; t.memo = t.memo || ''; t.ms = t.ms || ''; t.home = t.home || ''; t.party = t.party || '';
       t.st = t.st || 'req'; t.due = t.due || ''; t.days = +t.days || 0; t.hours = +t.hours || 0;
       if (t.ms && !p.milestones.some(m => m.id === t.ms)) t.ms = '';
     });
-    p.drawings.forEach(d => { d.contents = d.contents || []; d.contents.forEach(c => { c.items = [...new Set((c.items || []).filter(i => p.tasks[i]))]; if (c.scale == null) c.scale = d.scale || ''; }); });
+    p.drawings.forEach(d => { d.contents = d.contents || []; if (d.app) { d.contents.forEach(c => c.app = true); delete d.app; } d.contents.forEach(c => { c.items = [...new Set((c.items || []).filter(i => p.tasks[i]))]; if (c.scale == null) c.scale = d.scale || ''; }); });
   });
   return s;
 }
@@ -870,7 +924,7 @@ try { S = JSON.parse(lsGet(LS_KEY)); } catch(e) { S = null; }
 if (!S || !S.projects) S = seed();
 normalize(S);
 if (!S.projects.length) S.projects.push(newProject());
-let ui = Object.assign({ totMin:false, hlNow:true, flt:{}, bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
+let ui = Object.assign({ calMem:'', totMin:false, hlNow:true, flt:{}, bmode:1, treeColor:'member', starOnly:false, sideW:0, treeW:0,  fadeInst:false, openOnly:true, showLinks:true, zoom:0.8, treeWide:false, openD:[], memDone:false, memOpen:{}, dpane:'list', hmode:'sum' }, (() => { try { return JSON.parse(lsGet(UI_KEY) || '{}'); } catch(e) { return {}; } })());
 const saveUi = () => lsSet(UI_KEY, JSON.stringify(ui));
 
 const qs = new URLSearchParams(location.search);
@@ -992,7 +1046,6 @@ function fltBar(opts = {}){
     ${E.M ? sel('band', '期間', [['', 'すべて'], ...E.ms.map((m, k) => [String(k), periodName(E, k) + ' → ◆' + m.name]), ['none', '未定']]) : ''}
     ${sel('pre', '前提', [['', 'すべて'], ['any', '⚠/⏳ 前提が整っていない'], ['none', '⚠ 前提なし'], ['open', '⏳ 前提未了']])}
     ${sel('chk', 'ゾーン確認', [['', 'すべて'], ['cl', 'CL確認が未'], ['in', '社内確認が未']])}
-    ${sel('kind', '種別', [['', 'すべて'], ['in', '社内'], ['ext', '外部'], ['mtg', '打合せ']])}
     <button class="fstar ${f.star ? 'on' : ''}" data-act="fstar" title="★優先のみ">★</button>
     ${n ? `<button class="fclear" data-act="fclear">クリア(${n})</button>` : ''}
     ${opts.extra || ''}
@@ -1044,10 +1097,44 @@ function stdOf(p, mid){
 }
 const isManualMonth = (p, mid, key) => p.mcap[mid] && p.mcap[mid][key] != null && p.mcap[mid][key] !== '';
 const monthHours = (p, mid, key) => isManualMonth(p, mid, key) ? +p.mcap[mid][key] : stdOf(p, mid);
-function hoursBetween(p, mid, from, to){ // from 以上 to 未満の平日に、その月の時間を平日数で按分
-  const d = new Date(from); let h = 0, n = 0;
-  while (d < to && n < 3000) { const w = d.getDay(); if (w && w < 6) { const k = ymKey(d); h += monthHours(p, mid, k) / (wdInMonth(k) || 1); } d.setDate(d.getDate() + 1); n++; }
+// 定例・打合せ:p.recur = [{ id, name, hours(1回), times(回数), unit:'w'|'m'(週/月あたり), members:[id], from, to }]
+// 持ち時間からこの分を差し引いた「実動時間」を、図面作業に使える時間として計算する
+function recurPerDay(p, mid, d){ // その日(平日)に差し引く時間
+  let h = 0; const ds = ymd(d);
+  (p.recur || []).forEach(r => {
+    if (!r.members || !r.members.includes(mid)) return;
+    if (r.from && ds < r.from) return; if (r.to && ds > r.to) return;
+    const per = (+r.hours || 0) * (+r.times || 0);
+    h += r.unit === 'm' ? per / (wdInMonth(ymKey(d)) || 21) : per / 5;
+  });
   return h;
+}
+function dayHours(p, mid, d){ // その日に図面作業に使える時間(実動)
+  const w = d.getDay(); if (!w || w > 5) return 0;
+  const k = ymKey(d); return Math.max(0, monthHours(p, mid, k) / (wdInMonth(k) || 1) - recurPerDay(p, mid, d));
+}
+function hoursBetween(p, mid, from, to){ // from 以上 to 未満の日の実動時間の合計
+  const d = new Date(from); let h = 0, n = 0;
+  while (d < to && n < 3000) { h += dayHours(p, mid, d); d.setDate(d.getDate() + 1); n++; }
+  return h;
+}
+function monthNet(p, mid, key){ // その月の実動時間(= 作業可能時間 − 定例・打合せ)
+  const [y, m] = key.split('-').map(Number); return r1(hoursBetween(p, mid, new Date(y, m - 1, 1), new Date(y, m, 1)));
+}
+const hasRecur = (p, mid) => (p.recur || []).some(r => r.members && r.members.includes(mid) && +r.hours && +r.times);
+function recurTable(p){
+  const rows = (p.recur || []).map(r => `<tr data-rid="${r.id}">
+    <td><input class="rcn" data-rc="name" value="${esc(r.name)}" placeholder="例:社内打ち合わせ"></td>
+    <td class="nw"><input class="rch" type="number" min="0" step="0.5" data-rc="hours" value="${+r.hours || ''}" placeholder="1">h ×
+      <input class="rch" type="number" min="0" step="1" data-rc="times" value="${+r.times || ''}" placeholder="2">回 /
+      <select data-rc="unit"><option value="w" ${r.unit !== 'm' ? 'selected' : ''}>週</option><option value="m" ${r.unit === 'm' ? 'selected' : ''}>月</option></select></td>
+    <td class="rcm">${S.members.map(m => `<label style="--c:${m.color}" class="${r.members.includes(m.id) ? 'on' : ''}"><input type="checkbox" data-rcm="${m.id}" ${r.members.includes(m.id) ? 'checked' : ''}>${esc(m.name)}</label>`).join('')}
+      <button class="tbtn sm" data-act="rcall" title="全員にチェック">全員</button></td>
+    <td class="nw"><input type="date" data-rc="from" value="${esc(r.from || '')}" title="開始日(空欄=制限なし)"> 〜 <input type="date" data-rc="to" value="${esc(r.to || '')}" title="終了日(空欄=制限なし)"></td>
+    <td class="nw rcw">${(+r.hours || 0) * (+r.times || 0) ? `${r.unit === 'm' ? '月' : '週'} −${fmtH((+r.hours || 0) * (+r.times || 0))}h/人` : ''}</td>
+    <td><button class="ico" data-act="rcdel" title="削除">×</button></td></tr>`).join('');
+  return `<div class="mtabw"><table class="rtab"><tr><th>名称</th><th>時間 × 回数</th><th>参加メンバー</th><th>期間(任意)</th><th>差し引き</th><th></th></tr>${rows || '<tr><td colspan="6" class="muted" style="padding:10px">まだありません。「＋ 追加」で、定例や打合せなど図面作業以外に取られる時間を登録してください。</td></tr>'}</table></div>
+    <button class="tbtn sm" data-act="rcadd" style="margin-top:6px">＋ 定例・打合せを追加</button>`;
 }
 // インスタンスの時間:t.hours = 合計。t.alloc[作図内容id] = その配置の配分(未指定の配置は残りを均等割り)
 function shares(p, tid){
@@ -1072,8 +1159,8 @@ function unplace(p, tid, cid){ // 配置を外す:配分が確定している(�
   const t = p.tasks[tid]; if (!t) return;
   if (t.alloc && t.alloc[cid] != null) { const pl = places(p, tid); if (pl.every(x => t.alloc[x.c.id] != null)) t.hours = r1(Math.max(0, (+t.hours || 0) - (+t.alloc[cid] || 0))); delete t.alloc[cid]; }
 }
-const capOf = (p, mid) => monthHours(p, mid, ymKey(today0()));   // 今月の h/月
-const perDayOf = (p, mid) => { const k = ymKey(today0()); return monthHours(p, mid, k) / (wdInMonth(k) || 21); };
+const capOf = (p, mid) => monthHours(p, mid, ymKey(today0()));   // 今月の h/月(定例差し引き前)
+const perDayOf = (p, mid) => { const k = ymKey(today0()); return monthNet(p, mid, k) / (wdInMonth(k) || 21); };
 function periodRange(p, E, k){ return { from: k ? E.ms[k - 1].date : (p.start || ''), to: E.ms[k].date }; }
 const periodName = (E, k) => k >= E.M ? '未定(締切なし)' : (E.ms[k].period || (k ? `${E.ms[k - 1].name} 〜 ${E.ms[k].name}` : `設計開始 〜 ${E.ms[k].name}`));
 // 期間 k の持ち時間。full = 期間全体(前の締切の翌日 or 設計開始 〜 締切当日)、rem = そのうち本日以降。
@@ -1119,7 +1206,7 @@ function monthTable(p){
   return `<table class="mtab"><tr><th class="l">メンバー</th><th title="月ごとの入力がない月はこの値">標準(h/月)</th>${months.map(k => `<th class="${k === cm ? 'cur' : ''}">${k.slice(0, 4)}<br><b>${ymLabel(k)}</b><small>${wdInMonth(k)}営業日</small></th>`).join('')}</tr>
     ${S.members.map(m => `<tr><td class="l"><span style="color:${m.color}">●</span> ${esc(m.name)}</td>
       <td><input type="number" min="0" step="1" data-mstd="${m.id}" value="${stdOf(p, m.id)}"></td>
-      ${months.map(k => `<td class="${k === cm ? 'cur' : ''}"><input type="number" min="0" step="1" class="${isManualMonth(p, m.id, k) ? 'man' : ''}" data-mcap="${m.id}|${k}" value="${isManualMonth(p, m.id, k) ? +p.mcap[m.id][k] : ''}" placeholder="${stdOf(p, m.id)}"></td>`).join('')}</tr>`).join('') || '<tr><td class="l muted">メンバー未登録</td></tr>'}</table>`;
+      ${months.map(k => `<td class="${k === cm ? 'cur' : ''}"><input type="number" min="0" step="1" class="${isManualMonth(p, m.id, k) ? 'man' : ''}" data-mcap="${m.id}|${k}" value="${isManualMonth(p, m.id, k) ? +p.mcap[m.id][k] : ''}" placeholder="${stdOf(p, m.id)}">${hasRecur(p, m.id) ? `<small class="net" title="定例・打合せを差し引いた、図面作業に使える時間">実動 ${fmtH(monthNet(p, m.id, k))}</small>` : ''}</td>`).join('')}</tr>`).join('') || '<tr><td class="l muted">メンバー未登録</td></tr>'}</table>`;
 }
 
 /* ---------------- milestones: effective band ---------------- */
@@ -1225,7 +1312,8 @@ function render(){
   if (syncRendering && ae && $('#app').contains(ae) && /INPUT|TEXTAREA|SELECT/.test(ae.tagName)) { pendingRender = true; return; }
   renderHeader();
   document.body.dataset.view = cur.view;
-  if (cur.view === 'list') renderList(); else if (cur.view === 'party') renderParties(); else if (cur.view === 'member') renderMembers(); else if (cur.view === 'cal') renderCalendar(); else renderDetail();
+  if (cur.view === 'party') cur.view = 'list';
+  if (cur.view === 'list') renderList(); else if (cur.view === 'member') renderMembers(); else if (cur.view === 'cal') renderCalendar(); else renderDetail();
   if (board) renderBoard();
   renderTotals();
 }
@@ -1293,29 +1381,32 @@ function msCards(p){
   }).join('');
   return `<div class="mscards">${cards}<button class="msadd" data-act="milestones">${E.M ? '締切を編集' : '＋ 締切(マイルストーン)を登録'}</button></div>`;
 }
+const appN = d => d.contents.filter(c => c.app).length;
+function appBadge(d, cls = 'appb'){ const n = appN(d), a = d.contents.length; if (!n) return ''; return `<span class="${cls}" title="確認申請に使う作図内容 ${n}/${a}">申請${n < a ? `<small>${n}/${a}</small>` : ''}</span>`; }
 function renderList(){
   const p = P(), app = $('#app');
   const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
   const tot = projProgress(p), E = eff(p);
   const hours = placedIds(p).filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (+p.tasks[i].hours || 0), 0);
   const rows = p.drawings.map((d, i) => `
-    <div class="drow" data-did="${d.id}" data-idx="${i}">
+    <div class="drow ${appN(d) ? 'app' : ''}" data-did="${d.id}" data-idx="${i}">
       <button class="caret ${d.contents.length ? '' : 'none'}" data-act="tog" title="作図内容を表示">${isOpenD(d.id) ? '▼' : '▶'}</button>
       ${p.numMode !== 'sort' ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
       <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れの未了作業">遅${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了作業">今${u.now}</span>` : ''); })()}${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
+      <button class="appck ${appN(d) && appN(d) === d.contents.length ? 'on' : appN(d) ? 'part' : ''}" data-act="appall" title="確認申請に使う作図内容 ${appN(d)}/${d.contents.length}(クリックで全部オン/オフ。個別は▶で開いて)">${appN(d) && appN(d) < d.contents.length ? `<small>${appN(d)}/${d.contents.length}</small>` : ''}</button>
       <span class="cell sc ro" data-act="tog" title="${esc(dScales(d))}(作図内容ごとのスケール。▶で開いて編集)">${esc(dScales(d)) || '<span class="muted">—</span>'}</span>
       <div class="prog" data-act="open">${pctBar(progressOf(p, dTaskIds(d)))}</div>
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
     </div>${isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
-      return `<div class="crow" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
+      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
       <h2>${esc(p.name)}</h2>
-      <span class="stat">図面 ${p.drawings.length}枚 ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}</span>
+      <span class="stat">図面 ${p.drawings.length}枚 ・ 作業 ${placedIds(p).length}件 / 社内 ${fmtH(hours)}h ・ 全体 ${tot == null ? '—' : tot + '%'}${(() => { const nd = p.drawings.filter(d => appN(d)).length, nc = p.drawings.reduce((a, d) => a + appN(d), 0); return nd ? ` ・ 確認申請 ${nd}枚(作図内容 ${nc})` : ''; })()}</span>
       <span style="flex:1"></span>
       <span class="chk">並び:<select id="numMode" title="図面の並べ方と番号の付け方">
         <option value="sort" ${p.numMode === 'sort' ? 'selected' : ''}>番号順に自動整列</option>
@@ -1328,7 +1419,7 @@ function renderList(){
     ${phaseBanner(p)}
     <div style="display:flex;gap:6px;margin-bottom:8px"><button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button></div>
     <div class="dlist" id="dlist">
-      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div>スケール</div><div title="完了した作業時間 ÷ 作業時間の合計">達成率(時間)</div><div></div><div></div><div title="関係線">⇄</div></div>
+      <div class="drow head"><div></div><div></div><div>No.</div><div>図面名称</div><div class="apph" title="確認申請に必要な図面">確認申請</div><div>スケール</div><div title="完了した作業時間 ÷ 作業時間の合計">達成率(時間)</div><div></div><div></div><div title="関係線">⇄</div></div>
       ${rows}
       <button class="addrowbtn" data-act="addd">＋ 図面を追加</button>
       ${ui.showLinks ? linkSVG(p) : ''}
@@ -1380,8 +1471,8 @@ function renderDetail(){
   const prevSheets = $('#sheets'), sc = prevSheets ? prevSheets.scrollTop : null;
   const tbScroll = $('#treebox') ? [$('#treebox').scrollLeft, $('#treebox').scrollTop] : null;
   const side = p.drawings.map(d => { const pr = dProgress(p, d); return `
-    <div class="sitem ${d.id === cur.did ? 'on' : ''} ${fltActive() && !d.contents.some(c => c.items.some(i => taskMatch(p, i, c.id))) ? 'fout' : ''}" data-act="goto" data-did="${d.id}">
-      <span class="no">${esc(d.no)}</span><span class="nm" title="${esc(d.no + ' ' + d.name)}">${esc(d.name)}${starCount(p, d) ? `<span class="st">★${starCount(p, d)}</span>` : ''}${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れ">${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了">${u.now}</span>` : ''); })()}</span><span class="pc">${fltActive() ? (() => { const n = dTaskIds(d).filter(i => d.contents.some(c => c.items.includes(i) && taskMatch(p, i, c.id))).length; return n ? `<b class="fhit">${n}件</b>` : '<span class="muted">0</span>'; })() : pr == null ? '—' : pr + '%'}</span>
+    <div class="sitem ${d.id === cur.did ? 'on' : ''} ${appN(d) ? 'app' : ''} ${fltActive() && !d.contents.some(c => c.items.some(i => taskMatch(p, i, c.id))) ? 'fout' : ''}" data-act="goto" data-did="${d.id}">
+      <span class="no">${esc(d.no)}</span><span class="nm" title="${esc(d.no + ' ' + d.name)}${appN(d) ? '(確認申請 ' + appN(d) + '/' + d.contents.length + ')' : ''}">${esc(d.name)}${appBadge(d)}${starCount(p, d) ? `<span class="st">★${starCount(p, d)}</span>` : ''}${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れ">${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了">${u.now}</span>` : ''); })()}</span><span class="pc">${fltActive() ? (() => { const n = dTaskIds(d).filter(i => d.contents.some(c => c.items.includes(i) && taskMatch(p, i, c.id))).length; return n ? `<b class="fhit">${n}件</b>` : '<span class="muted">0</span>'; })() : pr == null ? '—' : pr + '%'}</span>
     </div>`; }).join('');
   app.innerHTML = `
   <div class="dv ${ui.treeWide ? 'wide' : ''} ${ui.dpane === 'tree' ? 'pane-tree' : ''}" style="${ui.sideW ? `--sideW:${ui.sideW}px;` : ''}${ui.treeW ? `--treeW:${ui.treeW}px;` : ''}">
@@ -1394,7 +1485,6 @@ function renderDetail(){
         <select class="mid-only" id="dsel">${p.drawings.map(d => `<option value="${d.id}" ${d.id === cur.did ? 'selected' : ''}>${esc(d.no)} ${esc(d.name)}</option>`).join('')}</select>
         <span class="chk" title="インスタンス(複数の作図内容に置いた作業)の時間の見せ方">インスタンスの時間:<span class="seg"><button data-act="hmode" data-v="sum" class="${ui.hmode !== 'split' ? 'on' : ''}">合算</button><button data-act="hmode" data-v="split" class="${ui.hmode === 'split' ? 'on' : ''}">配分</button></span></span>
         <label class="chk"><input type="checkbox" data-act="fade" ${ui.fadeInst ? 'checked' : ''}> インスタンスは本体以外を薄く表示(集計からも除外)</label>
-        <span>作業名の頭に <b>@関係者名</b> を付けて追加すると外部作業になります</span>
       </div>
       ${phaseBanner(p)}
       ${fltBar()}
@@ -1410,11 +1500,11 @@ function renderDetail(){
         <span class="zoom"><button data-act="zoom" data-v="-">−</button><span id="zl">${Math.round(ui.zoom * 100)}%</span><button data-act="zoom" data-v="+">＋</button><button data-act="zoom" data-v="fit" title="全体を表示">全体</button><button data-act="wide" title="ツリーを広く表示">${ui.treeWide ? '⇥ 戻す' : '⇤ 広く'}</button></span>
         <div class="tstats" id="tstats"></div>
       </div>
-      <div id="treebox"></div>
+      <div id="treebox" class="tbox"></div>
       <div class="legend">
         <span><i></i>前提→後続</span><span><i style="border-color:var(--accent)"></i>クリティカルパス</span>
-        <span>縦並び=並列</span><span>⬡外部 ◯打合せ</span><span style="color:var(--inst)">青字=インスタンス</span>
-        <span><b>締切線</b>:線をドラッグ→その行の作業を前後に振り分け/作業をドラッグ→帯を移動(関連作業は自動で連れて行く)</span>
+        <span>縦並び=並列</span><span style="color:var(--inst)">青字=インスタンス</span>
+        <span>期間(締切)への振り分けは、作図内容の <b>▦ 洗い出し → ③ 期間に入れる</b> で行います</span>
       </div>
     </section>
   </div>`;
@@ -1446,19 +1536,20 @@ function sheetHTML(p, d){
       <div class="chead">
         <input class="cell" data-cf="name" value="${esc(c.name)}" placeholder="作図内容">
         <input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール">
+        <button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button>
         <button class="bbtn" data-act="board" title="3ゾーンで作業を洗い出し・つなぐ・期間に入れる">▦ 洗い出し</button>${zchkMini(c)}
         <span class="meta">${dn2}/${counted.length}件 · ${fmtH(hrs)}h</span>
         <button class="ico" data-act="cmore" title="作図内容メニュー">⋯</button>
       </div>
       <ul class="tasks">${c.items.map((tid, i) => taskLI(p, d, c, tid, i)).join('')}</ul>
-      <div class="addtask"><input data-cid="${c.id}" data-did="${d.id}" placeholder="＋ 作業を追加(Enter)  例:@クライアント 照明器具の承認">
+      <div class="addtask"><input data-cid="${c.id}" data-did="${d.id}" placeholder="＋ 作業を追加(Enter)  例:照明器具の仕様確認">
         <button data-act="insert" title="他の図面にある作業を、同一インスタンスとしてここにも配置">◆ 既存作業を配置</button></div>
     </div>`;
   }).join('');
   return `<article class="sheet ${d.id === cur.did ? 'on' : ''}" id="sheet-${d.id}" data-did="${d.id}">
     <div class="shead">
       <input class="cell no" data-f="no" value="${esc(d.no)}" ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
-      <input class="cell nm" data-f="name" value="${esc(d.name)}">
+      <input class="cell nm" data-f="name" value="${esc(d.name)}">${appBadge(d)}
       <span class="cell sc ro" title="作図内容ごとのスケール">${esc(dScales(d)) || '—'}</span>
       <div class="prog">${segBar(p, dTaskIds(d))}</div>
       <button class="ico" data-act="dmore" title="図面メニュー">⋯</button>
@@ -1539,12 +1630,12 @@ function setActiveDrawing(did, scroll){
 
 /* ---------------- tree (DAG, banded by milestone) ---------------- */
 const NW = 178, NH = 46, GX = 40, GY = 14, PADX = 18, PADY = 80, LG = 64;
-function layoutTree(p, ids){
+function layoutTree(p, ids, plain){
   ids = ids.filter(i => p.tasks[i]);
   const set = new Set(ids), ghosts = [];
   ids.forEach(id => p.tasks[id].deps.forEach(d => { if (!set.has(d) && p.tasks[d] && !ghosts.includes(d)) ghosts.push(d); }));
   const all = [...ids, ...ghosts], inAll = new Set(all), gset = new Set(ghosts);
-  const E = eff(p), M = E.M, bandOf = id => E.band[id] ?? M;
+  const E = eff(p), M = plain ? 0 : E.M, bandOf = plain ? (() => 0) : (id => E.band[id] ?? M);
   const preds = id => gset.has(id) ? [] : p.tasks[id].deps.filter(d => inAll.has(d));
   const hrs = id => (gset.has(id) || p.tasks[id].kind === 'ext') ? 0 : (+p.tasks[id].hours || 0);
   const lvl = {}, vis = {};
@@ -1578,7 +1669,7 @@ function layoutTree(p, ids){
   const edges = []; all.forEach(id => preds(id).forEach(d => edges.push({ from: d, to: id, crit: crit.has(d) && crit.has(id) && Math.abs(ef[d] - (ef[id] - hrs(id))) < 1e-9 })));
   const inIds = ids.filter(i => p.tasks[i].kind !== 'ext');
   const total = inIds.reduce((a, i) => a + hrs(i), 0), remain = inIds.reduce((a, i) => a + (p.tasks[i].done ? 0 : hrs(i)), 0);
-  return { ids, all, pos, edges, crit, gset, bands, lines, M, E, W: x + PADX, H: PADY + maxRows * (NH + GY) - GY + 18, cp, total, remain, bandOf };
+  return { plain, ids, all, pos, edges, crit, gset, bands, lines, M, E, W: x + PADX, H: PADY + maxRows * (NH + GY) - GY + 18, cp, total, remain, bandOf };
 }
 function nodeShape(t, fill, stroke, dash){
   const a = `class="bx" fill="${fill}" stroke="${stroke}" stroke-width="1.2" ${dash ? 'stroke-dasharray="4 3"' : ''}`;
@@ -1590,7 +1681,7 @@ function treeSVG(p, T, print){
   if (!T.ids.length) return print ? '' : `<p class="muted" style="padding:20px">作業がありません</p>`;
   const sfx = print ? 'p' : '';
   const nos = id => [...new Set(places(p, id).map(x => x.d.no))].join(',');
-  let s = `<svg xmlns="http://www.w3.org/2000/svg" ${print ? '' : `width="${Math.round(T.W * ui.zoom)}" height="${Math.round(T.H * ui.zoom)}"`} viewBox="0 0 ${T.W} ${T.H}" font-family="${print ? 'sans-serif' : 'inherit'}">
+  let s = `<svg xmlns="http://www.w3.org/2000/svg" ${print ? '' : `width="${Math.round(T.W * (T.zoom || ui.zoom))}" height="${Math.round(T.H * (T.zoom || ui.zoom))}"`} viewBox="0 0 ${T.W} ${T.H}" font-family="${print ? 'sans-serif' : 'inherit'}">
   <defs><marker id="ta${sfx}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8d8a83"/></marker>
   <marker id="tc${sfx}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d2462b"/></marker></defs>`;
   // band backgrounds (drop targets)
@@ -1629,11 +1720,11 @@ function treeSVG(p, T, print){
     const starG = t.star && !t.done ? `<rect x="-4" y="-4" width="${NW + 8}" height="${NH + 8}" rx="8" fill="#ffd84d" opacity=".45"/>` : '';
     const fill = t.done ? '#f1f0ec' : t.kind !== 'in' ? '#fbfaf8' : '#fff';
     const ownMs = t.ms && p.milestones.find(x => x.id === t.ms);
-    s += `<g class="tn ${t.star ? 'starred' : ''} ${print ? '' : urgCls(p, id)} ${!print && fltActive() && !taskMatch(p, id) ? 'dim' : ''}" data-tid="${id}" transform="translate(${q.x},${q.y})">
+    s += `<g class="tn ${T.others && T.others.has(id) ? 'oth' : ''} ${t.star ? 'starred' : ''} ${print ? '' : urgCls(p, id)} ${!print && fltActive() && !taskMatch(p, id) ? 'dim' : ''}" data-tid="${id}" transform="translate(${q.x},${q.y})">
       ${!print && urg(p, id) ? `<rect x="-3" y="-3" width="${NW + 6}" height="${NH + 6}" rx="7" fill="none" stroke="${urg(p, id) === 'late' ? '#d2462b' : '#f08a24'}" stroke-width="2.5"/><rect x="${NW - 40}" y="-9" width="38" height="14" rx="7" fill="${urg(p, id) === 'late' ? '#d2462b' : '#f08a24'}"/><text x="${NW - 21}" y="1.5" font-size="9" fill="#fff" text-anchor="middle" font-weight="700">${urg(p, id) === 'late' ? '遅れ' : '今期'}</text>` : ''}
       ${starG}${nodeShape(t, t.star && !t.done ? '#fffbe6' : fill, t.star && !t.done && !od && !crit ? '#e0a100' : stroke, g || t.kind === 'ext')}
       ${t.star ? `<text x="${NW - 18}" y="40" font-size="13" fill="#e0a100">★</text>` : ''}
-      ${!print && ui.treeColor === 'zone' ? `<rect width="5" height="${NH}" rx="2" fill="${ZMAP[zoneOf(t)].c}"/><text x="${NW - 20}" y="14" font-size="9.5" fill="${ZMAP[zoneOf(t)].c}" font-weight="700">${ZMAP[zoneOf(t)].s}</text>` : m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
+      ${!print && (T.zoneColor || ui.treeColor === 'zone') ? `<rect width="5" height="${NH}" rx="2" fill="${ZMAP[zoneOf(t)].c}"/><text x="${NW - 20}" y="14" font-size="9.5" fill="${ZMAP[zoneOf(t)].c}" font-weight="700">${ZMAP[zoneOf(t)].s}</text>` : m && !g && t.kind === 'in' ? `<rect width="4" height="${NH}" rx="2" fill="${m.color}"/>` : ''}
       ${ownMs ? `<circle cx="${NW - 7}" cy="7" r="4" fill="${ownMs.color}"><title>締切指定:${esc(ownMs.name)}</title></circle>` : ''}
       <text x="${t.kind === 'in' ? 11 : 16}" y="19" font-size="11.5" fill="${t.done ? '#a8a6a0' : n > 1 ? '#2457c5' : '#1c1c1a'}">${t.done ? '✓ ' : ''}${esc(trunc(t.title, t.kind === 'in' ? 14 : 13))}</text>
       <text x="${t.kind === 'in' ? 11 : 16}" y="35" font-size="10" fill="${od ? '#d2462b' : '#6b6a66'}" font-family="ui-monospace,monospace">${esc(trunc(sub + (od ? ' 超過' : ''), 25))}</text>
@@ -1648,8 +1739,8 @@ function treeIds(p){
 let lastT = null;
 function renderTree(){
   const p = P(), box = $('#treebox'); if (!box) return;
-  const T = lastT = layoutTree(p, treeIds(p));
-  box.innerHTML = treeSVG(p, T, false);
+  const T = lastT = layoutTree(p, treeIds(p), true);
+  box._T = T; box.innerHTML = treeSVG(p, T, false);
   const d = p.drawings.find(x => x.id === cur.did);
   $('#tstats').innerHTML = `<span>${treeScope === 'all' ? '全図面' : d ? esc(d.no + ' ' + d.name) : ''}</span>
     <span>社内合計 <b>${fmtH(T.total)}h</b></span><span>残り <b>${fmtH(T.remain)}h</b></span>
@@ -1687,19 +1778,21 @@ document.addEventListener('dblclick', e => {
 
 /* ---------- tree drag: nodes & milestone lines ---------- */
 let drag = null, treeLock = 0;
-function svgPt(e){ const svg = $('#treebox svg'); const r = svg.getBoundingClientRect(); return { x: (e.clientX - r.left) / ui.zoom, y: (e.clientY - r.top) / ui.zoom }; }
+function svgPt(e){ const svg = $('svg', drag.box); const r = svg.getBoundingClientRect(); return { x: (e.clientX - r.left) / drag.z, y: (e.clientY - r.top) / drag.z }; }
 function markFollow(ids, cls = 'follow'){
-  $$('#treebox .tn.' + cls).forEach(n => n.classList.remove(cls));
-  ids.forEach(id => $$(`#treebox .tn[data-tid="${id}"]`).forEach(n => n.classList.add(cls)));
+  const box = drag ? drag.box : document;
+  $$('.tn.' + cls, box).forEach(n => n.classList.remove(cls));
+  ids.forEach(id => $$(`.tn[data-tid="${id}"]`, box).forEach(n => n.classList.add(cls)));
 }
 document.addEventListener('pointerdown', e => {
-  if (!e.target.closest || !e.target.closest('#treebox svg') || e.button !== 0) return;
+  if (!e.target.closest || !e.target.closest('.tbox svg') || e.button !== 0) return;
   if (Date.now() < treeLock) return;
   const node = e.target.closest('g.tn'), line = e.target.closest('g.msl');
   if (!node && !line) return;
+  const box = e.target.closest('.tbox'), lastT = box._T; if (!lastT) return;
   e.preventDefault();
+  drag = { type: node ? 'node' : 'line', el: node || line, sx: e.clientX, sy: e.clientY, moved: false, T: lastT, box, z: lastT.zoom || ui.zoom };
   const pt = svgPt(e);
-  drag = { type: node ? 'node' : 'line', el: node || line, sx: e.clientX, sy: e.clientY, moved: false, T: lastT };
   if (node) { drag.tid = node.dataset.tid; drag.p0 = lastT.pos[drag.tid]; drag.band0 = lastT.bandOf(drag.tid); drag.target = drag.band0; }
   else {
     drag.k = +line.dataset.k; drag.lx = lastT.lines.find(l => l.k === drag.k).x;
@@ -1709,15 +1802,16 @@ document.addEventListener('pointerdown', e => {
 });
 document.addEventListener('pointermove', e => {
   if (!drag) return;
-  const dx = (e.clientX - drag.sx) / ui.zoom, dy = (e.clientY - drag.sy) / ui.zoom;
-  if (!drag.moved && Math.hypot(dx, dy) * ui.zoom < 5) return;
+  const dx = (e.clientX - drag.sx) / drag.z, dy = (e.clientY - drag.sy) / drag.z;
+  if (!drag.moved && Math.hypot(dx, dy) * drag.z < 5) return;
+  if (drag.T.plain) return;   // 詳細ツリーは関係を見るだけ(期間の移動は洗い出し画面の③で)
   if (!drag.moved) { drag.moved = true; hideTip(); if (drag.type === 'node') { drag.el.classList.add('dragging'); drag.el.parentNode.appendChild(drag.el); } }
   const p = P(), T = drag.T;
   if (drag.type === 'node') {
     drag.el.setAttribute('transform', `translate(${drag.p0.x + dx},${drag.p0.y + dy})`);
     const cx = drag.p0.x + dx + NW / 2;
     const target = T.lines.filter(l => l.x < cx).length;
-    $$('#treebox .bandbg').forEach(r => r.classList.toggle('on', +r.dataset.band === target && target !== drag.band0));
+    $$('.bandbg', drag.box).forEach(r => r.classList.toggle('on', +r.dataset.band === target && target !== drag.band0));
     if (target !== drag.target) {
       drag.target = target;
       markFollow(target === drag.band0 ? [] : simulateMoves(p, [[drag.tid, target]]));
@@ -1745,13 +1839,13 @@ document.addEventListener('pointerup', e => {
   const d = drag; drag = null;
   const p = P();
   if (!d.moved) {
-    if (d.type === 'node') return jumpToTask(d.tid);
+    if (d.type === 'node') return d.box.id === 'btree' ? setTimeout(() => bandMenu(d.el, d.tid), 0) : jumpToTask(d.tid);
     return openMilestones();
   }
   let followers = [], list = [];
   if (d.type === 'node' && d.target !== d.band0) list = [[d.tid, d.target]];
   if (d.type === 'line') list = d.moves;
-  if (!list.length) return renderTree();
+  if (!list.length) return d.box.id === 'btree' ? renderBoard() : renderTree();
   followers = applyMoves(p, list);
   const E = effBandsRaw(p);
   const nm = d.type === 'node' ? `「${trunc(p.tasks[d.tid].title, 14)}」を ${bandName(E, d.target)} へ` : `${list.length}件を振り分け`;
@@ -1898,7 +1992,7 @@ function renderMembers(){
     const st = r.worst ? (r.worst.ratio > 1 ? `<span style="color:var(--accent)">● 超過:${esc(bandName(E, r.worst.k))}まで ${isFinite(r.worst.ratio) ? Math.round(r.worst.ratio * 100) + '%' : '稼働0'}</span>` : r.worst.ratio > .85 ? `<span style="color:#8a5d00">● 余裕なし(最大 ${Math.round(r.worst.ratio * 100)}%)</span>` : `<span style="color:var(--ok)">● 適正(最大 ${Math.round(r.worst.ratio * 100)}%)</span>`) : '';
     return `<section class="mcard" id="mcard-${r.id || '_'}" style="--c:${color}">
       <header><h3>${r.m ? esc(r.m.name) : '担当未定'}</h3>
-        ${r.m ? `<span class="kv">今月 <b>${capOf(p, r.id)}h</b> ・ 標準 ${stdOf(p, r.id)}h/月</span>` : '<span class="kv" style="color:var(--accent)">担当者を割り当ててください</span>'}
+        ${r.m ? `<span class="kv">今月 <b>${capOf(p, r.id)}h</b>${hasRecur(p, r.id) ? `(実動 <b>${fmtH(monthNet(p, r.id, ymKey(today0())))}h</b>)` : ''} ・ 標準 ${stdOf(p, r.id)}h/月</span>` : '<span class="kv" style="color:var(--accent)">担当者を割り当ててください</span>'}
         <span class="kv">残り <b>${fmtH(r.remH)}h</b>(${r.rem.length}件) ・ 完了 ${fmtH(r.doneH)}h</span>
         ${st}
         ${xp.length > 1 || (xp.length === 1 && xp[0].q.id !== p.id) ? `<span class="xproj">全PJの残り:${xp.map(x => `<span>${esc(trunc(x.q.name, 10))} ${fmtH(x.h)}h</span>`).join('')}<span class="${capSum > 160 ? 'warn' : ''}" title="今月、各プロジェクトに割り当てている時間の合計">今月の割当 計${fmtH(capSum)}h</span></span>` : ''}
@@ -1915,6 +2009,9 @@ function renderMembers(){
       <button class="tbtn" data-act="milestones">締切・期間を設定</button></div>
     <div class="sec" style="max-width:1150px;margin-top:0">月別の作業可能時間(このプロジェクトに使える時間)</div>
     <div class="mtabw">${monthTable(p)}</div>
+    <div class="sec" style="max-width:1150px">定例・打合せ(作業可能時間から差し引いて「実動時間」にする)</div>
+    ${recurTable(p)}
+    <div class="note" style="max-width:1150px;margin-top:6px">例:「社内打ち合わせ 1h × 2回 / 週」に参加メンバーをチェックすると、その人の持ち時間から週2h(平日1日あたり0.4h)が差し引かれます。月表の「実動」と、期間ごとの「持ち」・カレンダーの割付はすべて実動時間で計算されます。</div>
     <div class="note" style="max-width:1150px;margin-top:6px">月ごとに、このプロジェクトに使える時間(h)を入れてください。空欄の月は「標準」の値を使います(黄色=月ごとに入力済み)。月の時間はその月の平日に均等に割り振って計算します。休暇などで特定の期間だけ変えたい場合は、下の各メンバーの「期間内で使える時間」に直接入力して上書きできます。</div>
     <div class="note" style="max-width:1150px;display:none">85%超で黄、100%超で赤。グラフの縦線が使える時間です。作業の担当プルダウンでその場で付け替えて、負荷をならせます。外部作業は含みません。</div>
     ${phaseBanner(p)}
@@ -1982,13 +2079,38 @@ function renderBoard(){
     </header>
     <div class="bhint">${mode === 1 ? '各ゾーンに思いつくまま箇条書きで書き出します(Enterで次の行)。⋮⋮ をドラッグすると順番やゾーンを変えられます。担当・時間は後で入れればOKです。'
       : mode === 2 ? '項目の右端の ● から、後に続く項目へドラッグして線を引くと「前後関係(直列)」になります。線をクリックすると外せます。作図の項目に条件整理・検討がつながっていないと「⚠前提なし」が付きます。'
-      : '項目ごとに締切(期間)を選ぶか、各欄の上の「この欄をまとめて締切へ」で一括で入れます。前提の作業は自動で同じ締切に含まれます。細かい調整は「詳細・ツリー」の締切線で。'}</div>
-    <div class="bbody"><div class="bgrid">${ZONES.map(colHTML).join('<div class="barrow">→</div>')}</div><svg class="blinks"></svg></div>
+      : '作業を左右にドラッグして期間の帯へ入れます。締切線をドラッグすると、その行の作業を前後に振り分けます。作業をクリックすると期間を選べます。前提・後続の作業は自動で連れて行きます(薄い表示=他の作図内容の関連作業)。'}</div>
+    ${mode === 3 ? `<div class="bbody b3">${E.M ? `<div class="b3bar">${ZONES.map(z => { const n = items.filter(i => zoneOf(T[i]) === z.k).length; return `<label style="--c:${z.c}"><b>${z.n}</b> ${n}件 <select class="bbulk" data-bbulk="${z.k}" ${n ? '' : 'disabled'}><option value="">まとめて期間へ…</option>${E.ms.map((ms, k) => `<option value="${k}">${esc(trunc(periodName(E, k), 12))} → ◆${esc(trunc(ms.name, 10))}</option>`).join('')}</select></label>`; }).join('')}
+        <span class="b3zoom"><button class="tbtn sm" data-act="bzoom" data-v="-">−</button><button class="tbtn sm" data-act="bzoom" data-v="+">＋</button></span></div>
+        <div id="btree" class="tbox"></div>` : `<div class="bempty" style="padding:40px">マイルストーン(締切)がまだありません。右上の「マイルストーン」から追加してください。</div>`}</div>`
+      : `<div class="bbody"><div class="bgrid">${ZONES.map(colHTML).join('<div class="barrow">→</div>')}</div><svg class="blinks"></svg></div>`}
   </div>`;
-  $('.bbody', el).scrollTop = prevScroll;
-  drawBoardLinks();
+  const bt = $('#btree', el);
+  if (bt) { bt._T = boardTree(p, items); bt.innerHTML = treeSVG(p, bt._T, false); if (board.tsc) { bt.scrollLeft = board.tsc[0]; bt.scrollTop = board.tsc[1]; } bt.onscroll = () => board.tsc = [bt.scrollLeft, bt.scrollTop]; }
+  else { $('.bbody', el).scrollTop = prevScroll; drawBoardLinks(); }
   if (boardFocus) { const i = $(`[data-badd="${boardFocus}"]`, el); if (i) i.focus(); boardFocus = null; }
   else if (first && mode === 1 && !items.length) { const i = $('[data-badd="cond"]', el); if (i) i.focus(); }
+}
+function boardTree(p, items){
+  const T0 = p.tasks, set = new Set(items);
+  const up = id => (T0[id]?.deps || []).forEach(d => { if (T0[d] && !set.has(d)) { set.add(d); up(d); } });
+  items.forEach(up);
+  const succ = {}; Object.values(T0).forEach(t => t.deps.forEach(d => (succ[d] = succ[d] || []).push(t.id)));
+  const down = id => (succ[id] || []).forEach(x => { if (!set.has(x)) { set.add(x); down(x); } });
+  items.forEach(down);
+  const placed = new Set(placedIds(p));
+  const ids = [...set].filter(i => placed.has(i));
+  const T = layoutTree(p, ids, false);
+  T.others = new Set(ids.filter(i => !items.includes(i))); T.zoneColor = true; T.zoom = ui.bzoom || .85;
+  return T;
+}
+function bandMenu(el, tid){
+  const p = P(), E = eff(p), t = p.tasks[tid];
+  const go = j => { const f = applyMoves(p, [[tid, j]]); toast(`「${trunc(t.title, 14)}」を ${bandName(effBandsRaw(p), j)} へ` + (f.length ? `(関連作業 ${f.length}件も移動)` : '')); commit(); };
+  openMenu(el, [{ head: trunc(t.title, 18) },
+    ...E.ms.map((ms, k) => ({ label: `${E.band[tid] === k ? '✓ ' : '　'}${trunc(periodName(E, k), 12)} → ◆${trunc(ms.name, 12)}`, run: () => go(k) })),
+    { label: `${E.band[tid] === E.M ? '✓ ' : '　'}締切未定`, run: () => go(E.M) },
+    '-', { label: '詳細編集(担当・時間・前提作業・備考)…', run: () => editTask(tid) }]);
 }
 function drawBoardLinks(){
   const el = $('#board'); if (!el || !board) return;
@@ -2090,6 +2212,30 @@ document.addEventListener('change', e => {
   if (el.dataset.bbulk && el.value !== '') { const k = +el.value, ids = c.items.filter(i => p.tasks[i] && zoneOf(p.tasks[i]) === el.dataset.bbulk); const f = applyMoves(p, ids.map(i => [i, k])); commit(); toast(`${ids.length}件を「${eff(p).ms[k]?.name || ''}」に設定${f.length ? `(関連 ${f.length}件も移動)` : ''}`); }
 });
 
+/* ---------------- 人ごとの作業の割付(カレンダー用の目安) ----------------
+   その人の未完了の作業を、期間の早い順 → 前後関係の順(STEP)→ ★ → 図面の順に並べ、
+   本日から1日ずつ実動時間を割り当てていく。日付のある打合せはその日に固定。 */
+function depthOf(p, tid, memo = {}){ if (memo[tid] != null) return memo[tid]; memo[tid] = 0; let d = 0; (p.tasks[tid].deps || []).forEach(x => { if (p.tasks[x]) d = Math.max(d, depthOf(p, x, memo) + 1); }); return memo[tid] = d; }
+function scheduleMember(p, mid, untilKey){
+  const E = eff(p), T = p.tasks, memo = {}, dOrder = {};
+  p.drawings.forEach((d, i) => dTaskIds(d).forEach(t => { if (dOrder[t] == null) dOrder[t] = i; }));
+  const mine = placedIds(p).filter(i => T[i].assignee === mid && T[i].kind !== 'ext' && !T[i].done && (+T[i].hours || 0) > 0);
+  const fixed = mine.filter(i => T[i].kind === 'mtg' && T[i].due);
+  const flow = mine.filter(i => !fixed.includes(i)).sort((a, b) => (E.band[a] - E.band[b]) || (depthOf(p, a, memo) - depthOf(p, b, memo)) || (!!T[b].star - !!T[a].star) || ((dOrder[a] ?? 99) - (dOrder[b] ?? 99)));
+  const byDay = {}, used = {};
+  const push = (ds, tid, h) => { (byDay[ds] = byDay[ds] || []).push({ tid, h }); used[ds] = (used[ds] || 0) + h; };
+  fixed.forEach(i => push(T[i].due, i, +T[i].hours || 0));
+  const [uy, um] = untilKey.split('-').map(Number), until = new Date(uy, um, 1);
+  const d = today0(); let k = 0, rest = flow.length ? +T[flow[0]].hours : 0, guard = 0;
+  while (k < flow.length && d < until && guard++ < 2000) {
+    const ds = ymd(d); let cap = Math.max(0, dayHours(p, mid, d) - (used[ds] || 0));
+    while (cap > 0.01 && k < flow.length) { const h = Math.min(cap, rest); push(ds, flow[k], h); cap -= h; rest -= h; if (rest <= 0.01) { k++; rest = k < flow.length ? +T[flow[k]].hours : 0; } }
+    d.setDate(d.getDate() + 1);
+  }
+  const unplaced = flow.slice(k);
+  return { byDay, unplaced };
+}
+
 /* ---------------- calendar view ---------------- */
 function periodOfDay(p, E, d){ // d が属する期間 k(前の締切の翌日〜締切当日。最初の期間は設計開始日から)
   for (let k = 0; k < E.M; k++) {
@@ -2130,10 +2276,25 @@ function renderCalendar(){
   // items by date
   const items = {};
   E.ms.forEach((m, k) => { if (m.date) (items[m.date] = items[m.date] || []).push(`<div class="ci ms" style="--c:${m.color}" data-act="review" data-k="${k}" title="${esc(m.name)}">◆ ${esc(m.name)}</div>`); });
-  placedIds(p).forEach(i => { const t = T[i]; if (t.kind === 'in' || !t.due || t.done) return; const pa = party(p, t.party);
+  placedIds(p).forEach(i => { const t = T[i]; if (true) return; const pa = party(p, t.party);
     (items[t.due] = items[t.due] || []).push(`<div class="ci ${t.kind} ${isOverdue(t) ? 'od' : ''}" style="--c:${pa?.color || '#6b6a66'}" data-tid="${i}" data-act="jump" title="${esc((pa ? pa.name + ':' : '') + t.title)}">${t.kind === 'ext' ? '⬡' : '◯'} ${esc(t.title)}</div>`); });
   const months = projMonths(p);
-  const dayCap = d => S.members.reduce((a, m) => { const w = d.getDay(); if (!w || w > 5) return a; const k = ymKey(d); return a + monthHours(p, m.id, k) / (wdInMonth(k) || 1); }, 0);
+  const dayCap = d => S.members.reduce((a, m) => a + dayHours(p, m.id, d), 0);
+  const cm = ui.calMem && member(ui.calMem) ? ui.calMem : '';
+  const SCH = cm ? scheduleMember(p, cm, months[months.length - 1]) : null;
+  const firstDay = {}, lastDay = {};
+  if (SCH) Object.keys(SCH.byDay).sort().forEach(ds => SCH.byDay[ds].forEach(x => { if (!firstDay[x.tid]) firstDay[x.tid] = ds; lastDay[x.tid] = ds; }));
+  const workBars = (ds, d, colStart) => {
+    if (!SCH || !SCH.byDay[ds]) return '';
+    return `<div class="wbars">${SCH.byDay[ds].map(x => {
+      const t = T[x.tid], z = ZMAP[zoneOf(t)], hp = homePlace(p, x.tid), dn = hp ? hp.d.name : '';
+      const ms = E.ms[E.band[x.tid]], late = ms && ms.date && ds > ms.date;
+      const lbl = firstDay[x.tid] === ds || colStart;
+      const fm = flt(), dim = fltActive() && !taskMatch(p, x.tid);
+      return `<div class="wb ${late ? 'late' : ''} ${firstDay[x.tid] === ds ? 'st' : ''} ${lastDay[x.tid] === ds ? 'en' : ''} ${dim ? 'dim' : ''}" style="--c:${z.c}" data-tid="${x.tid}" data-act="jump"
+        title="${esc(t.title)}\n${esc(hp ? hp.d.no + ' ' + hp.d.name + ' / ' + hp.c.name : '')}\n${z.n} ・ この日 ${fmtH(r1(x.h))}h / 全${fmtH(t.hours)}h${late ? '\n⚠ 締切(' + esc(ms.name) + ' ' + esc(ms.date) + ')を過ぎる見込み' : ''}">${lbl ? esc(dn) : '&nbsp;'}</div>`;
+    }).join('')}</div>`;
+  };
   const cal = months.map(key => {
     const [y, mo] = key.split('-').map(Number), first = new Date(y, mo - 1, 1), lead = (first.getDay() + 6) % 7;
     const days = new Date(y, mo, 0).getDate(), cells = [];
@@ -2142,11 +2303,12 @@ function renderCalendar(){
       const d = new Date(y, mo - 1, dd), ds = ymd(d), w = d.getDay(), k = periodOfDay(p, E, d), col = k >= 0 ? E.ms[k].color : null;
       const prevK = periodOfDay(p, E, new Date(y, mo - 1, dd - 1));
       const showLbl = k >= 0 && (k !== prevK || (lead + dd - 1) % 7 === 0 || dd === 1);
-      const capd = dayCap(d);
+      const capd = cm ? dayHours(p, cm, d) : dayCap(d);
       cells.push(`<div class="cd ${w === 0 || w === 6 ? 'we' : ''} ${ds === ymd(t0) ? 'today' : ''} ${d < t0 ? 'past' : ''}">
         ${k >= 0 ? `<div class="strip" style="--c:${col}" data-act="review" data-k="${k}">${showLbl ? `<span>${esc(periodName(E, k))}${st[k].av || st[k].rem ? ` <em class="${cls(st[k].ratio)}">${st[k].av ? Math.round(st[k].ratio * 100) + '%' : ''}</em>` : ''}</span>` : ''}</div>` : '<div class="strip none"></div>'}
-        <div class="dn">${dd}${capd && d >= t0 ? `<small title="この日にメンバー全員が使える時間の合計">${fmtH(capd)}h</small>` : ''}</div>
+        <div class="dn">${dd}${capd && d >= t0 ? `<small title="${cm ? 'この日に' + esc(member(cm).name) + 'さんが図面作業に使える時間(実動)' : 'この日にメンバー全員が図面作業に使える時間(実動)の合計'}">${fmtH(r1(capd))}h</small>` : ''}</div>
         ${(items[ds] || []).join('')}
+        ${workBars(ds, d, (lead + dd - 1) % 7 === 0 || dd === 1)}
       </div>`);
     }
     return `<section class="calm"><h3>${y}年 ${mo}月 <small>${wdInMonth(key)}営業日 ・ 全員で ${fmtH(S.members.reduce((a, m) => a + monthHours(p, m.id, key), 0))}h</small></h3>
@@ -2155,9 +2317,16 @@ function renderCalendar(){
   app.innerHTML = `<div class="cv">
     <div class="lvbar"><h2>カレンダー</h2><span class="stat">${esc(p.name)} ・ 設計開始 ${esc(p.start || '未設定')}</span><span style="flex:1"></span>
       <button class="tbtn" data-act="milestones">締切・期間を設定</button></div>
+    <div class="calmem">
+      <span class="lbl">人ごとの作業を表示:</span>
+      <span class="fseg"><button data-act="calmem" data-v="" class="${!cm ? 'on' : ''}">表示しない</button>${S.members.map(m => `<button data-act="calmem" data-v="${m.id}" class="${cm === m.id ? 'on' : ''}" style="--c:${m.color}">${esc(m.name)}</button>`).join('')}</span>
+      ${cm ? `<span class="zleg">${ZONES.map(z => `<span style="--c:${z.c}"><i></i>${z.n}</span>`).join('')}<span class="lt"><i></i>締切を過ぎる見込み</span></span>` : ''}
+    </div>
+    ${cm ? `<div class="note" style="max-width:1100px">${esc(member(cm).name)}さんの未完了の作業を、期間の早い順・前後関係の順に、本日から実動時間で割り付けた<b>目安</b>です(バーの文字は図面名、色はゾーン)。他の人の作業待ちは考慮していません。${SCH.unplaced.length ? `<b style="color:var(--accent)">表示範囲内に収まらない作業が ${SCH.unplaced.length}件 あります。</b>` : ''}バーをクリックすると、その作業を開きます。</div>
+      ${fltBar({ noMember: true })}` : ''}
     ${E.M ? `<div class="sec" style="margin-top:0">期間ごとの工数(その期間に付いた作業の残り工数 / 本日以降にその期間で使える時間)</div>
       <div class="pcards">${cards}${noBand ? `<div class="pcard" style="--c:${NOBAND}"><div class="pn">締切未定</div><div class="pr">期間に属さない作業</div><div class="pb"><b>${fmtH(noBand)}h</b> <small>残り</small></div><div class="pf">ツリーで期間に振り分けてください</div></div>` : ''}</div>` : '<div class="note">「締切・期間を設定」で締切と期間を登録すると、期間ごとの工数とカレンダー上の帯が表示されます。</div>'}
-    <div class="note" style="max-width:1100px">帯=期間(%はその期間の負荷)、◆=締切、⬡=外部の回答予定日、◯=打合せ。日付の右の小さな数字は、その日にメンバー全員がこのプロジェクトに使える時間の合計です。カードや帯をクリックすると計画レビューを開きます。</div>
+    <div class="note" style="max-width:1100px">帯=期間(%はその期間の負荷)、◆=締切。日付の右の小さな数字は、その日にメンバー全員がこのプロジェクトに使える時間の合計です。カードや帯をクリックすると計画レビューを開きます。</div>
     ${cal}
   </div>`;
   app.firstElementChild.scrollTop = sc;
@@ -2323,7 +2492,7 @@ function addDrawing(){
 function addTask(did, cid, title){
   const p = P(), { c } = findDC(p, did, cid); if (!c || !title) return;
   const o = { title };
-  const m = title.match(/^[@＠](\S+)[\s　]+(.+)$/);
+  const m = null;
   if (m) {
     let pa = p.parties.find(x => x.name === m[1]) || p.parties.find(x => x.name.startsWith(m[1]) || m[1].startsWith(x.name));
     if (!pa) { pa = { id: uid(), name: m[1], color: COLORS[(p.parties.length + 3) % COLORS.length] }; p.parties.push(pa); toast(`関係者「${m[1]}」を登録しました`); }
@@ -2352,9 +2521,7 @@ function taskMenu(btn){
   const li = btn.closest('.task'), p = P(), tid = li.dataset.tid, did = li.dataset.did, cid = li.dataset.cid, i = +li.dataset.i;
   const n = placeCount(p, tid), t = p.tasks[tid], hp = homePlace(p, tid);
   openMenu(btn, [
-    { label: '詳細編集(前提作業・締切・備考)…', run: () => editTask(tid) },
-    { head: '種別' },
-    ...Object.keys(KIND).map(k => ({ label: `${t.kind === k ? '✓ ' : '　'}${{in:'社内作業', ext:'外部依頼・回答待ち', mtg:'打合せ・確認'}[k]}`, run: () => setKind(tid, k) })),
+    { label: '詳細編集(前提作業・備考)…', run: () => editTask(tid) },
     '-',
     { label: serialRun(p, findDC(p, did, cid).c, i).length > 1 ? '◆ インスタンス配置…(直列グループごとも可)' : '◆ インスタンスとして他の作図内容にも配置…', run: () => placeTask(tid, cid) },
     ...(n > 1 && hp.c.id !== cid ? [{ label: '★ ここを本体にする', run: () => { t.home = cid; commit(); toast('本体をこの配置に変更しました'); } }] : []),
@@ -2388,16 +2555,8 @@ function editTask(tid){
   modal('作業の詳細', `
     <label class="fld"><span>作業名</span><input id="et" value="${esc(t.title)}"></label>
     <div class="row3">
-      <label class="fld"><span>種別</span><select id="ek">${Object.keys(KIND).map(k => `<option value="${k}" ${t.kind === k ? 'selected' : ''}>${{in:'社内作業', ext:'外部依頼・回答待ち', mtg:'打合せ・確認'}[k]}</option>`).join('')}</select></label>
-      <label class="fld" data-for="in mtg"><span>担当者(社内)</span><select id="ea"><option value="">—</option>${S.members.map(m => `<option value="${m.id}" ${m.id === t.assignee ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
-      <label class="fld" data-for="in mtg"><span>必要時間(h)</span><input id="eh" type="number" min="0" step="0.5" value="${t.hours || 0}"></label>
-      <label class="fld" data-for="ext mtg"><span>関係者</span><select id="ep"><option value="">—</option>${p.parties.map(x => `<option value="${x.id}" ${x.id === t.party ? 'selected' : ''}>${esc(x.name)}</option>`).join('')}</select></label>
-      <label class="fld" data-for="ext mtg"><span id="edl1">回答予定日</span><input id="ed" type="date" value="${esc(t.due)}"></label>
-      <label class="fld" data-for="ext"><span>所要日数(日付未定の場合)</span><input id="es" type="number" min="0" step="1" value="${t.days || 0}"></label>
-    </div>
-    <div class="row2">
-      <label class="fld"><span>締切(マイルストーン)</span><select id="em2"><option value="">自動(後続作業から決まる)</option>${E.ms.map(m => `<option value="${m.id}" ${m.id === t.ms ? 'selected' : ''}>${esc(m.name)} ${esc(m.date)}</option>`).join('')}</select></label>
-      <div class="fld"><span>現在の締切</span><div style="padding:7px 0;color:${bandColor(E, effB)}">● ${esc(bandName(E, effB))}${!t.ms && effB < E.M ? '(後続作業から継承)' : ''}</div></div>
+      <label class="fld"><span>担当者</span><select id="ea"><option value="">—</option>${S.members.map(m => `<option value="${m.id}" ${m.id === t.assignee ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label class="fld"><span>必要時間(h)</span><input id="eh" type="number" min="0" step="0.5" value="${t.hours || 0}"></label>
     </div>
     ${placeCount(p, tid) > 1 && t.kind !== 'ext' ? (() => { const sh = shares(p, tid); return `<div class="fld"><span>時間の配分(作図内容ごと)— 合計に入れると配分、各欄に入れると積み上げで合計が変わります</span>
       <div class="alloc">${places(p, tid).map(x => `<label><span>${esc(x.d.no)} ${esc(x.c.name)}</span><input type="number" min="0" step="0.5" data-al="${x.c.id}" value="${r1(sh[x.c.id])}">h</label>`).join('')}
@@ -2409,19 +2568,15 @@ function editTask(tid){
     ${succ.length ? `<div class="note">この作業の後続:${succ.map(x => esc(x.title)).join(' / ')}</div>` : ''}
     <div class="note">配置箇所:${esc(where(tid))}${placeCount(p, tid) > 1 ? '(同一インスタンス・変更は全箇所に反映)' : ''}</div>`,
     [{ label: 'キャンセル' }, { label: '保存', cls: 'pri', run(bg){
-      t.title = $('#et', bg).value.trim() || t.title; t.kind = $('#ek', bg).value; t.assignee = $('#ea', bg).value;
+      t.title = $('#et', bg).value.trim() || t.title; t.kind = 'in'; t.assignee = $('#ea', bg).value;
       const nh = parseFloat($('#eh', bg).value) || 0, als = $$('[data-al]', bg);
       if (als.length && bg._alTouched) { t.alloc = {}; als.forEach(i => t.alloc[i.dataset.al] = Math.max(0, parseFloat(i.value) || 0)); t.hours = r1(Object.values(t.alloc).reduce((a, x) => a + x, 0)); }
       else if (bg._alEven) { delete t.alloc; t.hours = nh; }
       else t.hours = nh;
-      t.party = $('#ep', bg).value; t.due = $('#ed', bg).value; t.days = parseFloat($('#es', bg).value) || 0; t.memo = $('#em', bg).value;
-      const nms = $('#em2', bg).value;
+      t.memo = $('#em', bg).value;
       t.deps = $$('#edl input:checked', bg).map(x => x.value);
-      if (nms !== t.ms) { const j = nms ? msSorted(p).findIndex(m => m.id === nms) : msSorted(p).length; const f = applyMoves(p, [[tid, j]]); t.ms = nms; if (f.length) toast(`関連作業 ${f.length}件の締切も移動しました`); }
       commit(); } }],
     { wide: true, mount(bg){
-      const upd = () => { const k = $('#ek', bg).value; $$('[data-for]', bg).forEach(el => el.style.display = el.dataset.for.split(' ').includes(k) ? '' : 'none'); $('#edl1', bg).textContent = k === 'mtg' ? '打合せ日' : '回答予定日'; };
-      $('#ek', bg).addEventListener('change', upd); upd();
       const als = $$('[data-al]', bg);
       if (als.length) {
         const sync = () => { const sum = r1(als.reduce((a, i) => a + (parseFloat(i.value) || 0), 0)); $('#alt', bg).textContent = fmtH(sum); $('#eh', bg).value = sum; };
@@ -2622,13 +2777,11 @@ function openReview(k){
       <div class="kpi"><span>締切</span><b>${esc(r.ms.date || '—')}</b><span>${r.cal != null ? (r.cal >= 0 ? 'あと' + r.cal + '日' : Math.abs(r.cal) + '日超過') : ''}</span></div>
       <div class="kpi"><span>達成率(この締切までの作業)</span><b>${r.pct == null ? '—' : r.pct + '%'}</b><span>${r.ids.filter(i => T[i].done).length}/${r.ids.length}件</span></div>
       <div class="kpi"><span>残り社内工数</span><b>${fmtH(r.remH)}h</b><span>未完了 ${todo.length}件</span></div>
-      <div class="kpi ${r.D != null && r.cpDays > r.D ? 'bad' : ''}"><span>最短所要 / 残り営業日</span><b>${r.cpDays.toFixed(1)} / ${r.D ?? '—'}日</b><span>前後関係と外部回答日を考慮</span></div>
+      <div class="kpi ${r.D != null && r.cpDays > r.D ? 'bad' : ''}"><span>最短所要 / 残り営業日</span><b>${r.cpDays.toFixed(1)} / ${r.D ?? '—'}日</b><span>前後関係を考慮</span></div>
     </div>
     <div class="judge j-${r.status}" style="font-size:13px;margin-bottom:10px"><i></i><b>${JUDGE[r.status]}</b>${r.reasons.length ? ':' + esc(r.reasons.join('、')) : ''}</div>
     <div class="sec">人ごとの負荷(この締切までに終える必要がある残り作業)</div>
     ${memRows ? `<table class="rvtab"><tr><th>担当</th><th class="n">残り工数</th><th class="n">使える時間</th><th>負荷</th><th class="n">負荷率</th></tr>${memRows}</table>` : '<div class="muted">残っている社内作業はありません</div>'}
-    <div class="sec">外部・打合せ(未完了)</div>
-    ${extRows ? `<table class="rvtab"><tr><th>内容</th><th>関係者</th><th>状態</th><th class="n">回答予定</th></tr>${extRows}</table>` : '<div class="muted">待ちはありません</div>'}
     <div class="note">対象 = この締切が付いた作業と、その前提作業すべて(前の締切の分も含む累積)。使える時間は「メンバー工数」画面の月別の作業可能時間から計算します。最短所要は、担当者が並行作業できると仮定した日数です(同じ人の重なりは負荷率で判定)。</div>`,
     [{ label: '締切・稼働を編集', cls: 'left', run(){ setTimeout(openMilestones, 0); } }, { label: '閉じる', cls: 'pri' }], { wide: true, nofocus: true });
 }
@@ -2685,7 +2838,6 @@ function openPdf(){
     ${cb('i2', 'links', '図面間の関係線とメモ', true)}
     ${cb('i3', 'detail', '図面ごとの作業一覧(備考含む)')}
     ${cb('i4', 'tree', '図面ごとの作業ツリー')}
-    ${cb('i5', 'parties', '関係者別 確認・依頼事項')}
   </div>
   <div><div id="pvbox"></div><div class="note" style="margin-top:8px">印刷ダイアログで「送信先:PDFに保存」を選び、<b>倍率100%・余白「なし」または「デフォルト」</b>で保存してください。</div></div></div>`,
   [{ label: 'キャンセル' }, { label: 'PDF書き出し', cls: 'pri', run(bg){ readPdf(bg); commit(); setTimeout(() => doPrint(), 50); } }],
@@ -2695,7 +2847,7 @@ function readPdf(bg){
   const o = P().pdf, n = (id, d) => { const v = parseFloat($(id, bg).value); return isNaN(v) ? d : Math.max(0, v); };
   o.paper = $('#pp', bg).value; o.orient = $('#po', bg).value;
   o.m = { t: n('#mt', 15), r: n('#mr', 15), b: n('#mb', 15), l: n('#ml2', 20) }; o.pt = n('#pt', 9) || 9;
-  o.inc = { ms: $('#i0', bg).checked, list: $('#i1', bg).checked, links: $('#i2', bg).checked, detail: $('#i3', bg).checked, tree: $('#i4', bg).checked, parties: $('#i5', bg).checked };
+  o.inc = { ms: $('#i0', bg).checked, list: $('#i1', bg).checked, links: $('#i2', bg).checked, detail: $('#i3', bg).checked, tree: $('#i4', bg).checked };
 }
 function paperWH(o){ let [w, h] = PAPER[o.paper] || PAPER.A3; if (o.orient === 'landscape') [w, h] = [h, w]; return [w, h]; }
 function drawPreview(){
@@ -2740,8 +2892,8 @@ function doPrint(only){
   if (inc.list) {
     const withLinks = inc.links && p.links.length, gw = withLinks ? Math.min(90, cw * 0.36) : 0;
     h += `<div class="plist" style="width:${cw - gw}mm">
-      <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称</div><div>スケール</div><div>達成率</div></div>
-      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div>${esc(d.name)}</div><div class="mono">${esc(dScales(d))}</div>
+      <div class="prow h" style="height:${headH}mm"><div>No.</div><div>図面名称${p.drawings.some(d => appN(d)) ? ' <span style="font-weight:400;font-size:.85em">(<b style="border:.3mm solid #000;padding:0 .6mm">申請</b>=確認申請図)</span>' : ''}</div><div>スケール</div><div>達成率</div></div>
+      ${p.drawings.map(d => `<div class="prow" style="height:${rowH}mm"><div class="mono">${esc(d.no)}</div><div style="${appN(d) ? 'font-weight:700' : ''}">${esc(d.name)}${appN(d) ? ` <b style="border:.3mm solid #000;padding:0 .6mm;font-size:.8em">申請${appN(d) < d.contents.length ? ' ' + appN(d) + '/' + d.contents.length : ''}</b>` : ''}</div><div class="mono">${esc(dScales(d))}</div>
         <div class="pbar prog" style="padding:0 2mm">${pctBar(progressOf(p, dTaskIds(d)))}</div></div>`).join('')}
       ${withLinks ? printLinks(p, gw, rowH, headH) : ''}</div>`;
   }
@@ -2753,7 +2905,7 @@ function doPrint(only){
       h += `<div class="psheet"><h2><span class="mono">${esc(d.no)}</span>${esc(d.name)}<span class="mono">${esc(dScales(d))}</span><span class="r">達成率 ${pr == null ? '—' : pr + '%'}</span></h2>`;
       if (out.length || inn.length) h += `<div class="prel">${out.map(l => `→ ${esc(dn(l.to))}:${esc(l.memo)}`).concat(inn.map(l => `← ${esc(dn(l.from))}:${esc(l.memo)}`)).join('<br>')}</div>`;
       if (inc.detail) d.contents.forEach(c => {
-        h += `<div class="pc"><div style="float:right;font-size:.78em;color:#444">${ZONES.map(z => `<span style="color:${z.c};font-weight:600">${z.n}</span> CL${zchk(c, z.k).cl ? '☑' : '☐'} 社内${zchk(c, z.k).in ? '☑' : '☐'}`).join('　')}</div><h3>${esc(c.name)}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
+        h += `<div class="pc"><div style="float:right;font-size:.78em;color:#444">${ZONES.map(z => `<span style="color:${z.c};font-weight:600">${z.n}</span> CL${zchk(c, z.k).cl ? '☑' : '☐'} 社内${zchk(c, z.k).in ? '☑' : '☐'}`).join('　')}</div><h3>${esc(c.name)}${c.app ? ' <b style="border:.3mm solid #000;padding:0 .6mm;font-size:.75em">申請</b>' : ''}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
           <tr><th></th><th>作業</th><th>担当/関係者</th><th style="text-align:right">時間/期日</th><th>締切</th><th>前提作業</th><th>共有</th></tr>
         ${c.items.map((tid, i) => { const t = T[tid]; const m = member(t.assignee), pa = party(p, t.party); const n = placeCount(p, tid), b = E.band[tid];
           const who = t.kind === 'in' ? (m ? esc(m.name) : '') : `${KIND[t.kind]}:${esc(pa?.name || '')}`;
@@ -2765,7 +2917,6 @@ function doPrint(only){
       h += `</div>`;
     });
   }
-  if (inc.parties) h += partyPrintHTML(p);
   h += `</div>`;
   $('#printArea').innerHTML = h;
   window.print();
@@ -3048,7 +3199,9 @@ document.addEventListener('click', e => {
   switch (act) {
     case 'members': return openMembers();
     case 'milestones': return openMilestones();
-    case 'parties': return openParties();
+    case 'parties': return;
+    case 'appall': { const dd = p.drawings.find(x => x.id === did); if (!dd || !dd.contents.length) return; const on = appN(dd) < dd.contents.length; dd.contents.forEach(c => c.app = on); return commit(); }
+    case 'appc': { const cid = a.closest('[data-cid]')?.dataset.cid, dd = p.drawings.find(x => x.id === did), c = dd && dd.contents.find(x => x.id === cid); if (!c) return; c.app = !c.app; return commit(); }
     case 'pdf': return openPdf();
     case 'ppdf': return doPrint('parties');
     case 'settings': return openSettings();
@@ -3068,6 +3221,7 @@ document.addEventListener('click', e => {
     case 'board': { const r = a.closest('[data-cid]'); return openBoard(r.dataset.did, r.dataset.cid); }
     case 'bclose': return closeBoard();
     case 'bmode': ui.bmode = +a.dataset.v; saveUi(); return renderBoard();
+    case 'bzoom': ui.bzoom = Math.max(.4, Math.min(1.2, (ui.bzoom || .85) + (a.dataset.v === '+' ? .1 : -.1))); saveUi(); return renderBoard();
     case 'binsert': return insertExisting(board.did, board.cid);
     case 'bdel': { const tid = tidOf(), { c } = findDC(p, board.did, board.cid), n = placeCount(p, tid), t = p.tasks[tid];
       if (n > 1) { unplace(p, tid, c.id); c.items = c.items.filter(x => x !== tid); if (t.home === c.id) t.home = ''; commit(); return toast('この作図内容から外しました(他の配置は残ります)'); }
@@ -3078,6 +3232,10 @@ document.addEventListener('click', e => {
     case 'fzone': ui.flt = Object.assign(flt(), { zone: a.dataset.v }); saveUi(); return render();
     case 'fstar': ui.flt = Object.assign(flt(), { star: !flt().star }); saveUi(); return render();
     case 'fclear': ui.flt = {}; saveUi(); return render();
+    case 'rcadd': p.recur = p.recur || []; p.recur.push({ id: uid(), name: '', hours: 1, times: 1, unit: 'w', members: S.members.map(m => m.id), from: '', to: '' }); return commit();
+    case 'rcdel': { const id = a.closest('[data-rid]').dataset.rid; p.recur = p.recur.filter(r => r.id !== id); return commit(); }
+    case 'rcall': { const r = p.recur.find(x => x.id === a.closest('[data-rid]').dataset.rid); r.members = r.members.length === S.members.length ? [] : S.members.map(m => m.id); return commit(); }
+    case 'calmem': ui.calMem = a.dataset.v; saveUi(); return render();
     case 'totmin': ui.totMin = !ui.totMin; saveUi(); return renderTotals();
     case 'fdue': ui.flt = Object.assign(flt(), { urg: 'due' }); saveUi(); if (cur.view === 'list') { cur.view = 'detail'; } return render();
     case 'hlnow': ui.hlNow = a.checked; saveUi(); return render();
@@ -3133,6 +3291,11 @@ document.addEventListener('change', e => {
     const d = p.drawings.find(x => x.id === el.closest('[data-did]').dataset.did); d[el.dataset.f] = el.value.trim();
     if (el.dataset.f === 'no' && sortDrawings(p)) { flashDid = d.id; toast(`${d.no} を番号順の位置へ移動しました`); }
     return commit();
+  }
+  if (el.dataset.rc || el.dataset.rcm) {
+    const r = p.recur.find(x => x.id === el.closest('[data-rid]').dataset.rid); if (!r) return;
+    if (el.dataset.rcm) { r.members = el.checked ? [...new Set([...r.members, el.dataset.rcm])] : r.members.filter(x => x !== el.dataset.rcm); return commit(); }
+    const f = el.dataset.rc; r[f] = (f === 'hours' || f === 'times') ? Math.max(0, parseFloat(el.value) || 0) : el.value; return commit();
   }
   if (el.dataset.mstd) { p.mstd[el.dataset.mstd] = Math.max(0, parseFloat(el.value) || 0); return commit(); }
   if (el.dataset.mcap) { const [mid, k] = el.dataset.mcap.split('|'); p.mcap[mid] = p.mcap[mid] || {};
