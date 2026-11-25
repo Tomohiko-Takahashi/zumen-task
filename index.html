@@ -115,6 +115,9 @@ input,select,textarea{font:inherit;color:inherit}
 .dvbar.sub .subl{color:var(--mute);font-size:11.5px}
 .dvbar.sub .dvseg button{font-size:11.5px;padding:3px 10px}
 .dvbar.sub .subh{color:var(--sub);font-size:11.5px}
+.addcrow{display:block;padding:0 0 0 160px;background:#fbfaf7}
+.addcin{width:340px;border:none;background:none;font-size:12px;height:28px;color:var(--ink);outline:none}
+.addcin::placeholder{color:var(--mute)} .addcin:focus{background:#fff;box-shadow:inset 0 -1px 0 var(--ink)}
 .srow .cn{display:flex;align-items:center;gap:4px;overflow:hidden;white-space:nowrap}
 .srow .spg{font-family:var(--mono);font-size:10.5px;color:#fff;background:var(--sub);border-radius:3px;padding:0 5px;margin-right:4px;flex:none;min-width:14px;text-align:center}
 .srow .scn{cursor:pointer;overflow:hidden;text-overflow:ellipsis} .srow .scn:hover{text-decoration:underline}
@@ -1408,7 +1411,7 @@ function segBar(p, ids){
 /* ---------------- list view ---------------- */
 const ROW = 40, HEAD = 34, CROW = 30;
 const isOpenD = id => ui.openD.includes(id);
-function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? (sheetMode() ? sheetUnits(d).length : d.contents.length) * CROW : 0); }); return { c, H: y }; }
+function rowLayout(p){ let y = HEAD; const c = []; p.drawings.forEach(d => { c.push(y + ROW / 2); y += ROW + (isOpenD(d.id) ? ((sheetMode() ? sheetUnits(d).length : d.contents.length) + 1) * CROW : 0); }); return { c, H: y }; }
 const pctBar = pr => `<div class="pb1"><i class="${pr === 100 ? 'full' : ''}" style="width:${pr || 0}%"></i></div><span class="pct ${pr == null ? 'muted' : ''}">${pr == null ? '—' : pr + '%'}</span>`;
 function msCards(p){
   const E = eff(p);
@@ -1456,6 +1459,9 @@ function sheetRows(p, d){
       <span class="sact">${i ? '<button class="ico" data-act="smerge" title="上の行と同じページ(1つのまとまり)にする">⤒</button>' : '<span></span>'}${cs.length > 1 ? '<button class="ico" data-act="ssplit" title="作図内容ごとに別々のページに分ける">⇕</button>' : ''}</span>
     </div>`; }).join('');
 }
+let refocusAddc = null;
+function contentRows(p, d){ return d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
+      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join(''); }
 function renderList(){
   const p = P(), app = $('#app');
   const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
@@ -1475,8 +1481,7 @@ function renderList(){
       <button class="ico" data-act="open" title="詳細を開く">›</button>
       <button class="ico del" data-act="deld" title="図面を削除">×</button>
       <button class="port ${linking === d.id ? 'on' : ''}" data-act="port" title="関係線:ここをクリック→つなぎ先の●をクリック"></button>
-    </div>${isOpenD(d.id) && sheetMode() ? sheetRows(p, d) : isOpenD(d.id) ? d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
-      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button></div>`; }).join('') : ''}`).join('');
+    </div>${isOpenD(d.id) ? `${sheetMode() ? sheetRows(p, d) : contentRows(p, d)}<div class="crow addcrow" data-did="${d.id}"><input class="addcin" data-addc="1" placeholder="＋ 作図内容を追加(名前を入力して Enter)"></div>` : ''}`).join('');
   app.innerHTML = `
   <div class="lv ${linking ? 'linking' : ''}">
     <div class="lvbar">
@@ -1512,6 +1517,7 @@ function renderList(){
   if (flashDid) { const r = $(`.drow[data-did="${flashDid}"]`); if (r) { r.classList.add('flash'); r.scrollIntoView({ block: 'nearest' }); } flashDid = null; }
   if (linking) showBanner('つなぎ先の図面の ● をクリック(Escで取消)'); else hideBanner();
   bindFlow();
+  if (refocusAddc) { const el = $(`.addcrow[data-did="${refocusAddc}"] .addcin`); if (el) el.focus(); refocusAddc = null; }
 }
 function laneLinks(p){
   const idx = {}; p.drawings.forEach((d, i) => idx[d.id] = i);
@@ -1695,7 +1701,8 @@ function renderDetail(){
   if (focusAfter) { const el = $(`.addtask input[data-cid="${focusAfter}"]`); if (el) el.focus(); focusAfter = null; }
   if (focusMemo) { const el = $(`.tmemo textarea[data-key="${focusMemo}"]`); if (el) { el.focus(); el.selectionStart = el.value.length; } focusMemo = null; }
   if (scrollToDid) { const el = $('#sheet-' + scrollToDid); if (el) { spyLock = Date.now() + 300; sh.scrollTop = sheetScrollTop(el); } scrollToDid = null; }
-  if (scrollToCid) { const el = $(`.content[data-cid="${scrollToCid}"]`); if (el) { sh.scrollTop += el.getBoundingClientRect().top - sh.getBoundingClientRect().top - 56; el.classList.add('flash'); } scrollToCid = null; }
+  if (scrollToCid) { const el = $(`.content[data-cid="${scrollToCid}"]`); if (el) { spyLock = Date.now() + 1200; sh.scrollTop += el.getBoundingClientRect().top - sh.getBoundingClientRect().top - Math.min(sh.clientHeight * SPY - 30, 160); el.classList.add('flash'); } scrollToCid = null; }
+  if (cur.did) setActiveDrawing(cur.did, false);
 }
 function sheetHTML(p, d){
   const out = p.links.filter(l => l.from === d.id), inn = p.links.filter(l => l.to === d.id);
@@ -1705,9 +1712,9 @@ function sheetHTML(p, d){
     ${inn.map(l => `<div>← <a data-act="goto" data-did="${l.from}">${dn(l.from)}</a> から <span class="memo">${esc(l.memo || '')}</span></div>`).join('')}
   </div>` : '';
   const F = fltActive();
-  if (F && !d.contents.some(c => c.items.some(i => taskMatch(p, i, c.id)))) return '';
+  if (F && !d.contents.some(c => !c.items.length || c.items.some(i => taskMatch(p, i, c.id)))) return '';
   const contents = d.contents.map(c => {
-    if (F && !c.items.some(i => taskMatch(p, i, c.id))) return '';
+    if (F && c.items.length && !c.items.some(i => taskMatch(p, i, c.id))) return '';
     const counted = c.items.filter(i => p.tasks[i] && (ui.hmode === 'split' || !ui.fadeInst || homePlace(p, i)?.c.id === c.id));
     const hrs = counted.filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (ui.hmode === 'split' ? shareOf(p, i, c.id) : (+p.tasks[i].hours || 0)), 0);
     const dn2 = counted.filter(i => p.tasks[i].done).length;
@@ -3411,7 +3418,7 @@ document.addEventListener('click', e => {
     case 'tog': { const id = did; ui.openD = isOpenD(id) ? ui.openD.filter(x => x !== id) : [...ui.openD, id]; saveUi(); return render(); }
     case 'openall': ui.openD = p.drawings.map(d => d.id); saveUi(); return render();
     case 'closeall': ui.openD = []; saveUi(); return render();
-    case 'opencontent': { const r = a.closest('.crow'); cur.view = 'detail'; cur.did = r.dataset.did; scrollToCid = a.dataset.cid || r.dataset.cid; linking = null; return render(); }
+    case 'opencontent': { const r = a.closest('.crow'); cur.view = 'detail'; cur.did = r.dataset.did; scrollToDid = r.dataset.did; scrollToCid = a.dataset.cid || r.dataset.cid; linking = null; return render(); }
     case 'memdone': ui.memDone = a.checked; saveUi(); return render();
     case 'mjump': { const el = $('#mcard-' + (a.dataset.mid || '_')); if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
     case 'jump': { const tid = tidOf(), hp = homePlace(p, tid); if (!hp) return; cur.view = 'detail'; cur.did = hp.d.id; scrollToDid = hp.d.id; render(); return setTimeout(() => jumpToTask(tid), 60); }
@@ -3536,6 +3543,8 @@ document.addEventListener('focusout', e => { // 備考エディタ:変更なし�
 });
 document.addEventListener('keydown', e => {
   const el = e.target;
+  if (e.key === 'Enter' && !e.isComposing && el.matches('.addcin')) { e.preventDefault(); const name = el.value.trim(); if (!name) return; const p = P(), d = p.drawings.find(x => x.id === el.closest('[data-did]').dataset.did); if (!d) return;
+    d.contents.push({ id: uid(), name, items: [], scale: d.contents[d.contents.length - 1]?.scale || '1/100' }); refocusAddc = d.id; return commit(); }
   if (e.key === 'Enter' && !e.isComposing && el.matches('.addtask input')) { e.preventDefault(); return addTask(el.dataset.did, el.dataset.cid, el.value.trim()); }
   if (e.key === 'Enter' && !e.isComposing && el.matches('.cell, .ttl, .hrs, .pmemo')) { el.blur(); return; }
   if (e.key === 'Enter' && (e.metaKey || e.ctrlKey) && el.matches('.tmemo textarea')) { el.blur(); return; }
