@@ -1751,7 +1751,7 @@ function renderDetail(){
       <div class="legend">
         <span><i></i>前提→後続</span><span><i style="border-color:var(--accent)"></i>クリティカルパス</span>
         <span>縦並び=並列</span><span style="color:var(--inst)">青字=インスタンス</span>
-        <span>期間(締切)への振り分けは、作図内容の <b>▦ 洗い出し → ③ 期間に入れる</b> で行います</span>
+        <span><b>締切線</b>:線をドラッグ→その行の作業を前後に振り分け/作業をドラッグ→期間を移動(関連作業は自動で連れて行く)/横線=作図内容の区切り</span>
       </div>
     </section>
   </div>`;
@@ -1883,7 +1883,7 @@ function setActiveDrawing(did, scroll){
 
 /* ---------------- tree (DAG, banded by milestone) ---------------- */
 const NW = 178, NH = 46, GX = 40, GY = 14, PADX = 18, PADY = 80, LG = 64;
-function layoutTree(p, ids, plain){
+function layoutTree(p, ids, plain, laneOf){
   ids = ids.filter(i => p.tasks[i]);
   const set = new Set(ids), ghosts = [];
   ids.forEach(id => p.tasks[id].deps.forEach(d => { if (!set.has(d) && p.tasks[d] && !ghosts.includes(d)) ghosts.push(d); }));
@@ -1897,15 +1897,24 @@ function layoutTree(p, ids, plain){
   const bc = []; for (let b = 0; b <= M; b++) bc[b] = [];
   all.forEach(id => { const b = bandOf(id); (bc[b][lvl[id]] = bc[b][lvl[id]] || []).push(id); });
   const pos = {}, order = {}; all.forEach((id, i) => order[id] = i);
-  let x = PADX, maxRows = 1; const bands = [], lines = [];
+  // 作図内容ごとのレーン(横の帯)。同じ列の中でレーンごとに縦に分けて並べる
+  const lanes = [], laneIx = {};
+  all.forEach(id => { const L = (laneOf && laneOf(id)) || { key: '_', label: '' }; let k = lanes.findIndex(x => x.key === L.key); if (k < 0) { lanes.push({ key: L.key, label: L.label, last: !!L.last }); k = lanes.length - 1; } laneIx[id] = L.key; });
+  lanes.sort((a, b) => (a.last ? 1 : 0) - (b.last ? 1 : 0));
+  const li = {}; lanes.forEach((L, k) => li[L.key] = k); all.forEach(id => laneIx[id] = li[laneIx[id]]);
+  const cnt = lanes.map(() => 1);
+  for (let b = 0; b <= M; b++) (bc[b] || []).forEach(col => { if (!col) return; const c = lanes.map(() => 0); col.forEach(id => c[laneIx[id]]++); c.forEach((v, k) => cnt[k] = Math.max(cnt[k], v)); });
+  const LH = laneOf ? 20 : 0, rowY = []; let yy = PADY;
+  lanes.forEach((L, k) => { L.r0 = rowY.length; L.y0 = yy; yy += LH; for (let r = 0; r < cnt[k]; r++) { rowY.push(yy); yy += NH + GY; } L.y1 = yy - GY; yy += laneOf ? 10 : 0; });
+  let x = PADX; const bands = [], lines = [];
   for (let b = 0; b <= M; b++) {
     const cols = bc[b], x0 = x;
     cols.forEach((col, ci) => {
       if (!col) return;
       const bary = id => { const ps = preds(id).filter(d => pos[d]); return ps.length ? ps.reduce((a, d) => a + pos[d].r, 0) / ps.length : 1e3 + order[id]; };
-      col.sort((a, c) => bary(a) - bary(c) || order[a] - order[c]);
-      col.forEach((id, ri) => pos[id] = { x: x0 + ci * (NW + GX), y: PADY + ri * (NH + GY), r: ri, b });
-      maxRows = Math.max(maxRows, col.length);
+      col.sort((a, c) => laneIx[a] - laneIx[c] || bary(a) - bary(c) || order[a] - order[c]);
+      const seen = lanes.map(() => 0);
+      col.forEach(id => { const k = laneIx[id], r = lanes[k].r0 + seen[k]++; pos[id] = { x: x0 + ci * (NW + GX), y: rowY[r], r, b }; });
     });
     const w = cols.length ? cols.length * (NW + GX) - GX : (b < M ? 150 : 0);
     bands.push({ b, x0, x1: x0 + w, n: cols.length });
@@ -1922,7 +1931,7 @@ function layoutTree(p, ids, plain){
   const edges = []; all.forEach(id => preds(id).forEach(d => edges.push({ from: d, to: id, crit: crit.has(d) && crit.has(id) && Math.abs(ef[d] - (ef[id] - hrs(id))) < 1e-9 })));
   const inIds = ids.filter(i => p.tasks[i].kind !== 'ext');
   const total = inIds.reduce((a, i) => a + hrs(i), 0), remain = inIds.reduce((a, i) => a + (p.tasks[i].done ? 0 : hrs(i)), 0);
-  return { plain, ids, all, pos, edges, crit, gset, bands, lines, M, E, W: x + PADX, H: PADY + maxRows * (NH + GY) - GY + 18, cp, total, remain, bandOf };
+  return { plain, ids, all, pos, edges, crit, gset, bands, lines, M, E, W: x + PADX, H: yy - (laneOf ? 10 : 0) - GY + 18, cp, total, remain, bandOf, lanes: laneOf ? lanes : [], rowY };
 }
 function nodeShape(t, fill, stroke, dash){
   const a = `class="bx" fill="${fill}" stroke="${stroke}" stroke-width="1.2" ${dash ? 'stroke-dasharray="4 3"' : ''}`;
@@ -1937,6 +1946,9 @@ function treeSVG(p, T, print){
   let s = `<svg xmlns="http://www.w3.org/2000/svg" ${print ? '' : `width="${Math.round(T.W * (T.zoom || ui.zoom))}" height="${Math.round(T.H * (T.zoom || ui.zoom))}"`} viewBox="0 0 ${T.W} ${T.H}" font-family="${print ? 'sans-serif' : 'inherit'}">
   <defs><marker id="ta${sfx}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#8d8a83"/></marker>
   <marker id="tc${sfx}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#d2462b"/></marker></defs>`;
+  // 作図内容レーンの区切り線と名前
+  T.lanes.forEach((L, k) => { if (k) s += `<line x1="0" x2="${T.W}" y1="${L.y0 - 6}" y2="${L.y0 - 6}" stroke="#cfccc4" stroke-width="1" stroke-dasharray="${L.last ? '3 3' : '0'}"/>`;
+    s += `<text x="${PADX}" y="${L.y0 + 12}" font-size="11" font-weight="700" fill="${L.last ? '#a8a6a0' : '#5c5a55'}">${esc(L.label)}</text>`; });
   // band backgrounds (drop targets)
   T.bands.forEach((bd, i) => {
     const xa = i === 0 ? 0 : T.lines[i - 1].x, xb = i < T.lines.length ? T.lines[i].x : T.W;
@@ -1985,6 +1997,12 @@ function treeSVG(p, T, print){
   });
   return s + '</svg>';
 }
+function laneByContent(p, did){ // 選択中の図面ではその図面の作図内容ごと、それ以外は図面ごと
+  return id => { const pl = places(p, id), here = did && pl.find(x => x.d.id === did);
+    if (here) return { key: here.c.id, label: here.c.name };
+    const h = homePlace(p, id) || pl[0]; if (!h) return { key: '_x', label: 'その他', last: true };
+    return did ? { key: '_o', label: '他の図面の関連作業', last: true } : { key: h.c.id, label: `${h.d.no} ${h.d.name} / ${h.c.name}` }; };
+}
 function treeIds(p){
   if (treeScope === 'all') return placedIds(p);
   const d = p.drawings.find(x => x.id === cur.did) || p.drawings[0]; return d ? dTaskIds(d) : [];
@@ -1992,7 +2010,7 @@ function treeIds(p){
 let lastT = null;
 function renderTree(){
   const p = P(), box = $('#treebox'); if (!box) return;
-  const T = lastT = layoutTree(p, treeIds(p), true);
+  const T = lastT = layoutTree(p, treeIds(p), false, laneByContent(p, treeScope === 'all' ? null : cur.did));
   box._T = T; box.innerHTML = treeSVG(p, T, false);
   const d = p.drawings.find(x => x.id === cur.did);
   $('#tstats').innerHTML = `<span>${treeScope === 'all' ? '全図面' : d ? esc(d.no + ' ' + d.name) : ''}</span>
@@ -2049,7 +2067,7 @@ document.addEventListener('pointerdown', e => {
   if (node) { drag.tid = node.dataset.tid; drag.p0 = lastT.pos[drag.tid]; drag.band0 = lastT.bandOf(drag.tid); drag.target = drag.band0; }
   else {
     drag.k = +line.dataset.k; drag.lx = lastT.lines.find(l => l.k === drag.k).x;
-    drag.row = Math.max(0, Math.floor((pt.y - PADY + GY / 2) / (NH + GY)));
+    { const RY = lastT.rowY || []; let r = RY.findIndex(y => pt.y < y + NH + GY / 2); drag.row = r < 0 ? Math.max(0, RY.length - 1) : r; }
     drag.moves = [];
   }
 });
@@ -2070,7 +2088,7 @@ document.addEventListener('pointermove', e => {
       markFollow(target === drag.band0 ? [] : simulateMoves(p, [[drag.tid, target]]));
     }
   } else {
-    const bx = drag.lx + dx, rowTop = PADY + drag.row * (NH + GY) - GY / 2, rowBot = rowTop + NH + GY, k = drag.k;
+    const bx = drag.lx + dx, rowTop = (T.rowY ? T.rowY[drag.row] : PADY + drag.row * (NH + GY)) - GY / 2, rowBot = rowTop + NH + GY, k = drag.k;
     const d = `M${drag.lx},8 V${rowTop - 6} L${bx},${rowTop + 4} V${rowBot - 4} L${drag.lx},${rowBot + 6} V${T.H}`;
     $('.msp', drag.el).setAttribute('d', d);
     const moves = [];
@@ -2391,7 +2409,7 @@ function boardTree(p, items){
   items.forEach(down);
   const placed = new Set(placedIds(p));
   const ids = [...set].filter(i => placed.has(i));
-  const T = layoutTree(p, ids, false);
+  const T = layoutTree(p, ids, false, (() => { const f = laneByContent(p, null); return id => { const pl = places(p, id); const h = pl.find(x => x.c.id === board.cid); return h ? { key: h.c.id, label: 'この作図内容:' + h.c.name } : { ...f(id), last: true }; }; })());
   T.others = new Set(ids.filter(i => !items.includes(i))); T.zoneColor = true; T.zoom = ui.bzoom || .85;
   return T;
 }
@@ -3221,7 +3239,7 @@ function doPrint(only){
           return `<tr><td class="c">${t.done ? '☑' : '☐'}</td><td>${i && t.deps.includes(c.items[i - 1]) ? '↓ ' : ''}${t.star ? '<b style="color:#c78a00">★</b> ' : ''}${t.star ? `<b>${esc(t.title)}</b>` : esc(t.title)}${t.memo ? `<div style="color:#666;font-size:.85em">※${esc(t.memo)}</div>` : ''}</td><td>${who}</td><td class="n">${tm}</td>
           <td style="font-size:.85em"><span style="color:${bandColor(E, b)}">●</span>${esc(trunc(bandName(E, b), 10))}</td><td style="font-size:.85em;color:#444">${t.deps.map(x => esc(trunc(T[x]?.title, 16))).join('、')}</td><td style="font-size:.85em">${n > 1 ? '◆' + n : ''}</td></tr>`; }).join('')}</table></div>`;
       });
-      if (inc.tree) { const TT = layoutTree(p, dTaskIds(d)); if (TT.ids.length) h += `<div class="ptree"><h3>作業ツリー(社内合計 ${fmtH(TT.total)}h / クリティカルパス ${fmtH(TT.cp)}h)</h3>${treeSVG(p, TT, true).replace('<svg ', `<svg style="width:${Math.min(cw, TT.W * 0.27).toFixed(1)}mm" `)}</div>`; }
+      if (inc.tree) { const TT = layoutTree(p, dTaskIds(d), false, laneByContent(p, d.id)); if (TT.ids.length) h += `<div class="ptree"><h3>作業ツリー(社内合計 ${fmtH(TT.total)}h / クリティカルパス ${fmtH(TT.cp)}h)</h3>${treeSVG(p, TT, true).replace('<svg ', `<svg style="width:${Math.min(cw, TT.W * 0.27).toFixed(1)}mm" `)}</div>`; }
       h += `</div>`;
     });
   }
