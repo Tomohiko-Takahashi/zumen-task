@@ -110,6 +110,37 @@ input,select,textarea{font:inherit;color:inherit}
 .crow .sbar{height:5px}
 .crow .ico{grid-column:8}
 .tbtn.sm{padding:3px 8px;font-size:11.5px}
+/* 洗い出しボード:準備2段・関門・作図定型 */
+.bstack{display:flex;flex-direction:column;gap:12px;min-width:0}
+.bgate{align-self:stretch;margin:0 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;border:1px dashed var(--line);border-radius:22px;background:#faf9f6;padding:14px 0;position:relative}
+.bgate.ok{border:1.5px solid #2e9e6a;background:#f1f8f3}
+.bgate label{writing-mode:vertical-rl;display:flex;align-items:center;gap:5px;font-size:11.5px;letter-spacing:.12em;cursor:pointer;color:var(--sub);padding:8px 3px;border-radius:12px;user-select:none}
+.bgate label.on{color:#fff;background:#2e9e6a}
+.bgate input{writing-mode:horizontal-tb;width:14px;height:14px;margin:0;accent-color:#2e9e6a}
+.bgate small{font-family:var(--mono);font-size:9.5px;letter-spacing:0;opacity:.85}
+.bgate .garr{color:var(--mute);font-size:12px}
+.bdraw .bcards{gap:6px}
+.bstd{display:flex;align-items:center;gap:6px;padding:7px 8px!important}
+.bstd .sdn{font-size:13px;min-width:56px}
+.bstd .asg{font-size:12px;max-width:92px} .bstd .hrs{width:52px;text-align:right}
+.bstd .miss{outline:2px solid #d2462b;outline-offset:-1px;border-radius:4px}
+.bstd.off{border:1px dashed var(--line);border-radius:7px;background:none;padding:3px 6px!important}
+.sdadd{border:none;background:none;color:var(--mute);font-size:12px;cursor:pointer} .sdadd:hover{color:var(--ink)}
+.sdall{margin-top:4px}
+.bother{font-size:10.5px;color:var(--mute);margin:8px 0 2px;letter-spacing:.05em}
+.bcol header h4 small{font-weight:400;font-size:10.5px;color:var(--mute);margin-left:4px}
+/* 洗い出しを主役に */
+.bbtn.big{font-size:12.5px;font-weight:700;padding:4px 12px;background:var(--ink);color:#fff;border:none;border-radius:6px;flex:none}
+.bbtn.big:hover{opacity:.85} .bbtn.big.first{animation:bpulse 1.8s ease-in-out 3}
+@keyframes bpulse{50%{box-shadow:0 0 0 5px rgba(30,30,30,.15)}}
+.bcta{display:flex;flex-direction:column;gap:3px;align-items:flex-start;width:calc(100% - 32px);margin:6px 16px 4px;padding:14px 16px;border:1.5px dashed var(--ink);border-radius:10px;background:#fff;cursor:pointer;text-align:left}
+.bcta b{font-size:14px} .bcta span{font-size:11.5px;color:var(--sub)} .bcta:hover{background:#f4f2ec}
+.lbb{margin-left:10px;border:1px solid var(--line);background:#fff;border-radius:4px;font-size:10.5px;color:var(--sub);cursor:pointer;opacity:0;padding:0 6px;line-height:17px} .crow:hover .lbb,.lbb.first{opacity:1} .lbb:hover{color:#fff;background:var(--ink);border-color:var(--ink)} .lbb.first{color:var(--ink);border-color:var(--ink)}
+/* 記入漏れ */
+.missbtn{border:1.5px solid #d2462b;color:#d2462b;background:#fff;border-radius:14px;padding:2px 10px;font-size:11.5px;cursor:pointer;white-space:nowrap}
+.missbtn b{font-family:var(--mono)} .missbtn.on{background:#d2462b;color:#fff} .missbtn.zero{border-color:var(--line);color:var(--mute)}
+.task.miss-m .asg,.task.miss-h .hrs{outline:2px solid #d2462b;outline-offset:-1px;border-radius:4px}
+.ford.on{color:var(--ink);font-weight:700}
 /* 枚数管理 */
 .dvbar.sub{margin:-2px 0 8px 6px;font-size:12px}
 .dvbar.sub .subl{color:var(--mute);font-size:11.5px}
@@ -614,7 +645,7 @@ svg .tn.dim{opacity:.18}
 .b3zoom{margin-left:auto;display:flex;gap:4px}
 #btree{flex:1;overflow:auto;background-image:radial-gradient(var(--line2) 1px,transparent 1px);background-size:14px 14px}
 .tn.oth{opacity:.5} .tn.oth:hover{opacity:.9}
-.bgrid{display:grid;grid-template-columns:1fr 26px 1fr 26px 1fr;gap:0;padding:14px 16px 60px;min-width:780px;position:relative;z-index:1;pointer-events:none}
+.bgrid{display:grid;grid-template-columns:1fr 46px 1fr 46px minmax(250px,.8fr);gap:0;padding:14px 16px 60px;min-width:900px;position:relative;z-index:1;pointer-events:none}
 .bgrid>*{pointer-events:auto}
 .barrow{align-self:start;margin-top:14px;text-align:center;color:var(--mute);font-size:16px;pointer-events:none}
 .blinks{position:absolute;top:0;left:0;z-index:2;pointer-events:none}
@@ -995,7 +1026,7 @@ const party = (p, id) => p.parties.find(x => x.id === id);
 let snap = JSON.stringify(S), undoStack = [], ver = 0;
 function persist(){ snap = JSON.stringify(S); lsSet(LS_KEY, snap); ver++; }
 function commit(){
-  const p = P(); if (p) p.updatedAt = Date.now();
+  const p = P(); if (p) { p.updatedAt = Date.now(); p.drawings.forEach(d => d.contents.forEach(c => { if (c.items.some(i => p.tasks[i]?.std)) syncStd(p, c); })); }
   S.updatedAt = Date.now();
   undoStack.push(snap); if (undoStack.length > 100) undoStack.shift();
   persist(); dirty = true; scheduleSync(); render();
@@ -1012,11 +1043,18 @@ function undo(){
 // スケールは作図内容ごと。図面のスケール表記は作図内容のスケールを重複なくカンマ区切りで
 const dScales = d => [...new Set(d.contents.map(c => (c.scale || '').trim()).filter(Boolean))].join(', ');
 // ゾーン:作業の性質(条件整理 → デザイン検討 → 作図)。作業ごとに1つ。CL確認・社内確認は作図内容×ゾーン単位
-const ZONES = [{ k:'cond', n:'条件整理', s:'条', c:'#1a8a9a' }, { k:'design', n:'デザイン検討', s:'検', c:'#7b4bc4' }, { k:'draw', n:'作図', s:'作', c:'#5b6770' }];
+const ZONES = [{ k:'cond', n:'条件整理', s:'条', c:'#1a8a9a' }, { k:'prep', n:'下絵・レイアウト準備', s:'下', c:'#9a7b2f' }, { k:'design', n:'デザイン検討', s:'検', c:'#7b4bc4' }, { k:'draw', n:'作図', s:'作', c:'#5b6770' }];
+// ゾーンの間の関門(確認):準備(条件整理・下絵)→デザイン検討、デザイン検討→作図
+const GATES = [{ k:'cond', n:'準備 → デザイン検討' }, { k:'design', n:'デザイン検討 → 作図' }];
+const gateOf = z => z === 'cond' || z === 'prep' ? 'cond' : z === 'design' ? 'design' : null;
+// 作図ゾーンの定型(作図はファイナライズのみ:時間と担当を入れるだけ)
+const STD = [{ k:'draw', n:'作図' }, { k:'check', n:'チェック' }, { k:'fix', n:'修正' }];
 const ZMAP = Object.fromEntries(ZONES.map(z => [z.k, z]));
 function guessZone(t){
   if (t.kind && t.kind !== 'in') return 'cond';
   const x = t.title || '';
+  if (t.std) return 'draw';
+  if (/下絵|下図|ベース図|基図|元図|トレース|レイアウト準備|作図準備|図面準備|CAD準備/.test(x)) return 'prep';
   if (/作図|作成|反映|図化|製図|描く|書き込/.test(x)) return 'draw';
   if (/検討|納まり|納め|配置|スタディ|比較|割付|レイアウト|計画|デザイン/.test(x)) return 'design';
   if (/図$/.test(x)) return 'draw';
@@ -1035,7 +1073,7 @@ function prereqState(p, tid){ // 作図の作業について、前提(条件整�
 }
 const zchk = (c, z) => (c.zchk && c.zchk[z]) || {};
 function zchkMini(c){
-  return `<span class="zmini" title="${ZONES.map(z => `${z.n}:CL確認${zchk(c, z.k).cl ? '済 ' + zchk(c, z.k).cl : '未'}/社内確認${zchk(c, z.k).in ? '済 ' + zchk(c, z.k).in : '未'}`).join('\n')}">${ZONES.map(z => `<span style="--c:${z.c}"><b>${z.s}</b><i class="${zchk(c, z.k).cl ? 'on' : ''}"></i><i class="${zchk(c, z.k).in ? 'on' : ''}"></i></span>`).join('')}</span>`;
+  return `<span class="zmini" title="${GATES.map(g => `${g.n}:社内確認${zchk(c, g.k).in ? '済 ' + zchk(c, g.k).in : '未'}/CL確認${zchk(c, g.k).cl ? '済 ' + zchk(c, g.k).cl : '未'}`).join('\n')}">${GATES.map((g, i) => `<span style="--c:${i ? ZMAP.design.c : ZMAP.cond.c}"><b>${i ? '検▸作' : '準▸検'}</b><i class="${zchk(c, g.k).in ? 'on' : ''}"></i><i class="${zchk(c, g.k).cl ? 'on' : ''}"></i></span>`).join('')}</span>`;
 }
 const zoneDot = t => { const z = ZMAP[zoneOf(t)]; return `<button class="zd" data-act="zone" style="--c:${z.c}" title="ゾーン:${z.n}(クリックで切替)">${z.s}</button>`; };
 // ---- 今期(今日が入っている期間)と遅れ ----
@@ -1065,7 +1103,7 @@ function phaseBanner(p){
   </div>`;
 }
 // ---- フィルター(詳細・メンバー工数・ツリー共通) ----
-const FLT0 = { q:'', urg:'', mem:'', zone:'', st:'', band:'', pre:'', chk:'', kind:'', star:false };
+const FLT0 = { q:'', urg:'', mem:'', zone:'', st:'', band:'', pre:'', chk:'', kind:'', miss:'', star:false };
 const flt = () => Object.assign({}, FLT0, ui.flt || {});
 const fltCount = () => { const f = flt(); return Object.keys(FLT0).filter(k => f[k] && f[k] !== FLT0[k]).length; };
 const fltActive = () => fltCount() > 0;
@@ -1080,8 +1118,10 @@ function taskMatch(p, tid, cid){
   if (f.band !== '' && f.band != null) { const E = eff(p), b = E.band[tid]; if (f.band === 'none' ? b !== E.M : b !== +f.band) return false; }
   if (f.pre) { const ps = prereqState(p, tid); const k = ps ? ps.kind : null;
     if (f.pre === 'none' && k !== 'none') return false; if (f.pre === 'open' && k !== 'open') return false; if (f.pre === 'any' && k !== 'none' && k !== 'open') return false; }
-  if (f.chk) { const z = zoneOf(t), cs = cid ? [findCont(p, cid)].filter(Boolean) : places(p, tid).map(x => x.c);
-    if (!cs.some(c => !zchk(c, z)[f.chk])) return false; }
+  if (f.chk) { const g = gateOf(zoneOf(t)); if (!g) return false; const cs = cid ? [findCont(p, cid)].filter(Boolean) : places(p, tid).map(x => x.c);
+    if (!cs.some(c => !zchk(c, g)[f.chk])) return false; }
+  if (f.miss) { if (t.done || t.kind !== 'in') return false; const nm = !t.assignee, nh = !(+t.hours > 0);
+    if (f.miss === 'any' ? !(nm || nh) : f.miss === 'mem' ? !nm : !nh) return false; }
   if (f.kind && t.kind !== f.kind) return false;
   if (f.star && !t.star) return false;
   return true;
@@ -1099,7 +1139,8 @@ function fltBar(opts = {}){
     ${sel('st', '状態', [['', 'すべて'], ['open', '未完了'], ['done', '完了']])}
     ${E.M ? sel('band', '期間', [['', 'すべて'], ...E.ms.map((m, k) => [String(k), periodName(E, k) + ' → ◆' + m.name]), ['none', '未定']]) : ''}
     ${sel('pre', '前提', [['', 'すべて'], ['any', '⚠/⏳ 前提が整っていない'], ['none', '⚠ 前提なし'], ['open', '⏳ 前提未了']])}
-    ${sel('chk', 'ゾーン確認', [['', 'すべて'], ['cl', 'CL確認が未'], ['in', '社内確認が未']])}
+    ${sel('chk', '関門の確認', [['', 'すべて'], ['in', '社内確認が未'], ['cl', 'CL確認が未']])}
+    ${sel('miss', '記入漏れ', [['', 'すべて'], ['any', '担当なし or 時間0'], ['mem', '担当なし'], ['hrs', '時間0']])}
     <button class="fstar ${f.star ? 'on' : ''}" data-act="fstar" title="★優先のみ">★</button>
     ${n ? `<button class="fclear" data-act="fclear">クリア(${n})</button>` : ''}
     ${opts.extra || ''}
@@ -1469,16 +1510,23 @@ function sheetRows(p, d){
 }
 let refocusAddc = null, flashCid = null;
 function contentRows(p, d){ return d.contents.map(c => { const ids = c.items.filter(x => p.tasks[x]); const h = ids.filter(x => p.tasks[x].kind !== 'ext').reduce((a, x) => a + (ui.hmode === 'split' ? shareOf(p, x, c.id) : (+p.tasks[x].hours || 0)), 0);
-      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button><button class="ico del cdel" data-act="delc" title="この作図内容を削除(⌘/Ctrl+Z で元に戻せます)">×</button><button class="cins" data-act="cins" data-after="${c.id}" title="この下に作図内容を追加">＋</button></div>`; }).join(''); }
+      return `<div class="crow ${c.app ? 'app' : ''}" data-did="${d.id}" data-cid="${c.id}"><span class="cn"><span data-act="opencontent">${esc(c.name)}</span><button class="lbb ${c.items.length ? '' : 'first'}" data-act="lboard" title="この作図内容の洗い出しを開く">▦ 洗い出す</button></span><button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button><input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール"><div class="prog" data-act="opencontent">${pctBar(progressOf(p, ids))}</div><button class="ico" data-act="opencontent" title="この作図内容を開く">›</button><button class="ico del cdel" data-act="delc" title="この作図内容を削除(⌘/Ctrl+Z で元に戻せます)">×</button><button class="cins" data-act="cins" data-after="${c.id}" title="この下に作図内容を追加">＋</button></div>`; }).join(''); }
+function flowOrder(p){
+  const G = flowGraph(p), D = p.drawings, idx = new Map(D.map((d, i) => [d.id, i]));
+  const linked = D.filter(d => G.succ[d.id].length || G.pred[d.id].length);
+  return [...linked.sort((a, b) => G.dep[a.id] - G.dep[b.id] || G.inf[b.id] - G.inf[a.id] || idx.get(a.id) - idx.get(b.id)), ...D.filter(d => !linked.includes(d))];
+}
+// 表示だけフローチャート順に並べる(図面番号・保存される並び順は変えない)
+const viewP = p => ui.flowOrd ? Object.assign(Object.create(p), { drawings: flowOrder(p) }) : p;
 function renderList(){
-  const p = P(), app = $('#app');
+  const p = viewP(P()), app = $('#app');
   const sc = app.firstElementChild ? app.firstElementChild.scrollTop : 0;
   const tot = projProgress(p), E = eff(p);
   const hours = placedIds(p).filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (+p.tasks[i].hours || 0), 0);
   const rows = p.drawings.map((d, i) => `
     <div class="drow ${appN(d) ? 'app' : ''}" data-did="${d.id}" data-idx="${i}">
       <button class="caret ${d.contents.length ? '' : 'none'}" data-act="tog" title="作図内容を表示">${isOpenD(d.id) ? '▼' : '▶'}</button>
-      ${p.numMode !== 'sort' ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
+      ${p.numMode !== 'sort' && !ui.flowOrd ? '<div class="grip" title="ドラッグで並べ替え">⋮⋮</div>' : '<div></div>'}
       <input class="cell no" data-f="no" value="${esc(d.no)}" placeholder="No." ${p.numMode === 'renumber' ? 'readonly title="通し番号モード:並び順で自動採番"' : ''}>
       <div class="nmw"><input class="cell nm" data-f="name" value="${esc(d.name)}" placeholder="図面名称">${(() => { const u = urgCount(p, dTaskIds(d)); return (u.late ? `<span class="su late" title="遅れの未了作業">遅${u.late}</span>` : '') + (u.now ? `<span class="su now" title="今期の未了作業">今${u.now}</span>` : ''); })()}${starCount(p, d) ? `<span class="stc" title="未完了の優先作業">★${starCount(p, d)}</span>` : ''}</div>
       <button class="appck ${appN(d) && appN(d) === d.contents.length ? 'on' : appN(d) ? 'part' : ''}" data-act="appall" title="確認申請に使う作図内容 ${appN(d)}/${d.contents.length}(クリックで全部オン/オフ。個別は▶で開いて)">${appN(d) && appN(d) < d.contents.length ? `<small>${appN(d)}/${d.contents.length}</small>` : ''}</button>
@@ -1508,7 +1556,8 @@ function renderList(){
     ${phaseBanner(p)}
     <div class="dvbar"><span class="fseg dvseg"><button data-act="dmode" data-v="list" class="${ui.dmode !== 'flow' ? 'on' : ''}">☰ リスト</button><button data-act="dmode" data-v="flow" class="${ui.dmode === 'flow' ? 'on' : ''}">⇢ フローチャート</button></span>
       ${ui.dmode === 'flow' ? `<label class="chk"><input type="checkbox" data-act="flowtask" ${ui.flowTask !== false ? 'checked' : ''}> 図面をまたぐ作業の前後関係も矢印にする</label>`
-        : `<button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button>`}</div>
+        : `<button class="tbtn sm" data-act="openall">▼ すべて開く</button><button class="tbtn sm" data-act="closeall">▶ すべて閉じる</button>`}
+      ${ui.dmode !== 'flow' ? `<label class="chk ford ${ui.flowOrd ? 'on' : ''}" title="図面番号・保存される並び順は変わりません"><input type="checkbox" data-act="floword" ${ui.flowOrd ? 'checked' : ''}> ⇢ フローチャート順で表示(一時)</label>` : ''}</div>
     ${ui.dmode !== 'flow' ? `<div class="dvbar sub"><span class="subl">└ 開いたときの中身</span><span class="fseg dvseg"><button data-act="lunit" data-v="content" class="${ui.lunit !== 'sheet' ? 'on' : ''}">作図内容ごと</button><button data-act="lunit" data-v="sheet" class="${ui.lunit === 'sheet' ? 'on' : ''}">▤ 枚数ごと</button></span>
       ${ui.lunit === 'sheet' ? '<span class="subh">枚数を記入/<b>⤒</b>で上の行と同じページにまとめる/<b>⇕</b>で分ける。達成率は枚数で重み付け。</span>' : ''}</div>` : ''}
     ${ui.dmode === 'flow' ? flowHTML(p) : `<div class="dlist" id="dlist">
@@ -1661,7 +1710,7 @@ function bindFlow(){
 /* ---------------- detail view ---------------- */
 let focusAfter = null, scrollToDid = null, focusMemo = null, scrollToCid = null;
 function renderDetail(){
-  const p = P(), app = $('#app');
+  const p = viewP(P()), app = $('#app');
   if (!cur.did || !p.drawings.some(d => d.id === cur.did)) cur.did = p.drawings[0]?.id || null;
   const prevSheets = $('#sheets'), sc = prevSheets ? prevSheets.scrollTop : null;
   const tbScroll = $('#treebox') ? [$('#treebox').scrollLeft, $('#treebox').scrollTop] : null;
@@ -1680,6 +1729,9 @@ function renderDetail(){
         <select class="mid-only" id="dsel">${p.drawings.map(d => `<option value="${d.id}" ${d.id === cur.did ? 'selected' : ''}>${esc(d.no)} ${esc(d.name)}</option>`).join('')}</select>
         <span class="chk" title="インスタンス(複数の作図内容に置いた作業)の時間の見せ方">インスタンスの時間:<span class="seg"><button data-act="hmode" data-v="sum" class="${ui.hmode !== 'split' ? 'on' : ''}">合算</button><button data-act="hmode" data-v="split" class="${ui.hmode === 'split' ? 'on' : ''}">配分</button></span></span>
         <label class="chk"><input type="checkbox" data-act="fade" ${ui.fadeInst ? 'checked' : ''}> インスタンスは本体以外を薄く表示(集計からも除外)</label>
+        <label class="chk ford ${ui.flowOrd ? 'on' : ''}" title="図面番号・保存される並び順は変わりません"><input type="checkbox" data-act="floword" ${ui.flowOrd ? 'checked' : ''}> ⇢ フローチャート順(一時)</label>
+        ${(() => { const nm = placedIds(P()).filter(i => { const t = P().tasks[i]; return t && !t.done && t.kind === 'in' && (!t.assignee || !(+t.hours > 0)); }).length;
+          return `<button class="missbtn ${nm ? '' : 'zero'} ${flt().miss ? 'on' : ''}" data-act="fmiss" title="担当なし・時間0の未完了作業だけを表示">記入漏れ <b>${nm}</b>件</button>`; })()}
       </div>
       ${phaseBanner(p)}
       ${fltBar()}
@@ -1722,23 +1774,26 @@ function sheetHTML(p, d){
     ${inn.map(l => `<div>← <a data-act="goto" data-did="${l.from}">${dn(l.from)}</a> から <span class="memo">${esc(l.memo || '')}</span></div>`).join('')}
   </div>` : '';
   const F = fltActive();
-  if (F && !d.contents.some(c => !c.items.length || c.items.some(i => taskMatch(p, i, c.id)))) return '';
+  const showEmpty = !flt().miss;
+  if (F && !d.contents.some(c => (showEmpty && !c.items.length) || c.items.some(i => taskMatch(p, i, c.id)))) return '';
   const contents = d.contents.map(c => {
-    if (F && c.items.length && !c.items.some(i => taskMatch(p, i, c.id))) return '';
+    if (F && (c.items.length || !showEmpty) && !c.items.some(i => taskMatch(p, i, c.id))) return '';
     const counted = c.items.filter(i => p.tasks[i] && (ui.hmode === 'split' || !ui.fadeInst || homePlace(p, i)?.c.id === c.id));
     const hrs = counted.filter(i => p.tasks[i].kind !== 'ext').reduce((a, i) => a + (ui.hmode === 'split' ? shareOf(p, i, c.id) : (+p.tasks[i].hours || 0)), 0);
     const dn2 = counted.filter(i => p.tasks[i].done).length;
     return `<div class="content" data-cid="${c.id}" data-did="${d.id}">
       <div class="chead">
         <input class="cell" data-cf="name" value="${esc(c.name)}" placeholder="作図内容">
+        <button class="bbtn big ${c.items.length ? '' : 'first'}" data-act="board" title="条件整理・下絵準備 → デザイン検討 → 作図 で作業を洗い出す">▦ 洗い出す</button>
         <input class="cell csc" data-csc="1" value="${esc(c.scale || '')}" placeholder="1/100" title="この作図内容のスケール">
         <button class="appck ${c.app ? 'on' : ''}" data-act="appc" title="確認申請に使う作図内容(クリックで切替)"></button>
-        <button class="bbtn" data-act="board" title="3ゾーンで作業を洗い出し・つなぐ・期間に入れる">▦ 洗い出し</button>${zchkMini(c)}
+${zchkMini(c)}
         <span class="meta">${dn2}/${counted.length}件 · ${fmtH(hrs)}h</span>
         <button class="ico" data-act="cmore" title="作図内容メニュー">⋯</button>
         <button class="ico del cdel" data-act="delc" title="この作図内容を削除(⌘/Ctrl+Z で元に戻せます)">×</button>
       </div>
       <ul class="tasks">${c.items.map((tid, i) => taskLI(p, d, c, tid, i)).join('')}</ul>
+      ${c.items.length ? '' : `<button class="bcta" data-act="board"><b>▦ まずは洗い出しから</b><span>条件整理・下絵準備 → デザイン検討 → 作図 の順に、作業を箇条書きで書き出します</span></button>`}
       <div class="addtask"><input data-cid="${c.id}" data-did="${d.id}" placeholder="＋ 作業を追加(Enter)  例:照明器具の仕様確認">
         <button data-act="insert" title="他の図面にある作業を、同一インスタンスとしてここにも配置">◆ 既存作業を配置</button></div>
     </div>`;
@@ -1786,7 +1841,8 @@ function taskLI(p, d, c, tid, i){
   const kt = t.kind === 'in' ? '' : `<span class="kt ${t.kind}" style="--c:${pa?.color || '#6b6a66'}">${t.kind === 'ext' ? '外部' : '打合せ'}</span>`;
   const memoEdit = memoOpen.has(tid + c.id);
   if (fltActive() && !taskMatch(p, tid, c.id)) return '';
-  return `<li class="task ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, tid)}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
+  const missM = !t.done && t.kind === 'in' && !sub && !t.assignee, missH = !t.done && t.kind === 'in' && !sub && !(+t.hours > 0);
+  return `<li class="task ${missM ? 'miss-m' : ''} ${missH ? 'miss-h' : ''} ${t.done ? 'done' : ''} ${n > 1 ? 'inst' : ''} ${sub ? 'sub' : ''} ${t.star ? 'starred' : ''} ${urgCls(p, tid)}" data-tid="${tid}" data-cid="${c.id}" data-did="${d.id}" data-i="${i}">
    <div class="trow">
     ${i > 0 ? `<button class="chain ${serial ? 'serial' : ''}" data-act="chain" title="${serial ? '直列:前の作業が終わってから着手(クリックで並列に)' : '並列:前の作業と同時進行できる(クリックで直列に)'}">${serial ? '↓' : '∥'}</button>` : `<span class="chain first">●</span>`}
     <input type="checkbox" data-act="done" ${t.done ? 'checked' : ''} title="完了">
@@ -2240,7 +2296,7 @@ function renderBoard(){
   const E = eff(p), mode = ui.bmode || 1, T = p.tasks;
   const items = c.items.filter(i => T[i]);
   const colHTML = z => {
-    const ids = items.filter(i => zoneOf(T[i]) === z.k);
+    const ids = items.filter(i => zoneOf(T[i]) === z.k && !T[i].std);
     const hrs = ids.filter(i => T[i].kind !== 'ext').reduce((a, i) => a + (placeCount(p, i) > 1 && ui.hmode === 'split' ? shareOf(p, i, c.id) : (+T[i].hours || 0)), 0);
     const ck = zchk(c, z.k);
     const cards = ids.map(i => {
@@ -2258,10 +2314,9 @@ function renderBoard(){
           ${mode === 3 ? `<select class="bms" data-bms="1" title="締切(期間)"><option value="">自動(${esc(trunc(bandName(E, b), 8))})</option>${E.ms.map((ms, k) => `<option value="${ms.id}" ${t.ms === ms.id ? 'selected' : ''}>${esc(trunc(periodName(E, k), 10))} → ◆${esc(trunc(ms.name, 8))}</option>`).join('')}</select>` : `<span class="bband" title="${esc(periodName(E, b))}" style="color:${bandColor(E, b)}">● ${esc(trunc(bandName(E, b), 9))}</span>`}
         </div></div>`;
     }).join('');
+    if (z.k === 'draw') return drawColHTML(p, c, items, cards, hrs, mode);
     return `<section class="bcol" data-zone="${z.k}" style="--c:${z.c}">
       <header><h4>${z.n}</h4><span class="bcnt">${ids.length}件 · ${fmtH(hrs)}h</span>
-        <div class="bchk"><label title="${ck.cl ? 'クライアント確認済 ' + ck.cl : 'クライアント確認'}"><input type="checkbox" data-zchk="${z.k}|cl" ${ck.cl ? 'checked' : ''}>CL確認${ck.cl ? `<small>${fmtD(ck.cl)}</small>` : ''}</label>
-          <label title="${ck.in ? '社内確認済 ' + ck.in : '社内確認'}"><input type="checkbox" data-zchk="${z.k}|in" ${ck.in ? 'checked' : ''}>社内確認${ck.in ? `<small>${fmtD(ck.in)}</small>` : ''}</label></div>
         ${mode === 3 && E.M ? `<select class="bbulk" data-bbulk="${z.k}"><option value="">この欄をまとめて締切へ…</option>${E.ms.map((ms, k) => `<option value="${k}">${esc(trunc(periodName(E, k), 12))} → ◆${esc(trunc(ms.name, 10))}</option>`).join('')}</select>` : ''}
       </header>
       <div class="bcards">${cards || `<div class="bempty">${mode === 1 ? '下の欄に書いて Enter' : '項目なし'}</div>`}</div>
@@ -2275,22 +2330,57 @@ function renderBoard(){
       <div class="bsteps">${[['1', '① 洗い出す'], ['2', '② つなぐ'], ['3', '③ 期間に入れる']].map(([v, l]) => `<button data-act="bmode" data-v="${v}" class="${+v === mode ? 'on' : ''}">${l}</button>`).join('')}</div>
       <span class="bsum">${noneCnt ? `<span class="pq none">⚠前提なし ${noneCnt}</span>` : ''}${openCnt ? `<span class="pq open">⏳前提未了 ${openCnt}</span>` : ''}</span>
       <span style="flex:1"></span>
+      ${mode === 2 ? '<button class="tbtn" data-act="bauto" title="前提がない検討項目に、準備(条件整理・下絵)の最後の項目をつなぐ">⇉ 準備→検討を自動でつなぐ</button>' : ''}
       <button class="tbtn" data-act="binsert" title="他の作図内容の作業を同一インスタンスとして取り込む">◆ 他から取り込む</button>
       <button class="tbtn pri" data-act="bclose">閉じる</button>
     </header>
-    <div class="bhint">${mode === 1 ? '各ゾーンに思いつくまま箇条書きで書き出します(Enterで次の行)。⋮⋮ をドラッグすると順番やゾーンを変えられます。担当・時間は後で入れればOKです。'
-      : mode === 2 ? '項目の右端の ● から、後に続く項目へドラッグして線を引くと「前後関係(直列)」になります。線をクリックすると外せます。作図の項目に条件整理・検討がつながっていないと「⚠前提なし」が付きます。'
+    <div class="bhint">${mode === 1 ? '条件整理と下絵・レイアウト準備(並行)→ デザイン検討 → 作図 の順に、思いつくまま箇条書きで書き出します(Enterで次の行)。作図はファイナライズだけなので、作図・チェック・修正の時間と担当を入れるだけです。ゾーンの間の縦長の欄が関門の確認(社内確認・CL確認)です。'
+      : mode === 2 ? '項目の右端の ● から、後に続く項目へドラッグして線を引くと「前後関係(直列)」になります。線をクリックすると外せます。<b>「準備→検討を自動でつなぐ」</b>で、つながっていない検討項目に準備の項目をまとめてつなげます。作図はデザイン検討の最後の項目に自動でつながります。'
       : '作業を左右にドラッグして期間の帯へ入れます。締切線をドラッグすると、その行の作業を前後に振り分けます。作業をクリックすると期間を選べます。前提・後続の作業は自動で連れて行きます(薄い表示=他の作図内容の関連作業)。'}</div>
     ${mode === 3 ? `<div class="bbody b3">${E.M ? `<div class="b3bar">${ZONES.map(z => { const n = items.filter(i => zoneOf(T[i]) === z.k).length; return `<label style="--c:${z.c}"><b>${z.n}</b> ${n}件 <select class="bbulk" data-bbulk="${z.k}" ${n ? '' : 'disabled'}><option value="">まとめて期間へ…</option>${E.ms.map((ms, k) => `<option value="${k}">${esc(trunc(periodName(E, k), 12))} → ◆${esc(trunc(ms.name, 10))}</option>`).join('')}</select></label>`; }).join('')}
         <span class="b3zoom"><button class="tbtn sm" data-act="bzoom" data-v="-">−</button><button class="tbtn sm" data-act="bzoom" data-v="+">＋</button></span></div>
         <div id="btree" class="tbox"></div>` : `<div class="bempty" style="padding:40px">マイルストーン(締切)がまだありません。右上の「マイルストーン」から追加してください。</div>`}</div>`
-      : `<div class="bbody"><div class="bgrid">${ZONES.map(colHTML).join('<div class="barrow">→</div>')}</div><svg class="blinks"></svg></div>`}
+      : `<div class="bbody"><div class="bgrid"><div class="bstack">${colHTML(ZMAP.cond)}${colHTML(ZMAP.prep)}</div>${gateHTML(c, 'cond')}${colHTML(ZMAP.design)}${gateHTML(c, 'design')}${colHTML(ZMAP.draw)}</div><svg class="blinks"></svg></div>`}
   </div>`;
   const bt = $('#btree', el);
   if (bt) { bt._T = boardTree(p, items); bt.innerHTML = treeSVG(p, bt._T, false); if (board.tsc) { bt.scrollLeft = board.tsc[0]; bt.scrollTop = board.tsc[1]; } bt.onscroll = () => board.tsc = [bt.scrollLeft, bt.scrollTop]; }
   else { $('.bbody', el).scrollTop = prevScroll; drawBoardLinks(); }
   if (boardFocus) { const i = $(`[data-badd="${boardFocus}"]`, el); if (i) i.focus(); boardFocus = null; }
   else if (first && mode === 1 && !items.length) { const i = $('[data-badd="cond"]', el); if (i) i.focus(); }
+}
+function gateHTML(c, g){
+  const ck = zchk(c, g), all = ck.in && ck.cl;
+  return `<div class="bgate ${all ? 'ok' : ''}" title="${GATES.find(x => x.k === g).n} の関門">
+    <label class="${ck.in ? 'on' : ''}" title="${ck.in ? '社内確認済 ' + ck.in : '社内確認(クリックで済にする)'}"><input type="checkbox" data-zchk="${g}|in" ${ck.in ? 'checked' : ''}><span>社内確認</span>${ck.in ? `<small>${fmtD(ck.in)}</small>` : ''}</label>
+    <span class="garr">▶</span>
+    <label class="${ck.cl ? 'on' : ''}" title="${ck.cl ? 'クライアント確認済 ' + ck.cl : 'CL確認(クリックで済にする)'}"><input type="checkbox" data-zchk="${g}|cl" ${ck.cl ? 'checked' : ''}><span>CL確認</span>${ck.cl ? `<small>${fmtD(ck.cl)}</small>` : ''}</label>
+  </div>`;
+}
+const stdTask = (p, c, k) => c.items.map(i => p.tasks[i]).find(t => t && t.std === k);
+function syncStd(p, c){ // 作図の定型:最初の工程←デザイン検討(なければ準備)の末端、以降は 作図→チェック→修正 の直列
+  const chain = STD.map(x => stdTask(p, c, x.k)).filter(Boolean); if (!chain.length) return;
+  const own = c.items.filter(i => p.tasks[i] && !p.tasks[i].std);
+  const term = zs => { const ids = own.filter(i => zs.includes(zoneOf(p.tasks[i]))); return ids.filter(i => !ids.some(j => p.tasks[j].deps.includes(i))); };
+  const des = term(['design']), first = des.length ? des : term(['cond', 'prep']);
+  chain.forEach((t, k) => { const ext = t.deps.filter(x => !c.items.includes(x)); const need = k ? [chain[k - 1].id] : first;
+    t.deps = [...new Set([...ext, ...need.filter(x => x !== t.id && !wouldCycle(p, t.id, x))])]; });
+}
+function drawColHTML(p, c, items, cards, hrs, mode){
+  const z = ZMAP.draw, rows = STD.map(sd => { const t = stdTask(p, c, sd.k), m = t ? member(t.assignee) : null;
+    return t ? `<div class="bcard bstd ${t.done ? 'done' : ''}" data-tid="${t.id}">
+        <input type="checkbox" data-act="done" ${t.done ? 'checked' : ''} title="完了"><b class="sdn">${sd.n}</b>
+        <select class="asg ${t.assignee ? '' : 'miss'}" data-tf="assignee" style="--c:${m ? m.color : '#d5d2ca'}"><option value="">担当—</option>${S.members.map(mm => `<option value="${mm.id}" ${mm.id === t.assignee ? 'selected' : ''}>${esc(mm.name)}</option>`).join('')}</select>
+        <input class="hrs ${+t.hours > 0 ? '' : 'miss'}" type="number" min="0" step="0.5" data-tf="hours" value="${t.hours || ''}" placeholder="0">h
+        <button class="ico bdel" data-act="bdel" title="この工程を使わない">×</button>${mode === 2 ? '<span class="bport"></span>' : ''}</div>`
+      : `<div class="bstd off" data-std="${sd.k}"><button class="sdadd" data-act="stdadd" data-v="${sd.k}" title="この工程を使う">＋ ${sd.n}</button></div>`; }).join('');
+  const others = items.filter(i => zoneOf(p.tasks[i]) === 'draw' && !p.tasks[i].std);
+  hrs = items.filter(i => zoneOf(p.tasks[i]) === 'draw').reduce((a, i) => a + (+p.tasks[i].hours || 0), 0);
+  return `<section class="bcol bdraw" data-zone="draw" style="--c:${z.c}">
+      <header><h4>作図 <small>ファイナライズ</small></h4><span class="bcnt">${fmtH(hrs)}h</span></header>
+      <div class="bcards">${rows}
+        ${others.length ? `<div class="bother">その他の作図項目</div>${cards}` : ''}
+        ${!stdTask(p, c, 'draw') && !stdTask(p, c, 'check') && !stdTask(p, c, 'fix') ? '<button class="tbtn sm sdall" data-act="stdadd" data-v="all">＋ 作図・チェック・修正をまとめて使う</button>' : ''}</div>
+    </section>`;
 }
 function boardTree(p, items){
   const T0 = p.tasks, set = new Set(items);
@@ -3123,7 +3213,7 @@ function doPrint(only){
       h += `<div class="psheet"><h2><span class="mono">${esc(d.no)}</span>${esc(d.name)}<span class="mono">${esc(dScales(d))}</span><span class="r">達成率 ${pr == null ? '—' : pr + '%'}</span></h2>`;
       if (out.length || inn.length) h += `<div class="prel">${out.map(l => `→ ${esc(dn(l.to))}:${esc(l.memo)}`).concat(inn.map(l => `← ${esc(dn(l.from))}:${esc(l.memo)}`)).join('<br>')}</div>`;
       if (inc.detail) d.contents.forEach(c => {
-        h += `<div class="pc"><div style="float:right;font-size:.78em;color:#444">${ZONES.map(z => `<span style="color:${z.c};font-weight:600">${z.n}</span> CL${zchk(c, z.k).cl ? '☑' : '☐'} 社内${zchk(c, z.k).in ? '☑' : '☐'}`).join('　')}</div><h3>${esc(c.name)}${c.app ? ' <b style="border:.3mm solid #000;padding:0 .6mm;font-size:.75em">申請</b>' : ''}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
+        h += `<div class="pc"><div style="float:right;font-size:.78em;color:#444">${GATES.map(g => `<span style="font-weight:600">${g.n}</span> 社内${zchk(c, g.k).in ? '☑' : '☐'} CL${zchk(c, g.k).cl ? '☑' : '☐'}`).join('　')}</div><h3>${esc(c.name)}${c.app ? ' <b style="border:.3mm solid #000;padding:0 .6mm;font-size:.75em">申請</b>' : ''}${c.scale ? ` <span class="mono" style="font-weight:400;font-size:.85em;color:#555">${esc(c.scale)}</span>` : ''}</h3><table><colgroup><col style="width:6mm"><col style="width:36%"><col style="width:22mm"><col style="width:18mm"><col style="width:22mm"><col><col style="width:10mm"></colgroup>
           <tr><th></th><th>作業</th><th>担当/関係者</th><th style="text-align:right">時間/期日</th><th>締切</th><th>前提作業</th><th>共有</th></tr>
         ${c.items.map((tid, i) => { const t = T[tid]; const m = member(t.assignee), pa = party(p, t.party); const n = placeCount(p, tid), b = E.band[tid];
           const who = t.kind === 'in' ? (m ? esc(m.name) : '') : `${KIND[t.kind]}:${esc(pa?.name || '')}`;
@@ -3437,6 +3527,9 @@ document.addEventListener('click', e => {
     case 'showlinks': ui.showLinks = a.checked; saveUi(); return render();
     case 'dmode': ui.dmode = a.dataset.v; saveUi(); return render();
     case 'lunit': ui.lunit = a.dataset.v; saveUi(); return render();
+    case 'lboard': { const r = a.closest('[data-cid]'); return openBoard(r.dataset.did, r.dataset.cid); }
+    case 'floword': ui.flowOrd = a.checked; saveUi(); return render();
+    case 'fmiss': ui.flt = Object.assign(flt(), { miss: flt().miss ? '' : 'any' }); saveUi(); return render();
     case 'cins': { const dd = p.drawings.find(x => x.id === did); if (!dd) return; const after = a.dataset.after;
       return prompt2('作図内容を追加', `${dd.no} ${dd.name} に追加する作図内容の名前`, '', name => { if (!name) return; const i = after ? dd.contents.findIndex(c => c.id === after) + 1 : 0;
         const ref = dd.contents[Math.max(0, i - 1)]; const c = { id: uid(), name, items: [], scale: ref?.scale || '1/100' }; dd.contents.splice(i, 0, c);
@@ -3454,6 +3547,16 @@ document.addEventListener('click', e => {
     case 'board': { const r = a.closest('[data-cid]'); return openBoard(r.dataset.did, r.dataset.cid); }
     case 'bclose': return closeBoard();
     case 'bmode': ui.bmode = +a.dataset.v; saveUi(); return renderBoard();
+    case 'stdadd': { const { c } = findDC(p, board.did, board.cid); const ks = a.dataset.v === 'all' ? STD.map(x => x.k) : [a.dataset.v];
+      ks.forEach(k => { if (stdTask(p, c, k)) return; const t = newTask({ title: STD.find(x => x.k === k).n, zone: 'draw' }); t.std = k; p.tasks[t.id] = t;
+        const after = STD.map(x => x.k).slice(0, STD.findIndex(x => x.k === k)).map(x => stdTask(p, c, x)).filter(Boolean).pop();
+        const at = after ? c.items.indexOf(after.id) + 1 : c.items.length; c.items.splice(at, 0, t.id); });
+      syncStd(p, c); return commit(); }
+    case 'bauto': { const { c } = findDC(p, board.did, board.cid), T = p.tasks; const own = c.items.filter(i => T[i] && !T[i].std);
+      const prep = own.filter(i => ['cond', 'prep'].includes(zoneOf(T[i]))), term = prep.filter(i => !prep.some(j => T[j].deps.includes(i)));
+      let n = 0; own.filter(i => zoneOf(T[i]) === 'design' && !T[i].deps.some(x => c.items.includes(x) && ['cond', 'prep', 'design'].includes(zoneOf(T[x] || {})))).forEach(i => term.forEach(x => { if (!T[i].deps.includes(x) && !wouldCycle(p, i, x)) { T[i].deps.push(x); n++; } }));
+      if (!term.length) return toast('つなげる準備の項目がありません');
+      toast(n ? `${n}本つなぎました` : 'つなぐ必要のある項目はありませんでした'); syncStd(p, c); return commit(); }
     case 'bzoom': ui.bzoom = Math.max(.4, Math.min(1.2, (ui.bzoom || .85) + (a.dataset.v === '+' ? .1 : -.1))); saveUi(); return renderBoard();
     case 'binsert': return insertExisting(board.did, board.cid);
     case 'bdel': { const tid = tidOf(), { c } = findDC(p, board.did, board.cid), n = placeCount(p, tid), t = p.tasks[tid];
