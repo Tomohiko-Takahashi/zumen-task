@@ -1456,7 +1456,7 @@ function renderList(){
     </div>`}
     <div class="hint" style="${ui.dmode === 'flow' ? 'display:none' : ''}">
       ・達成率または <b>›</b> をクリックで詳細へ。並び「ドラッグ順に通し番号」では <b>⋮⋮</b> をドラッグして並べ替えると番号が自動で振り直されます(「番号順に自動整列」では番号を書き換えると並び替わります)。締切カードをクリックで計画レビュー。<br>
-      ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
+      ・右端の <b>●</b> → つなぎ先の <b>●</b> で図面同士を矢印で関連づけ(メモ付き)。線は小さな●が影響を与える側、▶が受ける側です。<kbd>Esc</kbd>で取消。<kbd>⌘/Ctrl</kbd>+<kbd>Z</kbd> で元に戻す。
     </div>
   </div>`;
   app.firstElementChild.scrollTop = sc;
@@ -1473,25 +1473,37 @@ function laneLinks(p){
   L.forEach(o => { let k = 0; while (lanes[k] && lanes[k].some(([lo, hi]) => !(o.hi <= lo || o.lo >= hi))) k++; (lanes[k] = lanes[k] || []).push([o.lo, o.hi]); o.lane = k; });
   return { L, nl: lanes.length };
 }
+function spreadEnds(L, yc, step, span){
+  // 同じ図面に出る線(●始点)と入る線(▶終点)が重ならないよう、行の中で縦にずらす
+  const ends = {};
+  L.forEach(o => { (ends[o.a] = ends[o.a] || []).push({ o, k: 'a', oth: o.b }); (ends[o.b] = ends[o.b] || []).push({ o, k: 'b', oth: o.a }); });
+  Object.entries(ends).forEach(([row, arr]) => {
+    row = +row;
+    arr.sort((x, y) => { const ux = x.oth < row, uy = y.oth < row; if (ux !== uy) return ux ? -1 : 1; return ux ? y.o.lane - x.o.lane : x.o.lane - y.o.lane; });
+    const gap = arr.length > 1 ? Math.min(step, span / (arr.length - 1)) : 0;
+    arr.forEach((e, i) => e.o['y' + e.k] = yc(row) + (i - (arr.length - 1) / 2) * gap);
+  });
+}
 function linkSVG(p){
   const { L, nl } = laneLinks(p);
   const RL = rowLayout(p), yc = i => RL.c[i], LX = 34 + nl * 30 + 4;
-  L.forEach(o => o.my = (yc(o.a) + yc(o.b)) / 2);
+  spreadEnds(L, yc, 8, 20);
+  L.forEach(o => o.my = (o.ya + o.yb) / 2);
   [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 23); return o.ly; }, -1e9);
   const H = Math.max(RL.H, ...L.map(o => o.ly + 12)), W = LX + 230;
   const paths = L.map(o => {
-    const x = 34 + o.lane * 30, y1 = yc(o.a), y2 = yc(o.b), s = y2 > y1 ? 1 : -1, r = 8;
-    const d = `M7,${y1} H${x - r} Q${x},${y1} ${x},${y1 + s * r} V${y2 - s * r} Q${x},${y2} ${x - r},${y2} H11`;
+    const x = 34 + o.lane * 30, y1 = o.ya, y2 = o.yb, s = y2 > y1 ? 1 : -1, r = Math.min(8, Math.abs(y2 - y1) / 2);
+    const d = `M8,${y1} H${x - r} Q${x},${y1} ${x},${y1 + s * r} V${y2 - s * r} Q${x},${y2} ${x - r},${y2} H11`;
     const memo = trunc(o.l.memo || '(メモなし)', 18), tw = Math.min(220, memo.length * 11.5 + 14);
     return `<g data-lid="${o.l.id}" data-from="${o.l.from}" data-to="${o.l.to}">
-      <path class="lk" d="${d}" fill="none" stroke="#5c5a55" stroke-width="1.5" marker-end="url(#ah)"/>
+      <path class="lk" d="${d}" fill="none" stroke="#5c5a55" stroke-width="1.5" marker-start="url(#ldot)" marker-end="url(#ah)"/>
       <path class="lk" d="${d}" fill="none" stroke="transparent" stroke-width="10" data-act="link"/>
       <path d="M${x},${o.my} L${x + 6},${o.my} L${LX - 4},${o.ly}" fill="none" stroke="#d2462b" stroke-width=".8" stroke-dasharray="2 2"/>
       <g class="lbl" data-act="link"><rect x="${LX}" y="${o.ly - 10}" width="${tw}" height="20" rx="3" fill="#fff" stroke="#d2462b" stroke-width=".8"/>
       <text x="${LX + 7}" y="${o.ly + 4}" font-size="11" fill="#d2462b">${esc(memo)}</text><title>${esc(o.l.memo || '')}</title></g></g>`;
   }).join('');
   return `<svg class="linksvg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
-    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker></defs>${paths}</svg>`;
+    <defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5c5a55"/></marker><marker id="ldot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6"><circle cx="5" cy="5" r="3.8" fill="#5c5a55"/></marker></defs>${paths}</svg>`;
 }
 
 /* ---------------- 図面フローチャート ---------------- */
@@ -3065,14 +3077,15 @@ function printLinks(p, gw, rowH, headH){
   const { L, nl } = laneLinks(p);
   const H = headH + p.drawings.length * rowH, yc = i => headH + i * rowH + rowH / 2;
   let s = `<svg style="position:absolute;left:100%;top:0;overflow:visible" width="${gw}mm" height="${H}mm" viewBox="0 0 ${gw} ${H}">
-    <defs><marker id="pah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker></defs>`;
+    <defs><marker id="pah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#333"/></marker><marker id="pdot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4"><circle cx="5" cy="5" r="3.8" fill="#333"/></marker></defs>`;
   const LX = 5 + nl * 5 + 2;
-  L.forEach(o => o.my = (yc(o.a) + yc(o.b)) / 2);
+  spreadEnds(L, yc, rowH * .22, rowH * .55);
+  L.forEach(o => o.my = (o.ya + o.yb) / 2);
   [...L].sort((a, b) => a.my - b.my).reduce((last, o) => { o.ly = Math.max(o.my, last + 3.6); return o.ly; }, -1e9);
   const maxCh = Math.max(6, Math.floor((gw - LX) / 2.7));
   L.forEach(o => {
-    const x = 5 + o.lane * 5, y1 = yc(o.a), y2 = yc(o.b), sg = y2 > y1 ? 1 : -1, r = 1.5;
-    s += `<path d="M0.5,${y1} H${x - r} Q${x},${y1} ${x},${y1 + sg * r} V${y2 - sg * r} Q${x},${y2} ${x - r},${y2} H1.5" fill="none" stroke="#333" stroke-width=".3" marker-end="url(#pah)"/>`;
+    const x = 5 + o.lane * 5, y1 = o.ya, y2 = o.yb, sg = y2 > y1 ? 1 : -1, r = Math.min(1.5, Math.abs(y2 - y1) / 2);
+    s += `<path d="M0.9,${y1} H${x - r} Q${x},${y1} ${x},${y1 + sg * r} V${y2 - sg * r} Q${x},${y2} ${x - r},${y2} H1.5" fill="none" stroke="#333" stroke-width=".3" marker-start="url(#pdot)" marker-end="url(#pah)"/>`;
     s += `<path d="M${x},${o.my} L${LX - .8},${o.ly - .9}" stroke="#c0392b" stroke-width=".15" stroke-dasharray=".6 .6" fill="none"/>`;
     s += `<text x="${LX}" y="${o.ly}" font-size="2.6" fill="#c0392b">${esc(trunc(o.l.memo, maxCh))}</text>`;
   });
